@@ -343,7 +343,7 @@ button.faded-clickable.active {
       </div>
       <div id="steady-forward-block">
         <div class="chart-wrap compact-chart">
-          <canvas id="forward-chart" height="220"></canvas>
+          <canvas id="forward-chart" height="300"></canvas>
           <div class="no-data" id="forward-none" style="display:none">No forward data</div>
         </div>
       </div>
@@ -367,7 +367,7 @@ button.faded-clickable.active {
       </div>
       <div id="steady-reverse-block">
         <div class="chart-wrap compact-chart faded-panel" id="reverse-wrap">
-          <canvas id="reverse-chart" height="220"></canvas>
+          <canvas id="reverse-chart" height="300"></canvas>
           <div class="no-data" id="reverse-none" style="display:none">No reverse data</div>
         </div>
       </div>
@@ -426,7 +426,7 @@ const state = {
 
 const AVAILABLE_MATERIALS = ['Si', '4H-SiC', 'GaN'];
 const UPCOMING_MATERIALS = [
-  { name: 'Gallium Arsenide', color: '#c73a3a' },
+  { name: 'GaAs', color: '#b8a892' },
   { name: 'Diamond', color: '#8a97a6' }
 ];
 
@@ -502,6 +502,28 @@ function buildMaterialRow() {
   row.querySelectorAll('.material-chip').forEach(n => n.remove());
 
   const colorMap = data.meta.colors;
+  
+  // Add GaAs first
+  UPCOMING_MATERIALS.forEach(mat => {
+    const chip = document.createElement('span');
+    chip.className = 'chip material-chip unavailable';
+    chip.title = 'Not yet available';
+    chip.setAttribute('aria-disabled', 'true');
+
+    const dot = document.createElement('span');
+    dot.className = 'dot';
+    dot.style.background = mat.color;
+
+    const txt = document.createElement('span');
+    txt.className = 'chip-label';
+    txt.textContent = mat.name;
+
+    chip.appendChild(dot);
+    chip.appendChild(txt);
+    row.appendChild(chip);
+  });
+  
+  // Then add available materials
   AVAILABLE_MATERIALS.forEach(mat => {
     const key = Object.entries(data.meta.materials).find(([, v]) => v === mat)?.[0] || mat.toLowerCase();
     const chip = document.createElement('label');
@@ -524,25 +546,6 @@ function buildMaterialRow() {
     txt.textContent = mat;
 
     chip.appendChild(input);
-    chip.appendChild(dot);
-    chip.appendChild(txt);
-    row.appendChild(chip);
-  });
-
-  UPCOMING_MATERIALS.forEach(mat => {
-    const chip = document.createElement('span');
-    chip.className = 'chip material-chip unavailable';
-    chip.title = 'Not yet available';
-    chip.setAttribute('aria-disabled', 'true');
-
-    const dot = document.createElement('span');
-    dot.className = 'dot';
-    dot.style.background = mat.color;
-
-    const txt = document.createElement('span');
-  txt.className = 'chip-label';
-    txt.textContent = mat.name;
-
     chip.appendChild(dot);
     chip.appendChild(txt);
     row.appendChild(chip);
