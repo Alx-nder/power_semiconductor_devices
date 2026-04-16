@@ -29,7 +29,7 @@ body {
 main {
   max-width: 1420px;
   margin: 0 auto;
-  padding: 1.2rem 1rem 2rem;
+  padding: 0.9rem 0.85rem 1rem;
 }
 header {
   display: flex;
@@ -60,8 +60,8 @@ h1 {
 .controls {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 0.6rem;
-  margin-bottom: 0.9rem;
+  gap: 0.45rem;
+  margin-bottom: 0.75rem;
 }
 .control-row {
   display: flex;
@@ -108,22 +108,30 @@ button.active {
   text-decoration: line-through;
 }
 .material-chip.unavailable {
-  opacity: 0.35;
   cursor: default;
+  background: rgba(240,240,240,0.55);
+  border-color: #e6e0d2;
+  color: rgba(22,22,22,0.34);
 }
 .material-chip.unavailable .dot {
-  opacity: 0.7;
+  opacity: 1;
+  box-shadow: 0 0 0 1px rgba(0,0,0,0.08);
+}
+.material-chip.unavailable .chip-label {
+  color: rgba(22,22,22,0.34);
 }
 .panel-grid {
   display: grid;
-  grid-template-columns: 2fr 1fr;
-  gap: 0.9rem;
+  grid-template-columns: minmax(0, 1.08fr) minmax(0, 1.08fr) minmax(320px, 0.94fr);
+  gap: 0.75rem;
+  align-items: start;
 }
 .panel {
   border: 1px solid var(--line);
   border-radius: 10px;
   background: var(--paper);
-  padding: 0.75rem;
+  padding: 0.65rem;
+  min-width: 0;
 }
 .panel h2 {
   margin: 0 0 0.55rem;
@@ -135,8 +143,11 @@ button.active {
   border: 1px solid #d6d0c2;
   border-radius: 8px;
   background: #fff;
-  padding: 0.45rem;
-  margin-bottom: 0.6rem;
+  padding: 0.35rem;
+}
+.compact-chart canvas {
+  display: block;
+  width: 100%;
 }
 .no-data {
   padding: 1rem;
@@ -172,11 +183,21 @@ small.mono {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 0.55rem;
+  margin-bottom: 0.45rem;
   flex-wrap: wrap;
   gap: 0.4rem;
 }
 .plot-header h2 { margin: 0; }
+.panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.45rem;
+  gap: 0.4rem;
+}
+.panel-header h2 {
+  margin: 0;
+}
 .axis-toggle {
   display: flex;
   gap: 0.3rem;
@@ -230,6 +251,15 @@ small.mono {
   border-radius: 2px;
   border: 1px solid rgba(0,0,0,0.12);
 }
+.side-panel .mono {
+  display: block;
+  margin-bottom: 0.35rem;
+}
+.decks-wrap {
+  max-height: 178px;
+  overflow: auto;
+  margin-top: 0.45rem;
+}
 button.faded {
   opacity: 0.35;
   cursor: default;
@@ -242,32 +272,15 @@ button.faded-clickable {
 button.faded-clickable.active {
   opacity: 0.55;
 }
-.overlay-wrap {
-  position: relative;
-}
-.overlay-fade {
-  position: relative;
-}
-.overlay-fade::after {
-  content: 'Coming soon';
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: rgba(255,255,255,0.82);
-  color: var(--muted);
-  font-size: 0.88rem;
-  font-style: italic;
-  border-radius: 8px;
-  z-index: 2;
+.faded-panel {
+  opacity: 0.42;
+  filter: saturate(0.9);
 }
 .circuit-diagram {
   border: 1px solid #d6d0c2;
   border-radius: 8px;
   background: #fff;
-  padding: 0.6rem;
-  margin-bottom: 0.6rem;
+  padding: 0.45rem;
 }
 .circuit-diagram h3 {
   margin: 0 0 0.3rem;
@@ -275,6 +288,18 @@ button.faded-clickable.active {
   text-transform: uppercase;
   letter-spacing: 0.07em;
   color: var(--muted);
+}
+.circuit-diagram svg {
+  display: block;
+  width: 100%;
+}
+@media (max-width: 1180px) {
+  .panel-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+  .side-panel {
+    grid-column: 1 / -1;
+  }
 }
 @media (max-width: 980px) {
   .panel-grid { grid-template-columns: 1fr; }
@@ -316,48 +341,59 @@ button.faded-clickable.active {
           <button id="btn-lin" class="active" onclick="setLogY(false)">Linear</button>
         </div>
       </div>
-      <div id="steady-block">
-        <div class="chart-wrap">
-          <canvas id="forward-chart" height="180"></canvas>
+      <div id="steady-forward-block">
+        <div class="chart-wrap compact-chart">
+          <canvas id="forward-chart" height="150"></canvas>
           <div class="no-data" id="forward-none" style="display:none">No forward data</div>
         </div>
-        <div class="chart-wrap overlay-fade" id="reverse-wrap">
-          <canvas id="reverse-chart" height="180"></canvas>
+      </div>
+      <div id="transient-waveform-block" style="display:none">
+        <div class="chart-wrap compact-chart">
+          <canvas id="transient-chart" height="260"></canvas>
+          <div class="no-data" id="transient-none" style="display:none">No switching data</div>
+        </div>
+      </div>
+      <div id="dpt-results-block" style="display:none">
+        <div class="chart-wrap faded-panel" style="min-height:180px;display:flex;align-items:center;justify-content:center;">
+          <span style="color:var(--muted);font-style:italic">Double Pulse Test results pending</span>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="panel">
+      <div class="panel-header">
+        <h2 id="secondary-title">Reverse Breakdown</h2>
+      </div>
+      <div id="steady-reverse-block">
+        <div class="chart-wrap compact-chart faded-panel" id="reverse-wrap">
+          <canvas id="reverse-chart" height="150"></canvas>
           <div class="no-data" id="reverse-none" style="display:none">No reverse data</div>
         </div>
       </div>
-      <div id="transient-block" style="display:none">
-        <div class="overlay-fade">
-          <div class="chart-wrap">
-            <canvas id="transient-chart" height="360"></canvas>
-            <div class="no-data" id="transient-none" style="display:none">No switching data</div>
-          </div>
-        </div>
+      <div id="transient-circuit-block" style="display:none">
         <div class="circuit-diagram" id="circuit-diagram">
           <h3>Test Circuit</h3>
           <svg id="circuit-svg" class="dev-svg" viewBox="0 0 520 280" xmlns="http://www.w3.org/2000/svg"></svg>
         </div>
       </div>
-      <div id="dpt-block" style="display:none">
-        <div class="overlay-fade" style="min-height:180px;display:flex;align-items:center;justify-content:center;border:1px solid #d6d0c2;border-radius:8px;">
-          <span style="color:var(--muted);font-style:italic">Double Pulse Test results pending</span>
-        </div>
-        <div class="circuit-diagram" id="dpt-circuit-diagram" style="margin-top:0.6rem">
-          <h3>DPT Circuit — Clamped Inductive Load</h3>
+      <div id="dpt-circuit-block" style="display:none">
+        <div class="circuit-diagram" id="dpt-circuit-diagram">
+          <h3>DPT Circuit</h3>
           <svg id="dpt-circuit-svg" class="dev-svg" viewBox="0 0 520 300" xmlns="http://www.w3.org/2000/svg"></svg>
         </div>
       </div>
     </div>
 
-    <div class="panel">
+    <div class="panel side-panel">
       <div id="device-svg-wrap">
         <h3>Device Cross-Section</h3>
-        <svg id="dev-svg" class="dev-svg" viewBox="0 0 300 230" xmlns="http://www.w3.org/2000/svg"></svg>
+        <svg id="dev-svg" class="dev-svg" viewBox="0 0 300 210" xmlns="http://www.w3.org/2000/svg"></svg>
         <div class="svg-legend" id="svg-legend"></div>
       </div>
       <h2>Decks</h2>
       <small class="mono">steady.in + switching.in</small>
-      <div style="max-height:300px; overflow:auto; margin-top:0.5rem;">
+      <div class="decks-wrap">
         <table>
           <thead>
             <tr>
@@ -383,7 +419,7 @@ let transientChart = null;
 const state = {
   mode: 'steady',
   family: 'pin',
-  voltage: '10V',
+  voltage: '100V',
   materials: { 'Si': true, '4H-SiC': true, 'GaN': true },
   logY: false
 };
@@ -426,7 +462,6 @@ function buildModeRow() {
       buildModeRow();
       renderAll();
     });
-    if (mode === 'transient') b.classList.add('faded-clickable');
     if (mode === 'dpt' || mode === 'process') b.classList.add('faded');
     row.appendChild(b);
   });
@@ -505,6 +540,7 @@ function buildMaterialRow() {
     dot.style.background = mat.color;
 
     const txt = document.createElement('span');
+  txt.className = 'chip-label';
     txt.textContent = mat.name;
 
     chip.appendChild(dot);
@@ -619,13 +655,27 @@ function renderPlots() {
 
   const modeLabel = state.mode === 'steady' ? 'Steady I-V' : state.mode === 'transient' ? 'Switching Response' : 'Double Pulse Test';
   document.getElementById('plot-title').textContent = `${familyNode.label} | ${state.voltage} | ${modeLabel}`;
+  document.getElementById('secondary-title').textContent = state.mode === 'steady'
+    ? 'Reverse Breakdown'
+    : state.mode === 'transient'
+      ? 'Test Circuit'
+      : 'DPT Circuit';
 
-  const steadyBlock = document.getElementById('steady-block');
-  const transientBlock = document.getElementById('transient-block');
-  const dptBlock = document.getElementById('dpt-block');
-  steadyBlock.style.display = state.mode === 'steady' ? '' : 'none';
-  transientBlock.style.display = state.mode === 'transient' ? '' : 'none';
-  dptBlock.style.display = state.mode === 'dpt' ? '' : 'none';
+  const steadyForwardBlock = document.getElementById('steady-forward-block');
+  const steadyReverseBlock = document.getElementById('steady-reverse-block');
+  const transientWaveformBlock = document.getElementById('transient-waveform-block');
+  const transientCircuitBlock = document.getElementById('transient-circuit-block');
+  const dptResultsBlock = document.getElementById('dpt-results-block');
+  const dptCircuitBlock = document.getElementById('dpt-circuit-block');
+  const axisToggle = document.querySelector('.axis-toggle');
+
+  steadyForwardBlock.style.display = state.mode === 'steady' ? '' : 'none';
+  steadyReverseBlock.style.display = state.mode === 'steady' ? '' : 'none';
+  transientWaveformBlock.style.display = state.mode === 'transient' ? '' : 'none';
+  transientCircuitBlock.style.display = state.mode === 'transient' ? '' : 'none';
+  dptResultsBlock.style.display = state.mode === 'dpt' ? '' : 'none';
+  dptCircuitBlock.style.display = state.mode === 'dpt' ? '' : 'none';
+  axisToggle.style.display = state.mode === 'steady' ? 'flex' : 'none';
 
   if (state.mode === 'steady') {
     renderSteady(classNode);
@@ -752,7 +802,7 @@ function renderDeviceSVG() {
   );
   const maxH_um = Math.max(...totals);
 
-  const SVG_W = 300, SVG_H = 240;
+  const SVG_W = 300, SVG_H = 210;
   const COL_GAP = 8;
   const CONTACT_H = 7;  // px
   const LABEL_H = 16;   // px reserved at top for material name
