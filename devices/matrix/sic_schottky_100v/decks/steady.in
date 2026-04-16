@@ -1,0 +1,50 @@
+GO VICTORYDEVICE SIMFLAGS="-P 16 -256"
+
+
+# Nd from BV scaling: 3.725e+17 cm^-3
+# Drift estimate: 0.622 um
+
+MESH WIDTH=1e7
+X.MESH loc=0.0 spac=0.5
+X.MESH loc=10.0 spac=0.5
+
+Y.MESH loc=0.0 spac=0.012
+Y.MESH loc=0.093 spac=0.025
+Y.MESH loc=0.373 spac=0.037
+Y.MESH loc=0.560 spac=0.050
+Y.MESH loc=0.622 spac=0.024
+Y.MESH loc=1.422 spac=0.120
+
+REGION num=1 material=4H-SiC x.min=0 x.max=10 y.min=0 y.max=1.422
+
+ELECTRODE name=anode top
+ELECTRODE name=cathode bottom
+
+DOPING uniform n.type conc=3.7250e+17
+DOPING uniform n.type conc=1e20 y.min=0.622 y.max=1.422
+
+CONTACT name=anode WORKFUNCTION=4.85 SURF.REC BARRIER
+CONTACT name=cathode NEUTRAL
+
+MATERIAL REGION=1
+MODELS REGION=1 FERMIDIRAC ANALYTIC CONWELL SRH BGN AUGER INCOMPLETE TEMP=300 PRINT
+IMPACT REGION=1 ANISOTROPIC E.SIDE SIC4H0001
+METHOD NEWTON GUMMEL TRAP climit=1.e-9 maxtraps=8
+
+# Forward IV
+LOG outf=steady_forward.log
+SOLVE init
+SAVE outf=structure.str
+SOLVE vanode=0.050 vstep=0.050 vfinal=3.500 name=anode
+EXTRACT name="steady_forward" curve(v."anode", i."anode") outfile="steady_forward.csv"
+LOG OFF
+
+# Reverse IV
+SOLVE init
+LOG outf=steady_reverse.log
+SOLVE vanode=-0.500 vstep=-0.500 vfinal=-50.000 name=anode compliance=1e-5 cname=anode
+SOLVE vstep=-1.250 vfinal=-125.000 name=anode compliance=1e-5 cname=anode
+EXTRACT name="steady_reverse" curve(v."anode", i."anode") outfile="steady_reverse.csv"
+LOG OFF
+
+QUIT

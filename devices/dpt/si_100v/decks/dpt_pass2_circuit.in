@@ -1,0 +1,92 @@
+GO VICTORYDEVICE SIMFLAGS="-P 8"
+
+# =============================================================================
+# DPT Pass 2: Double Pulse Test — Si 100V MOSFET (Mixed-Mode)
+# =============================================================================
+#
+# CIRCUIT TOPOLOGY (clamped inductive load, half-bridge):
+#
+#   V_DC (80V) ---- node 10
+#                      |
+#                    [L_LOAD] (100 µH — sets di/dt)
+#                      |
+#                   node 3 (mid-point = drain of DUT)
+#                      |
+#            +----[Q_DUT]----+     D_FW: anode=3, cathode=10
+#            |   drain  src  |     (freewheels I_L when Q off)
+#            |         node 0|
+#          [D_FW]       GND--+
+#            |               |
+#         node 10 -----------+
+#
+# When Q ON:  V_DC(10) → L(10→3) → Q(3→0) → GND. V_L ≈ V_DC → I_L ramps.
+# When Q OFF: I_L freewheels via D_FW(3→10) → L(10→3). I_L slowly decays.
+#
+# OPERATING CONDITIONS:
+#   V_DC  = 80V (bus voltage, 80% of 100V rating)
+#   L     = 100 µH (di/dt = V_DC/L = 0.8 A/µs per cm²)
+#   T1    = 10 µs  (1st pulse → ramp I_L to ~8 A/cm²)
+#   T_off = 2 µs   (dead time — current freewheels through D_FW)
+#   T2    = 2 µs   (2nd pulse — captures turn-ON into loaded diode)
+#   Total = 20 µs
+#
+# METRICS EXTRACTED:
+#   Turn-OFF: E_OFF, t_d(off), t_fall, V_DS overshoot
+#   Turn-ON:  E_ON, t_d(on), t_rise, I_D peak, diode reverse recovery
+#   Diode:    Q_rr, t_rr, I_RM from D_FW during turn-ON
+#
+# =============================================================================
+
+.BEGIN
+
+# --- DC Bus Supply ---
+V_DC     10  0   80.0
+
+# --- Gate Drive: Double Pulse ---
+# Pulse 1: 0→Vgs_on at t=100ns, hold for T1=10µs
+# Pulse 2: re-apply Vgs_on at t=12.1µs, hold for T2=2µs
+# Rise/fall = 20ns (realistic gate driver)
+V_GATE   1   0   PWL  0 0  100e-9 0  120e-9 10  10.1e-6 10  10.12e-6 0  12.1e-6 0  12.12e-6 10  14.1e-6 10  14.12e-6 0  20e-6 0
+
+# --- Gate Resistor (limits gate current, models driver impedance) ---
+R_GATE   1   2   5.0
+
+# --- Inductive Load (between V_DC and mid-point) ---
+L_LOAD   10  3   100e-6
+
+# --- DUT: TCAD Si 100V MOSFET ---
+# drain=3 (mid-point), gate=2 (after Rg), source=0 (GND)
+AMOSFET  0=source  2=gate  3=drain  INFILE=si_mosfet_100v_dpt.str  WIDTH=1E7
+
+# --- Free-wheeling Diode (anti-parallel to high-side position) ---
+# Anode = node 3 (mid-point), Cathode = node 10 (V_DC rail)
+# When Q OFF, D_FW forward-biases as node 3 rises above V_DC
+D_FW     3   10   DMOD_FW
+
+# --- Diode Model (fast-recovery Si) ---
+.MODEL DMOD_FW D IS=1e-14 N=1.0 BV=200 RS=0.05 TT=50e-9 CJO=100e-12 VJ=0.7
+
+# --- Initial Conditions ---
+# DUT off (Vgs=0), bus charged, V_DS = V_DC (no current in L)
+# L is DC short → V(3) = V(10) = 80V at initial DC operating point
+.NODESET  v(1)=0  v(2)=0  v(3)=80.0  v(10)=80.0
+
+# --- Solver Control ---
+.NUMERIC  LTE=0.3  TOLTR=1e-5  VCHANGE=5.0
+
+# --- Output ---
+.OPTIONS  PRINT RELPOT WRITE=10
+.LOG   OUTFILE=dpt_si_100v
+.SAVE  OUTFILE=dpt_si_100v_final
+
+# --- Transient: 20 µs total ---
+.TRAN  5e-9  20e-6
+
+.END
+
+# --- Physics for TCAD device ---
+MODELS   DEVICE=AMOSFET FERMIDIRAC FLDMOB CONMOB SRH BGN AUGER TEMP=300
+IMPACT   DEVICE=AMOSFET SELB
+METHOD   NEWTON TRAP MAXTRAPS=50 ITLIMIT=50 CLIMIT=1e8 DVMAX=1e6
+
+QUIT

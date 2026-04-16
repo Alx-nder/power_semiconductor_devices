@@ -1,0 +1,77 @@
+GO VICTORYDEVICE SIMFLAGS="-P 8"
+
+# =============================================================================
+# DPT Pass 2 (Diode DUT): Double Pulse Test for Si 100V PIN Diode
+# =============================================================================
+#
+# CIRCUIT: Clamped inductive load with SPICE MOSFET switch.
+# The TCAD PIN diode is the free-wheeling diode (DUT).
+# This captures reverse recovery under realistic switching conditions.
+#
+#   V_DC (80V) ---- node 10
+#                      |
+#                    [L_LOAD] (100 µH)
+#                      |
+#                   node 3 (mid-point)
+#                      |
+#            +---[M_SW]---+     TCAD PIN: anode=3, cathode=10
+#            |  drain src |     (freewheels I_L when switch OFF)
+#            |       GND  |
+#          [ADIODE]       |
+#            |            |
+#         node 10 --------+
+#
+# When M_SW ON: V_DC(10)→L(10→3)→M_SW(3→0)→GND. I_L ramps at V_DC/L.
+# When M_SW OFF: I_L freewheels via ADIODE(3→10)→L(10→3). Diode conducts.
+# When M_SW ON again: Diode must reverse-recover → E_rr measured here.
+#
+# =============================================================================
+
+.BEGIN
+
+# --- DC Bus ---
+V_DC     10  0   80.0
+
+# --- Gate Drive: Double Pulse ---
+# Rise/fall = 20 ns
+V_GATE   1   0   PWL  0 0  100e-9 0  120e-9 10  10.1e-6 10  10.12e-6 0  12.1e-6 0  12.12e-6 10  14.1e-6 10  14.12e-6 0  20e-6 0
+
+# --- Gate Resistor ---
+R_GATE   1   2   5.0
+
+# --- Inductive Load (between V_DC and mid-point) ---
+L_LOAD   10  3   100e-6
+
+# --- Low-side SPICE MOSFET (switch): drain=3, gate=2, source=0 ---
+M_SW     3   2   0   0   NMOD  W=1e7  L=1e-4
+
+# --- SPICE MOSFET Model (generic 200V Si) ---
+.MODEL NMOD NMOS LEVEL=1 VTO=3.0 KP=20.0 LAMBDA=0.01 RD=0.05 RS=0.01 CBD=50e-12 CBS=50e-12
+
+# --- TCAD PIN Diode (DUT: free-wheeling diode) ---
+# anode = mid-point (node 3), cathode = V_DC (node 10)
+ADIODE   3=anode  10=cathode  INFILE=si_pin_100v_fwd.str  WIDTH=1E7
+
+# --- Initial Conditions ---
+# Switch off, bus charged, V_mid ≈ 0 (MOSFET off, no current)
+.NODESET  v(1)=0  v(2)=0  v(3)=0  v(10)=80.0
+
+# --- Solver ---
+.NUMERIC  LTE=0.3  TOLTR=1e-5  VCHANGE=5.0
+.OPTIONS  PRINT RELPOT WRITE=10
+
+# --- Output ---
+.LOG   OUTFILE=dpt_diode_si_100v
+.SAVE  OUTFILE=dpt_diode_si_100v_final
+
+# --- Transient ---
+.TRAN  5e-9  20e-6
+
+.END
+
+# --- Physics for TCAD diode ---
+MODELS   DEVICE=ADIODE FERMIDIRAC FLDMOB CONMOB SRH BGN AUGER TEMP=300
+IMPACT   DEVICE=ADIODE SELB
+METHOD   NEWTON TRAP MAXTRAPS=50 ITLIMIT=50 CLIMIT=1e8 DVMAX=1e6
+
+QUIT

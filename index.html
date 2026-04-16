@@ -1,0 +1,1187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Power Device Matrix</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+<script src="data/device_data.js"></script>
+<style>
+:root {
+  --bg: #ffffff;
+  --paper: #ffffff;
+  --ink: #161616;
+  --muted: #5a5a5a;
+  --line: #ddd;
+  --accent: #1c7c54;
+  --chip: #f0f0f0;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  color: var(--ink);
+  background: var(--bg);
+  font-family: "Space Grotesk", sans-serif;
+}
+main {
+  max-width: 1420px;
+  margin: 0 auto;
+  padding: 1.2rem 1rem 2rem;
+}
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin-bottom: 1rem;
+}
+h1 {
+  margin: 0;
+  font-size: 1.7rem;
+  letter-spacing: 0.02em;
+}
+.sub {
+  color: var(--muted);
+  margin-top: 0.2rem;
+  font-size: 0.92rem;
+}
+.kpi {
+  border: 1px solid var(--line);
+  background: var(--paper);
+  padding: 0.45rem 0.7rem;
+  border-radius: 8px;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.78rem;
+}
+.controls {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.6rem;
+  margin-bottom: 0.9rem;
+}
+.control-row {
+  display: flex;
+  gap: 0.45rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.label {
+  font-size: 0.76rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+  min-width: 72px;
+}
+button, .chip {
+  border: 1px solid var(--line);
+  background: var(--chip);
+  color: var(--ink);
+  border-radius: 999px;
+  padding: 0.32rem 0.7rem;
+  font-size: 0.82rem;
+  cursor: pointer;
+  font-family: inherit;
+}
+button.active {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+}
+.material-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  user-select: none;
+}
+.material-chip input { display: none; }
+.material-chip .dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 99px;
+}
+.material-chip.inactive {
+  opacity: 0.35;
+  text-decoration: line-through;
+}
+.material-chip.unavailable {
+  opacity: 0.35;
+  cursor: default;
+}
+.material-chip.unavailable .dot {
+  opacity: 0.7;
+}
+.panel-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 0.9rem;
+}
+.panel {
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--paper);
+  padding: 0.75rem;
+}
+.panel h2 {
+  margin: 0 0 0.55rem;
+  font-size: 0.95rem;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+}
+.chart-wrap {
+  border: 1px solid #d6d0c2;
+  border-radius: 8px;
+  background: #fff;
+  padding: 0.45rem;
+  margin-bottom: 0.6rem;
+}
+.no-data {
+  padding: 1rem;
+  color: var(--muted);
+  text-align: center;
+  font-size: 0.88rem;
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.83rem;
+}
+th, td {
+  border: 1px solid #d6d0c2;
+  padding: 0.36rem 0.45rem;
+  text-align: left;
+}
+th {
+  background: #f5f5f5;
+  font-weight: 600;
+}
+a {
+  color: #0b5670;
+  text-decoration: none;
+}
+a:hover { text-decoration: underline; }
+small.mono {
+  font-family: "IBM Plex Mono", monospace;
+  color: var(--muted);
+  font-size: 0.72rem;
+}
+.plot-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.55rem;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+.plot-header h2 { margin: 0; }
+.axis-toggle {
+  display: flex;
+  gap: 0.3rem;
+  align-items: center;
+}
+.axis-toggle span {
+  font-size: 0.72rem;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+.axis-toggle button {
+  padding: 0.2rem 0.55rem;
+  font-size: 0.76rem;
+}
+/* Device cross-section SVG */
+#device-svg-wrap {
+  border: 1px solid #d6d0c2;
+  border-radius: 8px;
+  background: #fff;
+  padding: 0.45rem;
+  margin-bottom: 0.6rem;
+}
+#device-svg-wrap h3 {
+  margin: 0 0 0.35rem;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--muted);
+}
+.dev-svg {
+  width: 100%;
+  display: block;
+}
+.svg-legend {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-top: 0.35rem;
+}
+.svg-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.7rem;
+  color: var(--muted);
+}
+.svg-legend-swatch {
+  width: 12px;
+  height: 12px;
+  border-radius: 2px;
+  border: 1px solid rgba(0,0,0,0.12);
+}
+button.faded {
+  opacity: 0.35;
+  cursor: default;
+  pointer-events: none;
+}
+button.faded-clickable {
+  opacity: 0.35;
+  cursor: pointer;
+}
+button.faded-clickable.active {
+  opacity: 0.55;
+}
+.overlay-wrap {
+  position: relative;
+}
+.overlay-fade {
+  position: relative;
+}
+.overlay-fade::after {
+  content: 'Coming soon';
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255,255,255,0.82);
+  color: var(--muted);
+  font-size: 0.88rem;
+  font-style: italic;
+  border-radius: 8px;
+  z-index: 2;
+}
+.circuit-diagram {
+  border: 1px solid #d6d0c2;
+  border-radius: 8px;
+  background: #fff;
+  padding: 0.6rem;
+  margin-bottom: 0.6rem;
+}
+.circuit-diagram h3 {
+  margin: 0 0 0.3rem;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--muted);
+}
+@media (max-width: 980px) {
+  .panel-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <div>
+      <h1>Power Device Matrix</h1>
+      <div class="sub">PIN, Schottky, MOSFET | 10V, 100V, 1200V | steady + switching</div>
+    </div>
+    <div class="kpi" id="kpi">Loaded: 0 variants</div>
+  </header>
+
+  <section class="controls">
+    <div class="control-row" id="mode-row">
+      <span class="label">Mode</span>
+    </div>
+    <div class="control-row" id="family-row">
+      <span class="label">Family</span>
+    </div>
+    <div class="control-row" id="voltage-row">
+      <span class="label">Class</span>
+    </div>
+    <div class="control-row" id="material-row">
+      <span class="label">Material</span>
+    </div>
+  </section>
+
+  <section class="panel-grid">
+    <div class="panel">
+      <div class="plot-header">
+        <h2 id="plot-title">Comparison</h2>
+        <div class="axis-toggle">
+          <span>Y-axis</span>
+          <button id="btn-log" onclick="setLogY(true)">Log</button>
+          <button id="btn-lin" class="active" onclick="setLogY(false)">Linear</button>
+        </div>
+      </div>
+      <div id="steady-block">
+        <div class="chart-wrap">
+          <canvas id="forward-chart" height="180"></canvas>
+          <div class="no-data" id="forward-none" style="display:none">No forward data</div>
+        </div>
+        <div class="chart-wrap overlay-fade" id="reverse-wrap">
+          <canvas id="reverse-chart" height="180"></canvas>
+          <div class="no-data" id="reverse-none" style="display:none">No reverse data</div>
+        </div>
+      </div>
+      <div id="transient-block" style="display:none">
+        <div class="overlay-fade">
+          <div class="chart-wrap">
+            <canvas id="transient-chart" height="360"></canvas>
+            <div class="no-data" id="transient-none" style="display:none">No switching data</div>
+          </div>
+        </div>
+        <div class="circuit-diagram" id="circuit-diagram">
+          <h3>Test Circuit</h3>
+          <svg id="circuit-svg" class="dev-svg" viewBox="0 0 520 280" xmlns="http://www.w3.org/2000/svg"></svg>
+        </div>
+      </div>
+      <div id="dpt-block" style="display:none">
+        <div class="overlay-fade" style="min-height:180px;display:flex;align-items:center;justify-content:center;border:1px solid #d6d0c2;border-radius:8px;">
+          <span style="color:var(--muted);font-style:italic">Double Pulse Test results pending</span>
+        </div>
+        <div class="circuit-diagram" id="dpt-circuit-diagram" style="margin-top:0.6rem">
+          <h3>DPT Circuit — Clamped Inductive Load</h3>
+          <svg id="dpt-circuit-svg" class="dev-svg" viewBox="0 0 520 300" xmlns="http://www.w3.org/2000/svg"></svg>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div id="device-svg-wrap">
+        <h3>Device Cross-Section</h3>
+        <svg id="dev-svg" class="dev-svg" viewBox="0 0 300 230" xmlns="http://www.w3.org/2000/svg"></svg>
+        <div class="svg-legend" id="svg-legend"></div>
+      </div>
+      <h2>Decks</h2>
+      <small class="mono">steady.in + switching.in</small>
+      <div style="max-height:300px; overflow:auto; margin-top:0.5rem;">
+        <table>
+          <thead>
+            <tr>
+              <th>Material</th>
+              <th>Class</th>
+              <th>Steady</th>
+              <th>Switch</th>
+            </tr>
+          </thead>
+          <tbody id="deck-body"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script>
+let data = window.DEVICE_DATA || null;
+let forwardChart = null;
+let reverseChart = null;
+let transientChart = null;
+
+const state = {
+  mode: 'steady',
+  family: 'pin',
+  voltage: '10V',
+  materials: { 'Si': true, '4H-SiC': true, 'GaN': true },
+  logY: false
+};
+
+const AVAILABLE_MATERIALS = ['Si', '4H-SiC', 'GaN'];
+const UPCOMING_MATERIALS = [
+  { name: 'Gallium Arsenide', color: '#b6762d' },
+  { name: 'Diamond', color: '#8a97a6' }
+];
+
+function setLogY(isLog) {
+  state.logY = isLog;
+  document.getElementById('btn-log').classList.toggle('active', isLog);
+  document.getElementById('btn-lin').classList.toggle('active', !isLog);
+  renderPlots();
+}
+
+function btn(text, active, click) {
+  const b = document.createElement('button');
+  b.textContent = text;
+  if (active) b.classList.add('active');
+  b.addEventListener('click', click);
+  return b;
+}
+
+function destroyCharts() {
+  if (forwardChart) { forwardChart.destroy(); forwardChart = null; }
+  if (reverseChart) { reverseChart.destroy(); reverseChart = null; }
+  if (transientChart) { transientChart.destroy(); transientChart = null; }
+}
+
+function buildModeRow() {
+  const row = document.getElementById('mode-row');
+  row.querySelectorAll('button').forEach(n => n.remove());
+  ['steady', 'transient', 'dpt', 'process'].forEach(mode => {
+    const label = mode === 'steady' ? 'Steady I-V' : mode === 'transient' ? 'Switching' : mode === 'dpt' ? 'Double Pulse Test' : 'Process Manuf.';
+    const b = btn(label, state.mode === mode, () => {
+      if (mode === 'dpt' || mode === 'process') return; // disabled for now
+      state.mode = mode;
+      buildModeRow();
+      renderAll();
+    });
+    if (mode === 'transient') b.classList.add('faded-clickable');
+    if (mode === 'dpt' || mode === 'process') b.classList.add('faded');
+    row.appendChild(b);
+  });
+}
+
+function buildFamilyRow() {
+  const row = document.getElementById('family-row');
+  row.querySelectorAll('button').forEach(n => n.remove());
+  Object.entries(data.meta.families).forEach(([key, label]) => {
+    row.appendChild(btn(label, state.family === key, () => {
+      state.family = key;
+      buildFamilyRow();
+      buildVoltageRow();
+      renderAll();
+    }));
+  });
+}
+
+function buildVoltageRow() {
+  const row = document.getElementById('voltage-row');
+  row.querySelectorAll('button').forEach(n => n.remove());
+  const modeKey = state.mode === 'dpt' ? 'transient' : state.mode;
+  const classes = Object.keys(data[modeKey][state.family].classes);
+  if (!classes.includes(state.voltage)) {
+    state.voltage = classes[0];
+  }
+  classes.forEach(v => {
+    row.appendChild(btn(v, state.voltage === v, () => {
+      state.voltage = v;
+      buildVoltageRow();
+      renderAll();
+    }));
+  });
+}
+
+function buildMaterialRow() {
+  const row = document.getElementById('material-row');
+  row.querySelectorAll('.material-chip').forEach(n => n.remove());
+
+  const colorMap = data.meta.colors;
+  AVAILABLE_MATERIALS.forEach(mat => {
+    const key = Object.entries(data.meta.materials).find(([, v]) => v === mat)?.[0] || mat.toLowerCase();
+    const chip = document.createElement('label');
+    chip.className = 'chip material-chip' + (state.materials[mat] ? '' : ' inactive');
+
+    const input = document.createElement('input');
+    input.type = 'checkbox';
+    input.checked = state.materials[mat];
+    input.addEventListener('change', () => {
+      state.materials[mat] = input.checked;
+      buildMaterialRow();
+      renderPlots();
+    });
+
+    const dot = document.createElement('span');
+    dot.className = 'dot';
+    dot.style.background = colorMap[key] || '#666';
+
+    const txt = document.createElement('span');
+    txt.textContent = mat;
+
+    chip.appendChild(input);
+    chip.appendChild(dot);
+    chip.appendChild(txt);
+    row.appendChild(chip);
+  });
+
+  UPCOMING_MATERIALS.forEach(mat => {
+    const chip = document.createElement('span');
+    chip.className = 'chip material-chip unavailable';
+    chip.title = 'Not yet available';
+    chip.setAttribute('aria-disabled', 'true');
+
+    const dot = document.createElement('span');
+    dot.className = 'dot';
+    dot.style.background = mat.color;
+
+    const txt = document.createElement('span');
+    txt.textContent = mat.name;
+
+    chip.appendChild(dot);
+    chip.appendChild(txt);
+    row.appendChild(chip);
+  });
+}
+
+function seriesDataset(name, color, x, y) {
+  const pts = x.map((vx, i) => ({ x: vx, y: y[i] }));
+  return {
+    label: name,
+    data: pts,
+    borderColor: color,
+    backgroundColor: color,
+    borderWidth: 2,
+    pointRadius: 0,
+    showLine: true,
+    tension: 0
+  };
+}
+
+function chartOptions(xLabel, yLabel, logY = false, yMax = null, yMin = null) {
+  const yAxis = {
+    type: logY ? 'logarithmic' : 'linear',
+    title: { display: true, text: yLabel },
+    grid: { color: 'rgba(0,0,0,0.08)' }
+  };
+  if (yMax !== null) yAxis.max = yMax;
+  if (yMin !== null) yAxis.min = yMin;
+  return {
+    responsive: true,
+    animation: false,
+    plugins: {
+      legend: { position: 'top' }
+    },
+    scales: {
+      x: {
+        type: 'linear',
+        title: { display: true, text: xLabel },
+        grid: { color: 'rgba(0,0,0,0.08)' }
+      },
+      y: yAxis
+    }
+  };
+}
+
+function renderSteady(entry) {
+  const fwdSets = [];
+  const revSets = [];
+
+  Object.entries(entry.materials).forEach(([mat, d]) => {
+    if (!state.materials[mat]) return;
+    const color = d.color || '#666';
+    if (d.forward && d.forward.voltage?.length) {
+      const yAbs = d.forward.current.map(v => Math.abs(v));
+      fwdSets.push(seriesDataset(mat, color, d.forward.voltage, yAbs));
+    }
+    if (d.reverse && d.reverse.voltage?.length) {
+      const xNeg = d.reverse.voltage.map(v => -Math.abs(v));
+      const yAbs = d.reverse.current.map(v => Math.abs(v));
+      revSets.push(seriesDataset(mat, color, xNeg, yAbs));
+    }
+  });
+
+  document.getElementById('forward-none').style.display = fwdSets.length ? 'none' : '';
+  document.getElementById('reverse-none').style.display = revSets.length ? 'none' : '';
+
+  if (fwdSets.length) {
+    forwardChart = new Chart(document.getElementById('forward-chart'), {
+      type: 'scatter',
+      data: { datasets: fwdSets },
+      options: chartOptions('Voltage (V)', '|J| (A/cm²)', state.logY, 100, state.logY ? 1e-10 : null)
+    });
+  }
+
+  if (revSets.length) {
+    reverseChart = new Chart(document.getElementById('reverse-chart'), {
+      type: 'scatter',
+      data: { datasets: revSets },
+      options: chartOptions('Voltage (V)', '|J| (A/cm²)', state.logY)
+    });
+  }
+}
+
+function renderTransient(entry) {
+  const sets = [];
+
+  Object.entries(entry.materials).forEach(([mat, d]) => {
+    if (!state.materials[mat]) return;
+    if (!d.trace || !d.trace.x?.length) return;
+    sets.push(seriesDataset(mat, d.color || '#666', d.trace.x, d.trace.y));
+  });
+
+  document.getElementById('transient-none').style.display = sets.length ? 'none' : '';
+
+  if (sets.length) {
+    transientChart = new Chart(document.getElementById('transient-chart'), {
+      type: 'scatter',
+      data: { datasets: sets },
+      options: chartOptions('Control Sweep (V)', 'J (A/cm²)', false)
+    });
+  }
+}
+
+function renderPlots() {
+  destroyCharts();
+
+  const modeKey = state.mode === 'dpt' ? 'transient' : state.mode;
+  const familyNode = data[modeKey][state.family];
+  const classNode = familyNode.classes[state.voltage];
+
+  const modeLabel = state.mode === 'steady' ? 'Steady I-V' : state.mode === 'transient' ? 'Switching Response' : 'Double Pulse Test';
+  document.getElementById('plot-title').textContent = `${familyNode.label} | ${state.voltage} | ${modeLabel}`;
+
+  const steadyBlock = document.getElementById('steady-block');
+  const transientBlock = document.getElementById('transient-block');
+  const dptBlock = document.getElementById('dpt-block');
+  steadyBlock.style.display = state.mode === 'steady' ? '' : 'none';
+  transientBlock.style.display = state.mode === 'transient' ? '' : 'none';
+  dptBlock.style.display = state.mode === 'dpt' ? '' : 'none';
+
+  if (state.mode === 'steady') {
+    renderSteady(classNode);
+  } else if (state.mode === 'transient') {
+    renderTransient(classNode);
+    renderSwitchingCircuit();
+  } else {
+    renderDPTCircuit();
+  }
+}
+
+function renderDeckTable() {
+  const body = document.getElementById('deck-body');
+  body.innerHTML = '';
+
+  data.deck_table
+    .filter(row => row.family === data.meta.families[state.family] && row.voltage_class === state.voltage)
+    .forEach(row => {
+      const tr = document.createElement('tr');
+
+      const tdMat = document.createElement('td');
+      tdMat.textContent = row.material;
+      tr.appendChild(tdMat);
+
+      const tdV = document.createElement('td');
+      tdV.textContent = row.voltage_class;
+      tr.appendChild(tdV);
+
+      const tdS = document.createElement('td');
+      tdS.innerHTML = `<a href="${row.steady_deck}">steady.in</a>`;
+      tr.appendChild(tdS);
+
+      const tdT = document.createElement('td');
+      tdT.innerHTML = `<a href="${row.switching_deck}">switching.in</a>`;
+      tr.appendChild(tdT);
+
+      body.appendChild(tr);
+    });
+}
+
+// ─── Device cross-section SVG ───────────────────────────────────────────────
+
+// P-type → red hue; N-type → blue hue.
+// Doping magnitude maps lightness: low doping = light shade, high = dark shade.
+function layerColor(nd_cm3, isP) {
+  const logN = Math.log10(Math.max(nd_cm3, 1e13));
+  // t: 0 at 1e13 (lightest), 1 at 1e20 (darkest)
+  const t = Math.max(0, Math.min(1, (logN - 13) / 7));
+  const L = Math.round(88 - t * 62); // 88% (very light) → 26% (very dark)
+  const hue = isP ? 355 : 215;       // red : blue
+  return `hsl(${hue},75%,${L}%)`;
+}
+
+const MAT_COLOR = { 'Si': '#1f77b4', '4H-SiC': '#ff7f0e', 'GaN': '#2ca02c' };
+const MAT_ORDER = ['Si', '4H-SiC', 'GaN'];
+
+// Format doping: 1e18 → "1e18", 3.76e15 → "3.8e15"
+function fmtNd(nd) {
+  const exp = Math.floor(Math.log10(nd));
+  const mant = nd / Math.pow(10, exp);
+  const m = parseFloat(mant.toFixed(1));
+  return (m === 1.0 ? '' : m + '×') + `10¹${exp > 9 ? '' : ''}${exp}`;
+}
+
+// Simple scientific for tight spaces: "~1e18"
+function fmtNdShort(nd) {
+  const exp = Math.round(Math.log10(nd));
+  return `~1e${exp}`;
+}
+
+function fmtUm(um) {
+  if (um >= 100) return `${um.toFixed(0)} µm`;
+  if (um >= 10)  return `${um.toFixed(0)} µm`;
+  if (um >= 1)   return `${um.toFixed(1)} µm`;
+  return `${(um * 1000).toFixed(0)} nm`;
+}
+
+function deviceLayers(family, design) {
+  const { Nd_cm3, Drift_um, Substrate_um } = design;
+  if (family === 'pin') return [
+    { label: 'p+',  h_um: 0.5,          nd: 5e18,  p: true  },
+    { label: 'n−',  h_um: Drift_um,     nd: Nd_cm3, p: false },
+    { label: 'n+',  h_um: Substrate_um, nd: 1e18,  p: false },
+  ];
+  if (family === 'schottky') return [
+    { label: 'n−',  h_um: Drift_um,     nd: Nd_cm3, p: false },
+    { label: 'n+',  h_um: Substrate_um, nd: 1e18,  p: false },
+  ];
+  // mosfet — layer depths from actual deck gaussians:
+  // n+ source: char=0.1µm → ~0.2µm, peak 1e20
+  // p-body:    char=0.5µm → ~1.5µm, peak 1e18
+  // n+ substrate: uniform 1e19
+  return [
+    { label: 'n+ src', h_um: 0.2,          nd: 1e20,  p: false },
+    { label: 'p-body', h_um: 1.5,          nd: 1e18,  p: true  },
+    { label: 'n−',     h_um: Drift_um,     nd: Nd_cm3, p: false },
+    { label: 'n+ sub', h_um: Substrate_um, nd: 1e19,  p: false },
+  ];
+}
+
+function svgEl(tag, attrs) {
+  const el = document.createElementNS('http://www.w3.org/2000/svg', tag);
+  Object.entries(attrs).forEach(([k, v]) => el.setAttribute(k, v));
+  return el;
+}
+
+function renderDeviceSVG() {
+  const svg = document.getElementById('dev-svg');
+  svg.innerHTML = '';
+  const legend = document.getElementById('svg-legend');
+  legend.innerHTML = '';
+
+  const rows = data.deck_table.filter(
+    r => r.family === data.meta.families[state.family] && r.voltage_class === state.voltage && r.design
+  );
+  if (!rows.length) return;
+
+  const ordered = MAT_ORDER.map(m => rows.find(r => r.material === m)).filter(Boolean);
+  const nCols = ordered.length;
+
+  // ── True-to-scale: find thickest device, scale all relative to it ──
+  const totals = ordered.map(row =>
+    deviceLayers(state.family, row.design).reduce((s, l) => s + l.h_um, 0)
+  );
+  const maxH_um = Math.max(...totals);
+
+  const SVG_W = 300, SVG_H = 240;
+  const COL_GAP = 8;
+  const CONTACT_H = 7;  // px
+  const LABEL_H = 16;   // px reserved at top for material name
+  const BOTTOM_Y = SVG_H - 2; // all devices are bottom-aligned (cathode/drain at same Y)
+  const SEMI_MAX_H = SVG_H - LABEL_H - CONTACT_H * 2 - 4; // max semiconductor px height
+  const PX_PER_UM = SEMI_MAX_H / maxH_um;
+
+  const colW = (SVG_W - COL_GAP * (nCols + 1)) / nCols;
+
+  // Update SVG viewBox to actual height
+  svg.setAttribute('viewBox', `0 0 ${SVG_W} ${SVG_H}`);
+
+  const topLabel  = state.family === 'mosfet' ? 'S' : state.family === 'pin' ? 'A' : 'M';
+  const botLabel  = state.family === 'mosfet' ? 'D' : 'K';
+
+  ordered.forEach((row, ci) => {
+    const x0 = COL_GAP + ci * (colW + COL_GAP);
+    const layers = deviceLayers(state.family, row.design);
+    const totalH_um = layers.reduce((s, l) => s + l.h_um, 0);
+    const semiPx = totalH_um * PX_PER_UM;  // actual scaled height of this device
+
+    // Bottom contact sits at BOTTOM_Y
+    const bcY = BOTTOM_Y - CONTACT_H;
+    // Semiconductor block sits above bottom contact
+    const semiBottomY = bcY;
+    const semiTopY = semiBottomY - semiPx;
+    // Top contact sits above semiconductor
+    const tcY = semiTopY - CONTACT_H;
+    // Material label sits above top contact
+    const lblY = tcY - 3;
+
+    // Material label
+    const matColor = MAT_COLOR[row.material] || '#666';
+    svg.appendChild(svgEl('text', {
+      x: x0 + colW / 2, y: lblY,
+      'text-anchor': 'middle', 'font-size': '9',
+      'font-family': 'Space Grotesk, sans-serif', 'font-weight': '600',
+      fill: matColor
+    })).textContent = row.material;
+
+    // Top contact
+    svg.appendChild(svgEl('rect', {
+      x: x0, y: tcY, width: colW, height: CONTACT_H,
+      fill: '#888', rx: '1.5'
+    }));
+    svg.appendChild(svgEl('text', {
+      x: x0 + colW / 2, y: tcY + CONTACT_H - 1.5,
+      'text-anchor': 'middle', 'font-size': '6',
+      'font-family': 'IBM Plex Mono, monospace', fill: '#fff'
+    })).textContent = topLabel;
+
+    // Semiconductor layers (draw top→bottom)
+    let curY = semiTopY;
+    layers.forEach(layer => {
+      const layerPx = (layer.h_um / totalH_um) * semiPx;
+      svg.appendChild(svgEl('rect', {
+        x: x0, y: curY, width: colW, height: layerPx,
+        fill: layerColor(layer.nd, layer.p),
+        stroke: 'rgba(255,255,255,0.3)', 'stroke-width': '0.5'
+      }));
+
+      // Labels inside layer — show as much as fits
+      const midY = curY + layerPx / 2;
+      const dopStr  = fmtNdShort(layer.nd);  // e.g. "~1e18"
+      const thkStr  = fmtUm(layer.h_um);     // e.g. "7.5 µm"
+      const labelC  = 'rgba(255,255,255,0.95)';
+      const monoF   = 'IBM Plex Mono, monospace';
+
+      if (layerPx >= 36) {
+        // 3 lines: type | doping | thickness
+        svg.appendChild(svgEl('text', {
+          x: x0 + colW / 2, y: midY - 7,
+          'text-anchor': 'middle', 'font-size': '7.5', 'font-weight': '600',
+          'font-family': monoF, fill: labelC
+        })).textContent = layer.label;
+        svg.appendChild(svgEl('text', {
+          x: x0 + colW / 2, y: midY + 1,
+          'text-anchor': 'middle', 'font-size': '6.5',
+          'font-family': monoF, fill: 'rgba(255,255,255,0.8)'
+        })).textContent = dopStr + ' cm⁻³';
+        svg.appendChild(svgEl('text', {
+          x: x0 + colW / 2, y: midY + 9,
+          'text-anchor': 'middle', 'font-size': '6.5',
+          'font-family': monoF, fill: 'rgba(255,255,255,0.8)'
+        })).textContent = thkStr;
+      } else if (layerPx >= 20) {
+        // 2 lines: type | thickness
+        svg.appendChild(svgEl('text', {
+          x: x0 + colW / 2, y: midY - 1,
+          'text-anchor': 'middle', 'font-size': '7', 'font-weight': '600',
+          'font-family': monoF, fill: labelC
+        })).textContent = layer.label;
+        svg.appendChild(svgEl('text', {
+          x: x0 + colW / 2, y: midY + 7,
+          'text-anchor': 'middle', 'font-size': '6',
+          'font-family': monoF, fill: 'rgba(255,255,255,0.8)'
+        })).textContent = thkStr;
+      } else if (layerPx >= 10) {
+        // 1 line: type only
+        svg.appendChild(svgEl('text', {
+          x: x0 + colW / 2, y: midY + 2.5,
+          'text-anchor': 'middle', 'font-size': '6.5',
+          'font-family': monoF, fill: labelC
+        })).textContent = layer.label;
+      }
+
+      curY += layerPx;
+    });
+
+    // Bottom contact
+    svg.appendChild(svgEl('rect', {
+      x: x0, y: bcY, width: colW, height: CONTACT_H,
+      fill: '#888', rx: '1.5'
+    }));
+    svg.appendChild(svgEl('text', {
+      x: x0 + colW / 2, y: bcY + CONTACT_H - 1.5,
+      'text-anchor': 'middle', 'font-size': '6',
+      'font-family': 'IBM Plex Mono, monospace', fill: '#fff'
+    })).textContent = botLabel;
+
+    // Thickness annotation: total µm on right of rightmost column
+    if (ci === nCols - 1) {
+      const thickLabel = totalH_um >= 10 ?
+        `${totalH_um.toFixed(0)}µm` :
+        totalH_um >= 1 ? `${totalH_um.toFixed(1)}µm` : `${(totalH_um * 1000).toFixed(0)}nm`;
+      svg.appendChild(svgEl('text', {
+        x: x0 + colW + 3, y: semiTopY + semiPx / 2 + 3,
+        'font-size': '6.5', 'font-family': 'IBM Plex Mono, monospace', fill: '#888'
+      })).textContent = thickLabel;
+    }
+  });
+
+  // Legend
+  [
+    { label: 'n− (low doping)', nd: 1e14, p: false },
+    { label: 'n+ (high doping)', nd: 1e19, p: false },
+    { label: 'p  (low doping)',  nd: 5e16, p: true  },
+    { label: 'p+ (high doping)', nd: 5e18, p: true  },
+  ].forEach(item => {
+    const wrap = document.createElement('div');
+    wrap.className = 'svg-legend-item';
+    const sw = document.createElement('div');
+    sw.className = 'svg-legend-swatch';
+    sw.style.background = layerColor(item.nd, item.p);
+    const tx = document.createElement('span');
+    tx.textContent = item.label;
+    wrap.appendChild(sw); wrap.appendChild(tx);
+    legend.appendChild(wrap);
+  });
+  const note = document.createElement('div');
+  note.className = 'svg-legend-item';
+  note.style.color = '#8a8a8a';
+  note.textContent = '(to scale)';
+  legend.appendChild(note);
+}
+
+// ─── Switching circuit diagram (voltage-pulse reverse recovery) ──────────
+function renderSwitchingCircuit() {
+  const svg = document.getElementById('circuit-svg');
+  svg.innerHTML = '';
+  const NS = 'http://www.w3.org/2000/svg';
+  function el(tag, attrs, text) {
+    const e = document.createElementNS(NS, tag);
+    Object.entries(attrs).forEach(([k,v]) => e.setAttribute(k,v));
+    if (text) e.textContent = text;
+    svg.appendChild(e);
+    return e;
+  }
+  function line(x1,y1,x2,y2,extra={}) {
+    el('line', {x1,y1,x2,y2,stroke:'#333','stroke-width':'1.8',...extra});
+  }
+  function txt(x,y,t,size='10',anchor='middle',weight='400') {
+    el('text', {x,y,'text-anchor':anchor,'font-size':size,
+      'font-family':'IBM Plex Mono, monospace','font-weight':weight,fill:'#333'}, t);
+  }
+  function txtMuted(x,y,t,size='8.5') {
+    el('text', {x,y,'text-anchor':'middle','font-size':size,
+      'font-family':'Space Grotesk, sans-serif',fill:'#888'}, t);
+  }
+  function resistor(x,y,w,h,label,value) {
+    el('rect', {x:x-w/2,y:y-h/2,width:w,height:h,fill:'none',stroke:'#333','stroke-width':'1.5',rx:'2'});
+    if (label) txt(x,y+h/2+11,label,'8.5');
+    if (value) txtMuted(x,y+h/2+20,value,'7.5');
+  }
+  function diodeSymbol(x,y,dir,label) {
+    // dir: 'up' (anode bottom, cathode top) or 'down'
+    const s = 12;
+    if (dir === 'up') {
+      el('polygon', {points:`${x-s},${y+s/2} ${x+s},${y+s/2} ${x},${y-s/2}`,fill:'#333'});
+      line(x-s,y-s/2,x+s,y-s/2);
+    } else {
+      el('polygon', {points:`${x-s},${y-s/2} ${x+s},${y-s/2} ${x},${y+s/2}`,fill:'#333'});
+      line(x-s,y+s/2,x+s,y+s/2);
+    }
+    if (label) txt(x+18,y+3,label,'8.5','start');
+  }
+  function inductor(x,y,w,label,value) {
+    let d = `M ${x-w/2} ${y}`;
+    const n = 4, r = w/(2*n);
+    for (let i=0;i<n;i++) d += ` a ${r},${r*0.8} 0 0,1 ${2*r},0`;
+    el('path', {d,fill:'none',stroke:'#333','stroke-width':'1.8'});
+    if (label) txt(x,y-12,label,'8.5');
+    if (value) txtMuted(x,y-4,value,'7.5');
+  }
+  function vpulse(x,y,r,label) {
+    el('circle', {cx:x,cy:y,r,fill:'none',stroke:'#333','stroke-width':'1.5'});
+    // pulse symbol inside
+    const s = r*0.5;
+    el('polyline', {points:`${x-s},${y+s*0.3} ${x-s*0.3},${y+s*0.3} ${x-s*0.3},${y-s*0.3} ${x+s*0.3},${y-s*0.3} ${x+s*0.3},${y+s*0.3} ${x+s},${y+s*0.3}`,
+      fill:'none',stroke:'#333','stroke-width':'1.2'});
+    txt(x,y+r+12,label,'8.5');
+  }
+  function ground(x,y) {
+    line(x,y,x,y+6);
+    line(x-8,y+6,x+8,y+6);
+    line(x-5,y+10,x+5,y+10);
+    line(x-2,y+14,x+2,y+14);
+  }
+
+  // Layout: VPULSE → R_SERIES → DUT (TCAD diode) → GND
+  //                              ↑
+  //         Reverse-bias pulse drives DUT from forward → reverse
+  const cx = 260, topY = 30, botY = 240;
+  const leftX = 100, rightX = 420;
+
+  // Title
+  txt(260, 18, 'Voltage-Pulse Reverse Recovery', '11', 'middle', '600');
+
+  // VPULSE source on left
+  vpulse(leftX, 130, 22, 'V_PULSE');
+  txtMuted(leftX, 168, '−V_R → +V_F → −V_R', '7');
+
+  // + / - labels
+  txt(leftX-8, 100, '+', '10', 'end');
+  txt(leftX-8, 162, '−', '10', 'end');
+
+  // Top wire from V+ to R_SERIES
+  line(leftX, 108, leftX, 60);
+  line(leftX, 60, 220, 60);
+
+  // R_SERIES
+  resistor(260, 60, 50, 16, 'R_SERIES', '50 Ω');
+
+  // Wire from R to DUT anode
+  line(285, 60, 350, 60);
+
+  // Node label
+  el('circle', {cx:350,cy:60,r:3,fill:'#1c7c54'});
+  txt(358, 52, 'Anode', '8', 'start', '600');
+
+  // DUT diode (vertical, anode top, cathode bottom)
+  line(350, 60, 350, 105);
+  diodeSymbol(350, 120, 'down', '');
+  txt(375, 120, 'DUT', '10', 'start', '700');
+  txtMuted(375, 132, '(TCAD PIN)', '7.5');
+  line(350, 135, 350, 180);
+
+  // Node label cathode
+  el('circle', {cx:350,cy:180,r:3,fill:'#1c7c54'});
+  txt(358, 195, 'Cathode', '8', 'start', '600');
+
+  // Ground at bottom
+  line(350, 180, 350, 215);
+  ground(350, 215);
+
+  // Bottom wire back to V-
+  line(leftX, 152, leftX, 215);
+  line(leftX, 215, 350, 215);
+
+  // Ground symbol on left too
+  ground(leftX, 215);
+}
+
+// ─── DPT circuit diagram (clamped inductive load) ───────────────────────
+function renderDPTCircuit() {
+  const svg = document.getElementById('dpt-circuit-svg');
+  svg.innerHTML = '';
+  const NS = 'http://www.w3.org/2000/svg';
+  function el(tag, attrs, text) {
+    const e = document.createElementNS(NS, tag);
+    Object.entries(attrs).forEach(([k,v]) => e.setAttribute(k,v));
+    if (text) e.textContent = text;
+    svg.appendChild(e);
+    return e;
+  }
+  function line(x1,y1,x2,y2,extra={}) {
+    el('line', {x1,y1,x2,y2,stroke:'#333','stroke-width':'1.8',...extra});
+  }
+  function txt(x,y,t,size='10',anchor='middle',weight='400') {
+    el('text', {x,y,'text-anchor':anchor,'font-size':size,
+      'font-family':'IBM Plex Mono, monospace','font-weight':weight,fill:'#333'}, t);
+  }
+  function txtMuted(x,y,t,size='8.5') {
+    el('text', {x,y,'text-anchor':'middle','font-size':size,
+      'font-family':'Space Grotesk, sans-serif',fill:'#888'}, t);
+  }
+  function ground(x,y) {
+    line(x,y,x,y+6);
+    line(x-8,y+6,x+8,y+6);
+    line(x-5,y+10,x+5,y+10);
+    line(x-2,y+14,x+2,y+14);
+  }
+
+  // Title
+  txt(260, 18, 'Double Pulse Test — Half-Bridge Topology', '11', 'middle', '600');
+
+  // ── V_DC supply (left) ──
+  el('circle', {cx:80,cy:100,r:18,fill:'none',stroke:'#333','stroke-width':'1.5'});
+  txt(80,104,'V_DC','8.5');
+  txt(64,88,'+','10','end');
+  txt(64,118,'−','10','end');
+
+  // top rail from V_DC
+  line(80,82,80,45);
+  line(80,45,260,45);
+  // node 10 label
+  el('circle', {cx:260,cy:45,r:3,fill:'#1c7c54'});
+  txt(268,38,'node 10','7.5','start','600');
+
+  // ── L_LOAD (vertical, from DC bus to mid-point) ──
+  const lx = 260, ly_top = 45, ly_bot = 120;
+  line(lx, ly_top, lx, ly_top+12);
+  // inductor coils
+  let d = `M ${lx} ${ly_top+12}`;
+  for (let i=0;i<4;i++) {
+    d += ` c 15,0 15,14 0,14`;
+  }
+  el('path', {d,fill:'none',stroke:'#333','stroke-width':'1.8'});
+  line(lx, ly_top+12+56, lx, ly_bot+10);
+  txt(lx+20, ly_top+42, 'L_LOAD', '8.5', 'start');
+  txtMuted(lx+20, ly_top+53, '100 µH', '7.5');
+
+  // ── mid-point node ──
+  const midY = 140;
+  line(260, ly_bot+10, 260, midY);
+  el('circle', {cx:260,cy:midY,r:4,fill:'#1c7c54'});
+  txt(268,135,'node 3','7.5','start','600');
+  txtMuted(268,148,'(mid-point)','7');
+
+  // ── DUT MOSFET (bottom, drain=mid-point, source=GND) ──
+  const mx = 260, my = 200;
+  line(mx, midY, mx, my-22);
+  // MOSFET symbol
+  // gate line from left
+  line(mx-30, my, mx-12, my);
+  line(mx-12, my-16, mx-12, my+16, {'stroke-width':'2.5'});
+  // channel line
+  line(mx-8, my-14, mx-8, my+14, {'stroke-width':'1.5'});
+  // drain
+  line(mx-8, my-12, mx, my-12);
+  line(mx, my-12, mx, my-22);
+  // source
+  line(mx-8, my+12, mx, my+12);
+  line(mx, my+12, mx, my+30);
+  // arrow on source
+  el('polygon', {points:`${mx-3},${my+6} ${mx+3},${my+6} ${mx},${my+12}`,fill:'#333'});
+  // labels
+  txt(mx-34, my+4, 'G', '8', 'end', '600');
+  txt(mx+8, my-16, 'D', '8', 'start', '600');
+  txt(mx+8, my+18, 'S', '8', 'start', '600');
+  txt(mx, my+50, 'Q_DUT', '9', 'middle', '700');
+  txtMuted(mx, my+62, '(TCAD MOSFET)', '7.5');
+
+  // ── Gate drive ──
+  const gx = 140, gy = my;
+  el('circle', {cx:gx,cy:gy,r:15,fill:'none',stroke:'#333','stroke-width':'1.5'});
+  // pulse inside
+  const ps = 6;
+  el('polyline', {points:`${gx-ps},${gy+ps*0.3} ${gx-ps*0.3},${gy+ps*0.3} ${gx-ps*0.3},${gy-ps*0.3} ${gx+ps*0.3},${gy-ps*0.3} ${gx+ps*0.3},${gy+ps*0.3} ${gx+ps},${gy+ps*0.3}`,
+    fill:'none',stroke:'#333','stroke-width':'1'});
+  txt(gx, gy+28, 'V_GATE', '8');
+  txtMuted(gx, gy+38, 'Double pulse', '7');
+
+  // Gate resistor
+  line(gx+15, gy, gx+28, gy);
+  el('rect', {x:gx+28,y:gy-5,width:24,height:10,fill:'none',stroke:'#333','stroke-width':'1.2',rx:'2'});
+  txt(gx+40, gy+18, 'R_G', '7.5');
+  txtMuted(gx+40, gy+27, '5 Ω', '6.5');
+  line(gx+52, gy, mx-30, gy);
+
+  // Source to GND
+  line(mx, my+30, mx, my+45);
+  ground(mx, my+45);
+
+  // ── V_DC return to GND ──
+  line(80, 118, 80, my+45+6);
+  line(80, my+45+6, 260, my+45+6);
+
+  // ── Free-wheeling diode D_FW (parallel: anode=mid-point, cathode=V_DC rail) ──
+  const dx = 380;
+  line(260, midY, dx, midY); // horizontal from mid-point
+  line(dx, midY, dx, midY-20);
+  // diode triangle (pointing up = anode at bottom)
+  const ds = 10;
+  el('polygon', {points:`${dx-ds},${midY-30} ${dx+ds},${midY-30} ${dx},${midY-30-16}`,fill:'#333'});
+  line(dx-ds, midY-30-16, dx+ds, midY-30-16);
+  line(dx, midY-30-16, dx, 45);
+  line(dx, 45, 260, 45);
+  txt(dx+16, midY-35, 'D_FW', '8.5', 'start', '600');
+  txtMuted(dx+16, midY-24, 'Freewheeling', '7');
+
+  // ── Current path annotations ──
+  // Arrow showing load current direction
+  el('polygon', {points:`${lx-6},${ly_top+30} ${lx+6},${ly_top+30} ${lx},${ly_top+38}`,fill:'#1c7c54',opacity:'0.5'});
+  txtMuted(lx-30, ly_top+38, 'I_L', '8');
+}
+
+function renderAll() {
+  buildVoltageRow();
+  renderPlots();
+  renderDeckTable();
+  renderDeviceSVG();
+}
+
+function boot() {
+  if (!data) {
+    document.body.innerHTML = '<main><p class="no-data">No device_data.js found. Run plot_results.py after simulations.</p></main>';
+    return;
+  }
+
+  document.getElementById('kpi').textContent = `Loaded: ${data.meta.loaded_variants || 0} variants`;
+  buildModeRow();
+  buildFamilyRow();
+  buildVoltageRow();
+  buildMaterialRow();
+  renderAll();
+}
+
+boot();
+</script>
+</body>
+</html>

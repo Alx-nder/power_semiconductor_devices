@@ -1,0 +1,64 @@
+GO VICTORYDEVICE SIMFLAGS="-P 8"
+
+
+MESH WIDTH=1e7
+X.MESH loc=0.00 spac=0.1
+X.MESH loc=1.00 spac=0.05
+X.MESH loc=1.20 spac=0.02
+X.MESH loc=1.30 spac=0.02
+X.MESH loc=1.50 spac=0.05
+X.MESH loc=2.50 spac=0.1
+X.MESH loc=4.00 spac=0.1
+
+Y.MESH loc=-0.10 spac=0.02
+Y.MESH loc=-0.05 spac=0.01
+Y.MESH loc=0.00 spac=0.02
+Y.MESH loc=0.30 spac=0.05
+Y.MESH loc=1.50 spac=0.1
+Y.MESH loc=3.006 spac=0.601
+Y.MESH loc=9.014 spac=0.100
+Y.MESH loc=10.892 spac=0.282
+
+REGION num=1 material=sio2 y.min=-0.10 y.max=0.0
+REGION num=2 material=silicon y.min=0.0 y.max=10.892
+
+ELECTRODE name=source x.min=0.0 x.max=1.2 y.min=0.0 y.max=0.0 material=aluminum
+ELECTRODE name=gate x.min=1.3 x.max=4.0 y.max=-0.05 material=aluminum
+ELECTRODE name=drain bottom material=aluminum
+
+DOPING uniform n.type conc=3.7645e+15 REGION=2
+DOPING gauss p.type conc=1e18 peak=0 char=0.5 x.min=0.0 x.max=1.8 y.min=0.0
+DOPING gauss p.type conc=1e19 peak=0 char=0.2 x.min=0.0 x.max=0.6 y.min=0.0
+DOPING gauss n.type conc=1e20 peak=0 char=0.1 x.min=0.7 x.max=1.3 y.min=0.0
+DOPING uniform n.type conc=1.000e+19 y.min=9.014 y.max=10.892
+
+MATERIAL material=silicon
+MODELS MATERIAL=silicon FERMIDIRAC FLDMOB CONMOB SRH BGN AUGER TEMP=300 PRINT
+METHOD NEWTON
+CONTACT name=gate N.POLYSILICON
+CONTACT name=source NEUTRAL
+CONTACT name=drain NEUTRAL
+
+SOLVE INIT
+SOLVE vgate=0 vdrain=0
+SOLVE vdrain=-0.1 vstep=-0.1 vfinal=-1.0 name=drain
+SAVE OUTFILE=si_mosfet_100v_bodydiode.str
+
+GO VICTORYDEVICE SIMFLAGS="-P 8"
+
+.BEGIN
+VPULSE   0  1  PULSE  100  -10  100e-9  5e-9  5e-9  1e-6  2e-6
+R_SERIES 1  2  9.0
+AMOSFET  0=source  2=drain  0=gate  INFILE=si_mosfet_100v_bodydiode.str  WIDTH=1E7
+.NODESET  v(1)=100  v(2)=100
+.NUMERIC  LTE=0.3  TOLTR=1e-5  VCHANGE=10
+.OPTIONS  PRINT RELPOT WRITE=10
+.LOG   OUTFILE=si_mosfet_100v_rr
+.SAVE  OUTFILE=si_mosfet_100v_rr_final
+.TRAN  1e-9  2e-6
+.END
+
+MODELS DEVICE=AMOSFET FERMIDIRAC FLDMOB CONMOB SRH BGN AUGER TEMP=300
+METHOD NEWTON TRAP MAXTRAPS=50 CLIMIT=1e8 DVMAX=1e6
+
+QUIT

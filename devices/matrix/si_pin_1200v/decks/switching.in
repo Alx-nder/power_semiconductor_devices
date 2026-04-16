@@ -1,0 +1,50 @@
+GO VICTORYDEVICE SIMFLAGS="-P 8"
+
+
+
+MESH WIDTH=1e7
+X.MESH loc=0.0 spac=0.5
+X.MESH loc=10.0 spac=0.5
+Y.MESH loc=0.0 spac=2.655
+Y.MESH loc=106.195 spac=10.620
+Y.MESH loc=132.744 spac=0.784
+Y.MESH loc=158.893 spac=3.922
+
+REGION num=1 material=silicon x.min=0 x.max=10 y.min=0 y.max=158.893
+ELECTRODE name=anode top
+ELECTRODE name=cathode bottom
+
+DOPING uniform n.type conc=1.3703e+14
+DOPING gauss p.type conc=1e20 peak=0 char=0.900
+DOPING uniform n.type conc=1e20 y.min=132.744 y.max=158.893
+
+CONTACT name=anode NEUTRAL
+CONTACT name=cathode NEUTRAL
+
+MATERIAL material=silicon
+MODELS MATERIAL=silicon FERMIDIRAC FLDMOB CONMOB SRH BGN AUGER TEMP=300 PRINT
+METHOD NEWTON
+
+SOLVE INIT
+SOLVE VANODE=0.1 VSTEP=0.1 VFINAL=1.0 NAME=anode
+SAVE OUTFILE=si_pin_1200v_fwd.str
+
+GO VICTORYDEVICE SIMFLAGS="-P 8"
+
+.BEGIN
+VPULSE   0  1  PULSE  -1200  30  100e-9  10e-9  10e-9  3e-6  7e-6
+R_SERIES 1  2  2.68
+ADIODE   2=anode  0=cathode  INFILE=si_pin_1200v_fwd.str  WIDTH=1E7
+.NODESET  v(1)=-1200  v(2)=-1200
+.NUMERIC  LTE=0.3  TOLTR=1e-5  VCHANGE=10
+.OPTIONS  PRINT RELPOT WRITE=20
+.LOG   OUTFILE=si_pin_1200v_rr
+.SAVE  OUTFILE=si_pin_1200v_rr_final
+.TRAN  5e-9  7e-6
+.END
+
+MATERIAL material=silicon
+MODELS DEVICE=ADIODE FERMIDIRAC FLDMOB CONMOB SRH BGN AUGER TEMP=300
+METHOD NEWTON TRAP MAXTRAPS=50 CLIMIT=1e8 DVMAX=1e6
+
+QUIT
