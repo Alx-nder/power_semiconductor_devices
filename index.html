@@ -349,7 +349,7 @@ button.faded-clickable.active {
       </div>
       <div id="transient-waveform-block" style="display:none">
         <div class="chart-wrap compact-chart">
-          <canvas id="transient-chart" height="260"></canvas>
+          <canvas id="transient-chart" height="300"></canvas>
           <div class="no-data" id="transient-none" style="display:none">No switching data</div>
         </div>
       </div>
@@ -503,52 +503,62 @@ function buildMaterialRow() {
 
   const colorMap = data.meta.colors;
   
-  // Add GaAs first
-  UPCOMING_MATERIALS.forEach(mat => {
-    const chip = document.createElement('span');
-    chip.className = 'chip material-chip unavailable';
-    chip.title = 'Not yet available';
-    chip.setAttribute('aria-disabled', 'true');
-
-    const dot = document.createElement('span');
-    dot.className = 'dot';
-    dot.style.background = mat.color;
-
-    const txt = document.createElement('span');
-    txt.className = 'chip-label';
-    txt.textContent = mat.name;
-
-    chip.appendChild(dot);
-    chip.appendChild(txt);
-    row.appendChild(chip);
-  });
+  // Order: GaAs, Si, SiC, GaN, Diamond
+  const orderedMaterials = [
+    { mat: 'GaAs', isAvailable: false, color: '#b8a892' },
+    { mat: 'Si', isAvailable: true },
+    { mat: '4H-SiC', isAvailable: true },
+    { mat: 'GaN', isAvailable: true },
+    { mat: 'Diamond', isAvailable: false, color: '#8a97a6' }
+  ];
   
-  // Then add available materials
-  AVAILABLE_MATERIALS.forEach(mat => {
-    const key = Object.entries(data.meta.materials).find(([, v]) => v === mat)?.[0] || mat.toLowerCase();
-    const chip = document.createElement('label');
-    chip.className = 'chip material-chip' + (state.materials[mat] ? '' : ' inactive');
+  orderedMaterials.forEach(item => {
+    if (item.isAvailable) {
+      // Available material
+      const mat = item.mat;
+      const key = Object.entries(data.meta.materials).find(([, v]) => v === mat)?.[0] || mat.toLowerCase();
+      const chip = document.createElement('label');
+      chip.className = 'chip material-chip' + (state.materials[mat] ? '' : ' inactive');
 
-    const input = document.createElement('input');
-    input.type = 'checkbox';
-    input.checked = state.materials[mat];
-    input.addEventListener('change', () => {
-      state.materials[mat] = input.checked;
-      buildMaterialRow();
-      renderPlots();
-    });
+      const input = document.createElement('input');
+      input.type = 'checkbox';
+      input.checked = state.materials[mat];
+      input.addEventListener('change', () => {
+        state.materials[mat] = input.checked;
+        buildMaterialRow();
+        renderPlots();
+      });
 
-    const dot = document.createElement('span');
-    dot.className = 'dot';
-    dot.style.background = colorMap[key] || '#666';
+      const dot = document.createElement('span');
+      dot.className = 'dot';
+      dot.style.background = colorMap[key] || '#666';
 
-    const txt = document.createElement('span');
-    txt.textContent = mat;
+      const txt = document.createElement('span');
+      txt.textContent = mat;
 
-    chip.appendChild(input);
-    chip.appendChild(dot);
-    chip.appendChild(txt);
-    row.appendChild(chip);
+      chip.appendChild(input);
+      chip.appendChild(dot);
+      chip.appendChild(txt);
+      row.appendChild(chip);
+    } else {
+      // Unavailable material
+      const chip = document.createElement('span');
+      chip.className = 'chip material-chip unavailable';
+      chip.title = 'Not yet available';
+      chip.setAttribute('aria-disabled', 'true');
+
+      const dot = document.createElement('span');
+      dot.className = 'dot';
+      dot.style.background = item.color;
+
+      const txt = document.createElement('span');
+      txt.className = 'chip-label';
+      txt.textContent = item.mat;
+
+      chip.appendChild(dot);
+      chip.appendChild(txt);
+      row.appendChild(chip);
+    }
   });
 }
 
@@ -657,7 +667,7 @@ function renderPlots() {
   const classNode = familyNode.classes[state.voltage];
 
   const modeLabel = state.mode === 'steady' ? 'Steady I-V' : state.mode === 'transient' ? 'Switching Response' : 'Double Pulse Test';
-  document.getElementById('plot-title').textContent = `${familyNode.label} | ${state.voltage} | ${modeLabel}`;
+  document.getElementById('plot-title').textContent = state.mode === 'steady' ? 'FORWARD BIASING' : state.mode === 'transient' ? 'REVERSE RECOVERY' : `${familyNode.label} | ${state.voltage} | ${modeLabel}`;
   document.getElementById('secondary-title').textContent = state.mode === 'steady'
     ? 'Reverse Breakdown'
     : state.mode === 'transient'
