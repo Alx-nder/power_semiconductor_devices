@@ -8,29 +8,30 @@ MESH WIDTH=1e7
 X.MESH loc=0.0 spac=0.5
 X.MESH loc=10.0 spac=0.5
 
-Y.MESH loc=0.0 spac=0.017
-Y.MESH loc=0.128 spac=0.034
-Y.MESH loc=0.510 spac=0.051
-Y.MESH loc=0.765 spac=0.068
-Y.MESH loc=0.850 spac=0.030
-Y.MESH loc=1.850 spac=0.150
+Y.MESH loc=0.000 spac=0.010
+Y.MESH loc=0.213 spac=0.010
+Y.MESH loc=0.531 spac=0.050
+Y.MESH loc=0.850 spac=0.010
+Y.MESH loc=1.850 spac=0.100
 
-REGION num=1 material=4H-SiC x.min=0 x.max=10 y.min=0 y.max=1.850
+REGION num=1 material=4H-SiC x.min=0 x.max=10 y.min=0 y.max=0.213
+REGION num=2 material=4H-SiC x.min=0 x.max=10 y.min=0.213 y.max=0.850
+REGION num=3 material=4H-SiC x.min=0 x.max=10 y.min=0.850 y.max=1.850
 
 ELECTRODE name=anode top
 ELECTRODE name=cathode bottom
 
-DOPING uniform n.type conc=3.7250e+17
-DOPING gauss p.type conc=1e20 peak=0 char=0.090
-DOPING uniform n.type conc=1e20 y.min=0.850 y.max=1.850
+DOPING gauss p.type conc=1e20 peak=0 char=0.090 REGION=1
+DOPING uniform n.type conc=3.7250e+17 REGION=2
+DOPING uniform n.type conc=1e20 REGION=3
 
 CONTACT name=anode NEUTRAL
 CONTACT name=cathode NEUTRAL
 
-MATERIAL REGION=1
-MODELS REGION=1 FERMIDIRAC ANALYTIC CONWELL SRH BGN AUGER INCOMPLETE TEMP=300 PRINT
-IMPACT REGION=1 ANISOTROPIC E.SIDE SIC4H0001
-METHOD NEWTON GUMMEL TRAP climit=1.e-9 maxtraps=8
+MATERIAL material=4H-SiC
+MODELS material=4H-SiC FERMIDIRAC ANALYTIC CONWELL SRH BGN AUGER INCOMPLETE TEMP=300 PRINT
+IMPACT material=4H-SiC ANISOTROPIC E.SIDE SIC4H0001
+METHOD NEWTON GUMMEL
 
 # Forward IV
 LOG outf=steady_forward.log

@@ -1,4 +1,4 @@
-GO VICTORYDEVICE SIMFLAGS="-P 16 -256"
+GO VICTORYDEVICE SIMFLAGS="-P 8 -256"
 
 
 MESH WIDTH=1e7
@@ -48,7 +48,7 @@ INTERFACE REGION=2 charge=5e11 s.n=1e5 s.p=1e5 s.i
 
 SOLVE INIT
 SOLVE vgate=0 vdrain=0
-SOLVE vdrain=-0.1 vstep=-0.1 vfinal=-1.0 name=drain
+SOLVE vdrain=1 vstep=1 vfinal=10 name=drain
 SAVE OUTFILE=gan_mosfet_10v_bodydiode.str
 
 GO VICTORYDEVICE SIMFLAGS="-P 8 -256"

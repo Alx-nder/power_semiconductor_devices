@@ -1,0 +1,8 @@
+nohup: ignoring input
+[15:36:51] START sic_pin_100v
+[15:42:41] DONE sic_pin_100v rc=0
+[15:42:41] START sic_mosfet_100v
+[17:30:35] DONE sic_mosfet_100v rc=0
+[17:30:35] START gan_mosfet_100v
+[17:38:23] DONE gan_mosfet_100v rc=0
+ALL DONE

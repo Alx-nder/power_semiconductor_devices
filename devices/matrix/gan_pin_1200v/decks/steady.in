@@ -8,21 +8,22 @@ MESH WIDTH=1e7
 X.MESH loc=0.0 spac=0.5
 X.MESH loc=10.0 spac=0.5
 
-Y.MESH loc=0.0 spac=0.188
-Y.MESH loc=1.412 spac=0.376
-Y.MESH loc=5.647 spac=0.565
-Y.MESH loc=8.470 spac=0.753
-Y.MESH loc=9.411 spac=0.049
-Y.MESH loc=11.048 spac=0.246
+Y.MESH loc=0.000 spac=0.010
+Y.MESH loc=1.580 spac=0.010
+Y.MESH loc=5.495 spac=0.392
+Y.MESH loc=9.411 spac=0.010
+Y.MESH loc=11.048 spac=0.164
 
-REGION num=1 material=GaN x.min=0 x.max=10 y.min=0 y.max=11.048
+REGION num=1 material=GaN x.min=0 x.max=10 y.min=0 y.max=1.580
+REGION num=2 material=GaN x.min=0 x.max=10 y.min=1.580 y.max=9.411
+REGION num=3 material=GaN x.min=0 x.max=10 y.min=9.411 y.max=11.048
 
 ELECTRODE name=anode top
 ELECTRODE name=cathode bottom
 
-DOPING uniform n.type conc=2.7649e+16
-DOPING gauss p.type conc=1e20 peak=0 char=0.552
-DOPING uniform n.type conc=1e20 y.min=9.411 y.max=11.048
+DOPING gauss p.type conc=1e20 peak=0 char=0.552 REGION=1
+DOPING uniform n.type conc=2.7649e+16 REGION=2
+DOPING uniform n.type conc=1e20 REGION=3
 
 CONTACT name=anode NEUTRAL
 CONTACT name=cathode NEUTRAL
@@ -32,7 +33,7 @@ MATERIAL material=GaN TAUN0=1e-9 TAUP0=1e-9
 MODELS MATERIAL=GaN FERMIDIRAC FLDMOB SRH INCOMPLETE TEMP=300 PRINT
 MOBILITY MATERIAL=GaN FMCT.N GANSAT.N
 IMPACT MATERIAL=GaN N.OGUZMAN P.OGUZMAN EDGE
-METHOD NEWTON DIRECT.256 TRAP MAXTRAPS=12 ITLIMIT=100 CLIMIT=1e-9 DVMAX=1e8 PR.TOLER=1e-40 CR.TOLER=1e-40 PX.TOLER=1e-5 CX.TOLER=1e-5
+METHOD NEWTON DIRECT.256
 
 # Forward IV
 LOG outf=steady_forward.log

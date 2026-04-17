@@ -41,7 +41,8 @@ CONTACT name=drain NEUTRAL
 
 SOLVE INIT
 SOLVE vgate=0 vdrain=0
-SOLVE vdrain=-0.1 vstep=-0.1 vfinal=-1.0 name=drain
+SOLVE vdrain=10 vstep=10 vfinal=100 name=drain
+SOLVE vstep=100 vfinal=1200 name=drain COMPLIANCE=1e-5 CNAME=drain
 SAVE OUTFILE=si_mosfet_1200v_bodydiode.str
 
 GO VICTORYDEVICE SIMFLAGS="-P 8"

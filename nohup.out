@@ -1,0 +1,25 @@
+[22:20:42] START switching retry3
+[22:20:42] START si_pin_1200v
+[22:34:32] FAIL si_pin_1200v rc=0 (no _rr_tr.log)
+[22:34:32] START si_schottky_1200v
+[22:34:55] FAIL si_schottky_1200v rc=0 (no _rr_tr.log)
+[22:34:55] START si_mosfet_1200v
+[22:35:36] FAIL si_mosfet_1200v rc=0 (no _rr_tr.log)
+[22:35:36] START sic_pin_100v
+[22:41:20] FAIL sic_pin_100v rc=0 (no _rr_tr.log)
+[22:41:20] START sic_pin_1200v
+[23:07:26] FAIL sic_pin_1200v rc=1 (no _rr_tr.log)
+[23:07:26] START sic_schottky_1200v
+[23:07:40] FAIL sic_schottky_1200v rc=9 (no _rr_tr.log)
+[23:07:40] START sic_mosfet_1200v
+./run_switching_retry.sh: line 19: 400637 Killed                  $DECKBUILD switching.in >> "$LOG" 2>&1
+[23:07:54] FAIL sic_mosfet_1200v rc=137 (no _rr_tr.log)
+[23:07:54] START sic_mosfet_10v
+[23:08:04] FAIL sic_mosfet_10v rc=9 (no _rr_tr.log)
+[23:08:04] START sic_mosfet_100v
+./run_switching_retry.sh: line 19: 403945 Killed                  $DECKBUILD switching.in >> "$LOG" 2>&1
+[23:08:25] FAIL sic_mosfet_100v rc=137 (no _rr_tr.log)
+[23:08:25] START gan_mosfet_10v
+./run_switching_retry.sh: line 19: 406584 Killed                  $DECKBUILD switching.in >> "$LOG" 2>&1
+[23:08:33] FAIL gan_mosfet_10v rc=137 (no _rr_tr.log)
+[23:08:33] START gan_mosfet_100v
