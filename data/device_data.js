@@ -29943,7 +29943,7 @@ window.DEVICE_DATA = {
       "design": {
         "Nd_cm3": 8.11045132020327e+16,
         "Wdep_um": 0.4265917830344191,
-        "Drift_um": 0.4905805504895819,
+        "Drift_um": 0.451,
         "Substrate_um": 1.0
       }
     },
@@ -29957,7 +29957,7 @@ window.DEVICE_DATA = {
       "design": {
         "Nd_cm3": 3764538028341553.0,
         "Wdep_um": 6.261511067115133,
-        "Drift_um": 7.200737727182402,
+        "Drift_um": 6.73,
         "Substrate_um": 1.4401475454364805
       }
     },
@@ -29971,7 +29971,7 @@ window.DEVICE_DATA = {
       "design": {
         "Nd_cm3": 137026120013170.2,
         "Wdep_um": 113.69043798606829,
-        "Drift_um": 130.74400368397852,
+        "Drift_um": 129.437,
         "Substrate_um": 26.148800736795707
       }
     },
@@ -29985,7 +29985,7 @@ window.DEVICE_DATA = {
       "design": {
         "Nd_cm3": 8.11045132020327e+16,
         "Wdep_um": 0.4265917830344191,
-        "Drift_um": 0.46925096133786104,
+        "Drift_um": 1.269,
         "Substrate_um": 0.8
       }
     },
@@ -29999,7 +29999,7 @@ window.DEVICE_DATA = {
       "design": {
         "Nd_cm3": 3764538028341553.0,
         "Wdep_um": 6.261511067115133,
-        "Drift_um": 6.887662173826646,
+        "Drift_um": 8.265,
         "Substrate_um": 1.3775324347653293
       }
     },
@@ -30013,7 +30013,7 @@ window.DEVICE_DATA = {
       "design": {
         "Nd_cm3": 137026120013170.2,
         "Wdep_um": 113.69043798606829,
-        "Drift_um": 125.05948178467513,
+        "Drift_um": 150.071,
         "Substrate_um": 25.011896356935026
       }
     },
@@ -30027,7 +30027,7 @@ window.DEVICE_DATA = {
       "design": {
         "Nd_cm3": 8.11045132020327e+16,
         "Wdep_um": 0.4265917830344191,
-        "Drift_um": 2.0,
+        "Drift_um": 4.5,
         "Substrate_um": 1.0
       }
     },
@@ -30041,8 +30041,8 @@ window.DEVICE_DATA = {
       "design": {
         "Nd_cm3": 3764538028341553.0,
         "Wdep_um": 6.261511067115133,
-        "Drift_um": 7.513813280538159,
-        "Substrate_um": 1.8784533201345397
+        "Drift_um": 10.892,
+        "Substrate_um": 1.0
       }
     },
     {
@@ -30055,8 +30055,8 @@ window.DEVICE_DATA = {
       "design": {
         "Nd_cm3": 137026120013170.2,
         "Wdep_um": 113.69043798606829,
-        "Drift_um": 136.42852558328195,
-        "Substrate_um": 34.10713139582049
+        "Drift_um": 172.036,
+        "Substrate_um": 1.0
       }
     },
     {
@@ -30069,7 +30069,7 @@ window.DEVICE_DATA = {
       "design": {
         "Nd_cm3": 1.5077914325842698e+18,
         "Wdep_um": 0.08888888888888888,
-        "Drift_um": 0.35,
+        "Drift_um": 0.407,
         "Substrate_um": 1.0
       }
     },
@@ -30083,7 +30083,7 @@ window.DEVICE_DATA = {
       "design": {
         "Nd_cm3": 1.5077914325842694e+17,
         "Wdep_um": 0.888888888888889,
-        "Drift_um": 1.0222222222222221,
+        "Drift_um": 0.637,
         "Substrate_um": 1.0
       }
     },
@@ -30097,8 +30097,8 @@ window.DEVICE_DATA = {
       "design": {
         "Nd_cm3": 1.2564928604868914e+16,
         "Wdep_um": 10.666666666666664,
-        "Drift_um": 12.266666666666662,
-        "Substrate_um": 2.4533333333333327
+        "Drift_um": 11.202,
+        "Substrate_um": 2.362
       }
     },
     {
@@ -30111,7 +30111,7 @@ window.DEVICE_DATA = {
       "design": {
         "Nd_cm3": 1.5077914325842698e+18,
         "Wdep_um": 0.08888888888888888,
-        "Drift_um": 0.25,
+        "Drift_um": 1.05,
         "Substrate_um": 0.8
       }
     },
@@ -30125,7 +30125,7 @@ window.DEVICE_DATA = {
       "design": {
         "Nd_cm3": 1.5077914325842694e+17,
         "Wdep_um": 0.888888888888889,
-        "Drift_um": 0.977777777777778,
+        "Drift_um": 1.422,
         "Substrate_um": 0.8
       }
     },
@@ -30139,8 +30139,8 @@ window.DEVICE_DATA = {
       "design": {
         "Nd_cm3": 1.2564928604868914e+16,
         "Wdep_um": 10.666666666666664,
-        "Drift_um": 11.733333333333333,
-        "Substrate_um": 2.3466666666666667
+        "Drift_um": 13.554,
+        "Substrate_um": 2.259
       }
     },
     {
@@ -30153,7 +30153,7 @@ window.DEVICE_DATA = {
       "design": {
         "Nd_cm3": 1.5077914325842698e+18,
         "Wdep_um": 0.08888888888888888,
-        "Drift_um": 2.0,
+        "Drift_um": 4.5,
         "Substrate_um": 1.0
       }
     },
@@ -30167,7 +30167,7 @@ window.DEVICE_DATA = {
       "design": {
         "Nd_cm3": 1.5077914325842694e+17,
         "Wdep_um": 0.888888888888889,
-        "Drift_um": 2.0,
+        "Drift_um": 4.5,
         "Substrate_um": 1.0
       }
     },
@@ -30181,8 +30181,8 @@ window.DEVICE_DATA = {
       "design": {
         "Nd_cm3": 1.2564928604868914e+16,
         "Wdep_um": 10.666666666666664,
-        "Drift_um": 12.799999999999997,
-        "Substrate_um": 3.1999999999999993
+        "Drift_um": 16.903,
+        "Substrate_um": 1.0
       }
     },
     {
@@ -30195,7 +30195,7 @@ window.DEVICE_DATA = {
       "design": {
         "Nd_cm3": 2.5730072191011236e+18,
         "Wdep_um": 0.06734006734006734,
-        "Drift_um": 0.35,
+        "Drift_um": 0.429,
         "Substrate_um": 1.0
       }
     },
@@ -30209,7 +30209,7 @@ window.DEVICE_DATA = {
       "design": {
         "Nd_cm3": 2.5730072191011232e+17,
         "Wdep_um": 0.6734006734006733,
-        "Drift_um": 0.7744107744107743,
+        "Drift_um": 0.452,
         "Substrate_um": 1.0
       }
     },
@@ -30223,8 +30223,8 @@ window.DEVICE_DATA = {
       "design": {
         "Nd_cm3": 2.1441726825842696e+16,
         "Wdep_um": 8.080808080808081,
-        "Drift_um": 9.292929292929292,
-        "Substrate_um": 1.8585858585858586
+        "Drift_um": 7.831,
+        "Substrate_um": 1.637
       }
     },
     {
@@ -30237,7 +30237,7 @@ window.DEVICE_DATA = {
       "design": {
         "Nd_cm3": 2.5730072191011236e+18,
         "Wdep_um": 0.06734006734006734,
-        "Drift_um": 0.25,
+        "Drift_um": 1.05,
         "Substrate_um": 0.8
       }
     },
@@ -30251,7 +30251,7 @@ window.DEVICE_DATA = {
       "design": {
         "Nd_cm3": 2.5730072191011232e+17,
         "Wdep_um": 0.6734006734006733,
-        "Drift_um": 0.7407407407407407,
+        "Drift_um": 1.231,
         "Substrate_um": 0.8
       }
     },
@@ -30265,8 +30265,8 @@ window.DEVICE_DATA = {
       "design": {
         "Nd_cm3": 2.1441726825842696e+16,
         "Wdep_um": 8.080808080808081,
-        "Drift_um": 8.888888888888891,
-        "Substrate_um": 1.7777777777777783
+        "Drift_um": 9.393,
+        "Substrate_um": 1.565
       }
     },
     {
@@ -30279,7 +30279,7 @@ window.DEVICE_DATA = {
       "design": {
         "Nd_cm3": 2.5730072191011236e+18,
         "Wdep_um": 0.06734006734006734,
-        "Drift_um": 2.0,
+        "Drift_um": 4.5,
         "Substrate_um": 1.0
       }
     },
@@ -30293,7 +30293,7 @@ window.DEVICE_DATA = {
       "design": {
         "Nd_cm3": 2.5730072191011232e+17,
         "Wdep_um": 0.6734006734006733,
-        "Drift_um": 2.0,
+        "Drift_um": 4.5,
         "Substrate_um": 1.0
       }
     },
@@ -30307,8 +30307,8 @@ window.DEVICE_DATA = {
       "design": {
         "Nd_cm3": 2.1441726825842696e+16,
         "Wdep_um": 8.080808080808081,
-        "Drift_um": 9.696969696969697,
-        "Substrate_um": 2.4242424242424243
+        "Drift_um": 12.174,
+        "Substrate_um": 1.0
       }
     }
   ]

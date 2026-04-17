@@ -374,6 +374,39 @@ button.faded-clickable.active {
   font-style: italic;
   white-space: nowrap;
 }
+.calc-notes {
+  width: 100%;
+  border-top: 1px solid var(--line);
+  margin-top: 0.35rem;
+  padding-top: 0.35rem;
+  display: flex;
+  gap: 1.2rem;
+  flex-wrap: wrap;
+  font-size: 0.7rem;
+  color: var(--muted);
+  line-height: 1.45;
+}
+.calc-notes .note-col {
+  min-width: 180px;
+}
+.calc-notes strong {
+  color: var(--ink);
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.calc-notes ul {
+  margin: 0.15rem 0 0;
+  padding-left: 1.1rem;
+}
+.calc-notes li {
+  margin-bottom: 0.1rem;
+}
+.calc-margin {
+  font-size: 0.72rem;
+  color: #b45309;
+  font-weight: 500;
+}
 </style>
 </head>
 <body>
@@ -402,7 +435,7 @@ button.faded-clickable.active {
   </section>
 
   <div class="calc-bar">
-    <h3>BV → N<sub>d</sub>, W<sub>d</sub></h3>
+    <h3>Drift Region Calculator</h3>
     <div class="calc-inputs">
       <label>Material
         <select id="calc-mat">
@@ -411,16 +444,44 @@ button.faded-clickable.active {
           <option value="GaN">GaN</option>
         </select>
       </label>
-      <label>BV (V)
+      <label>Target BV (V)
         <input type="number" id="calc-bv" value="600" min="1" max="50000" step="1">
       </label>
     </div>
     <div class="calc-results" id="calc-results">
-      <span class="calc-result-item">N<sub>d</sub> = <span class="val" id="calc-nd">—</span></span>
-      <span class="calc-result-item">W<sub>d</sub> = <span class="val" id="calc-wd">—</span></span>
+      <span class="calc-result-item">N<sub>d,max</sub> = <span class="val" id="calc-nd">—</span></span>
+      <span class="calc-result-item">W<sub>d,min</sub> = <span class="val" id="calc-wd">—</span></span>
       <span class="calc-result-item">E<sub>c</sub> = <span class="val" id="calc-ec">—</span></span>
     </div>
-    <div class="calc-eqs">NPT: N<sub>d</sub> = ε<sub>s</sub>E<sub>c</sub>² / 2qBV &ensp;|&ensp; W<sub>d</sub> = 2BV / E<sub>c</sub> &ensp;— Baliga, <i>Fundamentals of Power Semiconductor Devices</i></div>
+    <div class="calc-eqs">NPT: N<sub>d</sub> = ε<sub>s</sub>E<sub>c</sub>² / 2qBV &ensp;|&ensp; W<sub>d</sub> = 2BV / E<sub>c</sub> &ensp;— Baliga, <i>Fundamentals of Power Semiconductor Devices</i>, 2nd ed.</div>
+    <div class="calc-notes">
+      <div class="note-col">
+        <strong>Assumptions</strong>
+        <ul>
+          <li>1-D abrupt P⁺N junction (plane-parallel)</li>
+          <li>Non-punch-through (NPT) — drift fully depleted at BV</li>
+          <li>Uniform doping in drift region</li>
+          <li>WBG: E<sub>c</sub>(N<sub>d</sub>) = E<sub>c0</sub>(N<sub>d</sub>/10<sup>16</sup>)<sup>1/8</sup> (Konstantinov)</li>
+          <li>No edge termination or curvature effects</li>
+        </ul>
+      </div>
+      <div class="note-col">
+        <strong>Material Constants (Baliga Table 1.1)</strong>
+        <ul>
+          <li>Si: ε<sub>r</sub> = 11.7, E<sub>c0</sub> = 3.0 × 10⁵ V/cm</li>
+          <li>4H-SiC: ε<sub>r</sub> = 9.7, E<sub>c0</sub> = 2.2 × 10⁶ V/cm</li>
+          <li>GaN: ε<sub>r</sub> = 9.0, E<sub>c0</sub> = 3.3 × 10⁶ V/cm</li>
+        </ul>
+      </div>
+      <div class="note-col">
+        <strong>Design Margin</strong>
+        <ul>
+          <li>These are the <em>minimum</em> W<sub>d</sub> and <em>maximum</em> N<sub>d</sub> that just sustain the target BV</li>
+          <li>Real designs use 10–20% wider drift and ~80% of N<sub>d,max</sub> to provide engineering margin for process variation, temperature, and edge effects</li>
+          <li>Simulated devices on this page may differ — they include guardring/JTE, finite geometry, and realistic doping profiles</li>
+        </ul>
+      </div>
+    </div>
   </div>
 
   <section class="panel-grid">
@@ -1379,8 +1440,8 @@ function calcBV() {
   const Wd_cm = 2 * BV / Ec;
   const Wd_um = Wd_cm * 1e4;
 
-  document.getElementById('calc-nd').textContent = Nd.toExponential(2) + ' cm⁻³';
-  document.getElementById('calc-wd').textContent = Wd_um.toFixed(1) + ' µm';
+  document.getElementById('calc-nd').textContent = Nd.toExponential(2) + ' cm⁻³  (max)';
+  document.getElementById('calc-wd').textContent = Wd_um.toFixed(1) + ' µm  (min)';
   document.getElementById('calc-ec').textContent = (Ec / 1e5).toFixed(1) + ' × 10⁵ V/cm';
 }
 
