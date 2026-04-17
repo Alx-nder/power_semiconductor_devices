@@ -304,6 +304,76 @@ button.faded-clickable.active {
 @media (max-width: 980px) {
   .panel-grid { grid-template-columns: 1fr; }
 }
+
+/* ── BV Calculator ──────────────────────────────── */
+.calc-bar {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--paper);
+  padding: 0.6rem 0.8rem;
+  flex-wrap: wrap;
+}
+.calc-bar h3 {
+  margin: 0;
+  font-size: 0.82rem;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  white-space: nowrap;
+  line-height: 2;
+}
+.calc-inputs {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.calc-inputs label {
+  font-size: 0.78rem;
+  color: var(--muted);
+  white-space: nowrap;
+}
+.calc-inputs select,
+.calc-inputs input[type="number"] {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.82rem;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 0.28rem 0.45rem;
+  background: #fafafa;
+  color: var(--ink);
+  width: 100px;
+}
+.calc-inputs select { width: 90px; }
+.calc-results {
+  display: flex;
+  gap: 0.7rem;
+  align-items: center;
+  flex-wrap: wrap;
+  flex: 1;
+}
+.calc-result-item {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.8rem;
+  white-space: nowrap;
+}
+.calc-result-item .val {
+  font-weight: 600;
+  color: var(--accent);
+}
+.calc-result-item .unit {
+  color: var(--muted);
+  font-size: 0.72rem;
+}
+.calc-eqs {
+  font-size: 0.68rem;
+  color: var(--muted);
+  font-style: italic;
+  white-space: nowrap;
+}
 </style>
 </head>
 <body>
@@ -330,6 +400,28 @@ button.faded-clickable.active {
       <span class="label">Material</span>
     </div>
   </section>
+
+  <div class="calc-bar">
+    <h3>BV → N<sub>d</sub>, W<sub>d</sub></h3>
+    <div class="calc-inputs">
+      <label>Material
+        <select id="calc-mat">
+          <option value="Si">Si</option>
+          <option value="SiC">4H-SiC</option>
+          <option value="GaN">GaN</option>
+        </select>
+      </label>
+      <label>BV (V)
+        <input type="number" id="calc-bv" value="600" min="1" max="50000" step="1">
+      </label>
+    </div>
+    <div class="calc-results" id="calc-results">
+      <span class="calc-result-item">N<sub>d</sub> = <span class="val" id="calc-nd">—</span></span>
+      <span class="calc-result-item">W<sub>d</sub> = <span class="val" id="calc-wd">—</span></span>
+      <span class="calc-result-item">E<sub>c</sub> = <span class="val" id="calc-ec">—</span></span>
+    </div>
+    <div class="calc-eqs">NPT: N<sub>d</sub> = ε<sub>s</sub>E<sub>c</sub>² / 2qBV &ensp;|&ensp; W<sub>d</sub> = 2BV / E<sub>c</sub> &ensp;— Baliga, <i>Fundamentals of Power Semiconductor Devices</i></div>
+  </div>
 
   <section class="panel-grid">
     <div class="panel">
@@ -1242,7 +1334,58 @@ function boot() {
   buildVoltageRow();
   buildMaterialRow();
   renderAll();
+  calcBV();
 }
+
+// ─── BV Design Calculator (Baliga NPT) ─────────────────────────────────────
+// Ref: B.J. Baliga, "Fundamentals of Power Semiconductor Devices", 2nd ed.
+//   NPT (non-punch-through) 1-D abrupt junction:
+//     BV = ε_s · E_c² / (2·q·N_d)   →  N_d = ε_s · E_c² / (2·q·BV)
+//     W_d = 2·BV / E_c
+//   For WBG: E_c(N_d) = E_c0 · (N_d / 1e16)^(1/8)   (Konstantinov/Baliga)
+const CALC_MATS = {
+  Si:  { eps_r: 11.7, Ec0: 3.0e5, scaling: false },
+  SiC: { eps_r: 9.7,  Ec0: 2.2e6, scaling: true  },
+  GaN: { eps_r: 9.0,  Ec0: 3.3e6, scaling: true  },
+};
+
+function calcBV() {
+  const q  = 1.602e-19;
+  const e0 = 8.854e-14; // F/cm
+
+  const mat = document.getElementById('calc-mat').value;
+  const BV  = parseFloat(document.getElementById('calc-bv').value);
+  if (!BV || BV <= 0) return;
+
+  const { eps_r, Ec0, scaling } = CALC_MATS[mat];
+  const eps_s = eps_r * e0;
+  let Nd, Ec;
+
+  if (!scaling) {
+    Ec = Ec0;
+    Nd = eps_s * Ec * Ec / (2 * q * BV);
+  } else {
+    // Iterative: Ec depends on Nd
+    Nd = eps_s * Ec0 * Ec0 / (2 * q * BV); // seed
+    for (let i = 0; i < 50; i++) {
+      Ec = Ec0 * Math.pow(Nd / 1e16, 1 / 8);
+      const Nd_new = eps_s * Ec * Ec / (2 * q * BV);
+      if (Math.abs(Nd_new - Nd) / Nd < 1e-10) break;
+      Nd = Nd_new;
+    }
+    Ec = Ec0 * Math.pow(Nd / 1e16, 1 / 8);
+  }
+
+  const Wd_cm = 2 * BV / Ec;
+  const Wd_um = Wd_cm * 1e4;
+
+  document.getElementById('calc-nd').textContent = Nd.toExponential(2) + ' cm⁻³';
+  document.getElementById('calc-wd').textContent = Wd_um.toFixed(1) + ' µm';
+  document.getElementById('calc-ec').textContent = (Ec / 1e5).toFixed(1) + ' × 10⁵ V/cm';
+}
+
+document.getElementById('calc-mat').addEventListener('change', calcBV);
+document.getElementById('calc-bv').addEventListener('input', calcBV);
 
 boot();
 </script>
