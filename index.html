@@ -374,38 +374,20 @@ button.faded-clickable.active {
   font-style: italic;
   white-space: nowrap;
 }
-.calc-notes {
-  width: 100%;
+.page-footer {
+  margin-top: 0.9rem;
+  padding-top: 0.6rem;
   border-top: 1px solid var(--line);
-  margin-top: 0.35rem;
-  padding-top: 0.35rem;
   display: flex;
-  gap: 1.2rem;
   flex-wrap: wrap;
-  font-size: 0.7rem;
+  gap: 0.5rem 1.5rem;
+  font-size: 0.69rem;
   color: var(--muted);
-  line-height: 1.45;
+  line-height: 1.5;
 }
-.calc-notes .note-col {
-  min-width: 180px;
-}
-.calc-notes strong {
+.page-footer strong {
   color: var(--ink);
-  font-size: 0.68rem;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
-.calc-notes ul {
-  margin: 0.15rem 0 0;
-  padding-left: 1.1rem;
-}
-.calc-notes li {
-  margin-bottom: 0.1rem;
-}
-.calc-margin {
-  font-size: 0.72rem;
-  color: #b45309;
-  font-weight: 500;
+  font-weight: 600;
 }
 </style>
 </head>
@@ -454,34 +436,6 @@ button.faded-clickable.active {
       <span class="calc-result-item">E<sub>c</sub> = <span class="val" id="calc-ec">—</span></span>
     </div>
     <div class="calc-eqs">NPT: N<sub>d</sub> = ε<sub>s</sub>E<sub>c</sub>² / 2qBV &ensp;|&ensp; W<sub>d</sub> = 2BV / E<sub>c</sub> &ensp;— Baliga, <i>Fundamentals of Power Semiconductor Devices</i>, 2nd ed.</div>
-    <div class="calc-notes">
-      <div class="note-col">
-        <strong>Assumptions</strong>
-        <ul>
-          <li>1-D abrupt P⁺N junction (plane-parallel)</li>
-          <li>Non-punch-through (NPT) — drift fully depleted at BV</li>
-          <li>Uniform doping in drift region</li>
-          <li>WBG: E<sub>c</sub>(N<sub>d</sub>) = E<sub>c0</sub>(N<sub>d</sub>/10<sup>16</sup>)<sup>1/8</sup> (Konstantinov)</li>
-          <li>No edge termination or curvature effects</li>
-        </ul>
-      </div>
-      <div class="note-col">
-        <strong>Material Constants (Baliga Table 1.1)</strong>
-        <ul>
-          <li>Si: ε<sub>r</sub> = 11.7, E<sub>c0</sub> = 3.0 × 10⁵ V/cm</li>
-          <li>4H-SiC: ε<sub>r</sub> = 9.7, E<sub>c0</sub> = 2.2 × 10⁶ V/cm</li>
-          <li>GaN: ε<sub>r</sub> = 9.0, E<sub>c0</sub> = 3.3 × 10⁶ V/cm</li>
-        </ul>
-      </div>
-      <div class="note-col">
-        <strong>Design Margin</strong>
-        <ul>
-          <li>These are the <em>minimum</em> W<sub>d</sub> and <em>maximum</em> N<sub>d</sub> that just sustain the target BV</li>
-          <li>Real designs use 10–20% wider drift and ~80% of N<sub>d,max</sub> to provide engineering margin for process variation, temperature, and edge effects</li>
-          <li>Simulated devices on this page may differ — they include guardring/JTE, finite geometry, and realistic doping profiles</li>
-        </ul>
-      </div>
-    </div>
   </div>
 
   <section class="panel-grid">
@@ -561,6 +515,12 @@ button.faded-clickable.active {
       </div>
     </div>
   </section>
+
+  <footer class="page-footer">
+    <span><strong>Assumptions:</strong> 1-D abrupt NPT junction, uniform drift doping, no edge termination. WBG: E<sub>c</sub>(N<sub>d</sub>) = E<sub>c0</sub>(N<sub>d</sub>/10<sup>16</sup>)<sup>1/8</sup> (Konstantinov).</span>
+    <span><strong>Constants (Baliga Table 1.1):</strong> Si ε<sub>r</sub>=11.7, E<sub>c0</sub>=3.0×10⁵ V/cm &ensp;|&ensp; 4H-SiC ε<sub>r</sub>=9.7, E<sub>c0</sub>=2.2×10⁶ &ensp;|&ensp; GaN ε<sub>r</sub>=9.0, E<sub>c0</sub>=3.3×10⁶ V/cm.</span>
+    <span><strong>Note:</strong> Calculator gives ideal <em>minimum</em> W<sub>d</sub> and <em>maximum</em> N<sub>d</sub>. Simulated devices use added margin and realistic profiles.</span>
+  </footer>
 </main>
 
 <script>
