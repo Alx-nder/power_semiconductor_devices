@@ -1,0 +1,19 @@
+nohup: ignoring input
+=== PIN Run All: Fri Apr 17 10:48:43 AM CDT 2026 ===
+
+>>> si_pin_10v steady: Fri Apr 17 10:48:43 AM CDT 2026
+    steady rc=0
+>>> si_pin_10v switching: Fri Apr 17 10:49:16 AM CDT 2026
+    switching rc=0
+
+>>> si_pin_100v steady: Fri Apr 17 10:50:11 AM CDT 2026
+    steady rc=0
+>>> si_pin_100v switching: Fri Apr 17 10:51:46 AM CDT 2026
+    switching rc=0
+
+>>> si_pin_1200v steady: Fri Apr 17 10:52:20 AM CDT 2026
+    steady rc=0
+>>> si_pin_1200v switching: Fri Apr 17 10:57:39 AM CDT 2026
+    switching rc=0
+
+>>> sic_pin_10v steady: Fri Apr 17 10:58:46 AM CDT 2026

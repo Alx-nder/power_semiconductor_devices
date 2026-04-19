@@ -726,9 +726,15 @@ function renderSteady(entry) {
       fwdSets.push(seriesDataset(mat, color, d.forward.voltage, yAbs));
     }
     if (d.reverse && d.reverse.voltage?.length) {
-      const xNeg = d.reverse.voltage.map(v => -Math.abs(v));
-      const yAbs = d.reverse.current.map(v => Math.abs(v));
-      revSets.push(seriesDataset(mat, color, xNeg, yAbs));
+      const xNeg = [], yAbs = [];
+      for (let i = 0; i < d.reverse.voltage.length; i++) {
+        const absI = Math.abs(d.reverse.current[i]);
+        if (absI >= 1e-25) {
+          xNeg.push(-Math.abs(d.reverse.voltage[i]));
+          yAbs.push(absI);
+        }
+      }
+      if (xNeg.length) revSets.push(seriesDataset(mat, color, xNeg, yAbs));
     }
   });
 
@@ -747,7 +753,7 @@ function renderSteady(entry) {
     reverseChart = new Chart(document.getElementById('reverse-chart'), {
       type: 'scatter',
       data: { datasets: revSets },
-      options: chartOptions('Voltage (V)', '|J| (A/cm²)', state.logY)
+      options: chartOptions('Voltage (V)', '|J| (A/cm²)', true, null, 1e-22)
     });
   }
 }

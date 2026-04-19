@@ -8,12 +8,13 @@ MESH WIDTH=1e7
 X.MESH loc=0.0 spac=0.5
 X.MESH loc=10.0 spac=0.5
 
-Y.MESH loc=0.0 spac=0.157
-Y.MESH loc=1.174 spac=0.313
-Y.MESH loc=4.697 spac=0.470
-Y.MESH loc=7.045 spac=0.626
-Y.MESH loc=7.828 spac=0.047
-Y.MESH loc=9.393 spac=0.235
+Y.MESH loc=0.0 spac=0.010
+Y.MESH loc=0.500 spac=0.050
+Y.MESH loc=2.000 spac=0.100
+Y.MESH loc=4.500 spac=0.200
+Y.MESH loc=7.000 spac=0.100
+Y.MESH loc=7.828 spac=0.010
+Y.MESH loc=9.393 spac=0.100
 
 REGION num=1 material=GaN x.min=0 x.max=10 y.min=0 y.max=9.393
 
@@ -31,7 +32,7 @@ MATERIAL material=GaN TAUN0=1e-9 TAUP0=1e-9
 MODELS MATERIAL=GaN FERMIDIRAC FLDMOB SRH INCOMPLETE TEMP=300 PRINT
 MOBILITY MATERIAL=GaN FMCT.N GANSAT.N
 IMPACT MATERIAL=GaN N.OGUZMAN P.OGUZMAN EDGE
-METHOD NEWTON DIRECT.256 TRAP MAXTRAPS=12 ITLIMIT=100 CLIMIT=1e-9 DVMAX=1e8 PR.TOLER=1e-40 CR.TOLER=1e-40 PX.TOLER=1e-5 CX.TOLER=1e-5
+METHOD NEWTON DIRECT.256 TRAP MAXTRAPS=60 ITLIMIT=100 CLIMIT=1e-9 DVMAX=1e8 PR.TOLER=1e-40 CR.TOLER=1e-40 PX.TOLER=1e-5 CX.TOLER=1e-5
 
 # Forward IV
 LOG outf=steady_forward.log
@@ -44,8 +45,12 @@ LOG OFF
 # Reverse IV
 SOLVE init
 LOG outf=steady_reverse.log
-SOLVE vanode=-2.000 vstep=-2.000 vfinal=-600.000 name=anode compliance=1e-5 cname=anode
-SOLVE vstep=-5.000 vfinal=-1500.000 name=anode compliance=1e-5 cname=anode
+SOLVE vanode=-2.0 vstep=-2.0 vfinal=-20.0 name=anode
+SOLVE vstep=-5.0 vfinal=-100.0 name=anode
+SOLVE vstep=-10.0 vfinal=-500.0 name=anode
+SOLVE vstep=-5.0 vfinal=-1000.0 name=anode
+SOLVE vstep=-5.0 vfinal=-1400.0 name=anode compliance=1e-5 cname=anode
+SOLVE vstep=-2.0 vfinal=-1550.0 name=anode compliance=1e-5 cname=anode
 EXTRACT name="steady_reverse" curve(v."anode", i."anode") outfile="steady_reverse.csv"
 LOG OFF
 
