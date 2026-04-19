@@ -615,18 +615,30 @@ function buildMaterialRow() {
   row.querySelectorAll('.material-chip').forEach(n => n.remove());
 
   const colorMap = data.meta.colors;
+  const modeKey = state.mode === 'dpt' ? 'transient' : state.mode;
+  const classNode = data[modeKey]?.[state.family]?.classes?.[state.voltage];
+
+  function hasData(mat) {
+    if (!classNode?.materials?.[mat]) return false;
+    const m = classNode.materials[mat];
+    if (modeKey === 'steady') {
+      return (m.forward?.voltage?.length > 0) || (m.reverse?.voltage?.length > 0);
+    }
+    return m.trace?.x?.length > 0;
+  }
   
   // Order: GaAs, Si, SiC, GaN, Diamond
   const orderedMaterials = [
-    { mat: 'GaAs', isAvailable: false, color: '#b8a892' },
-    { mat: 'Si', isAvailable: true },
-    { mat: '4H-SiC', isAvailable: true },
-    { mat: 'GaN', isAvailable: true },
-    { mat: 'Diamond', isAvailable: false, color: '#8a97a6' }
+    { mat: 'GaAs', alwaysUnavailable: true, color: '#b8a892' },
+    { mat: 'Si', alwaysUnavailable: false },
+    { mat: '4H-SiC', alwaysUnavailable: false },
+    { mat: 'GaN', alwaysUnavailable: false },
+    { mat: 'Diamond', alwaysUnavailable: true, color: '#8a97a6' }
   ];
   
   orderedMaterials.forEach(item => {
-    if (item.isAvailable) {
+    const available = !item.alwaysUnavailable && hasData(item.mat);
+    if (available) {
       // Available material
       const mat = item.mat;
       const key = Object.entries(data.meta.materials).find(([, v]) => v === mat)?.[0] || mat.toLowerCase();
@@ -657,12 +669,13 @@ function buildMaterialRow() {
       // Unavailable material
       const chip = document.createElement('span');
       chip.className = 'chip material-chip unavailable';
-      chip.title = 'Not yet available';
+      chip.title = item.alwaysUnavailable ? 'Not yet available' : 'No simulation data for this combination';
       chip.setAttribute('aria-disabled', 'true');
 
       const dot = document.createElement('span');
       dot.className = 'dot';
-      dot.style.background = item.color;
+      const uKey = Object.entries(data.meta.materials).find(([, v]) => v === item.mat)?.[0] || item.mat.toLowerCase();
+      dot.style.background = item.color || colorMap[uKey] || '#999';
 
       const txt = document.createElement('span');
       txt.className = 'chip-label';
@@ -695,6 +708,11 @@ function chartOptions(xLabel, yLabel, logY = false, yMax = null, yMin = null) {
     title: { display: true, text: yLabel },
     grid: { color: 'rgba(0,0,0,0.08)' }
   };
+  if (logY) {
+    yAxis.ticks = {
+      callback: (v) => v === 0 ? '0' : v.toExponential(0)
+    };
+  }
   if (yMax !== null) yAxis.max = yMax;
   if (yMin !== null) yAxis.min = yMin;
   return {
@@ -742,10 +760,11 @@ function renderSteady(entry) {
   document.getElementById('reverse-none').style.display = revSets.length ? 'none' : '';
 
   if (fwdSets.length) {
+    const fwdYMax = state.family === 'mosfet' ? null : 100;
     forwardChart = new Chart(document.getElementById('forward-chart'), {
       type: 'scatter',
       data: { datasets: fwdSets },
-      options: chartOptions('Voltage (V)', '|J| (A/cm²)', state.logY, 100, state.logY ? 1e-10 : null)
+      options: chartOptions('Voltage (V)', '|J| (A/cm²)', state.logY, fwdYMax, state.logY ? 1e-10 : null)
     });
   }
 
@@ -1343,6 +1362,7 @@ function renderDPTCircuit() {
 }
 
 function renderAll() {
+  buildMaterialRow();
   buildVoltageRow();
   renderPlots();
   renderDeckTable();
