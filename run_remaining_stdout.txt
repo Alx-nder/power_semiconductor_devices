@@ -1,0 +1,22 @@
+nohup: ignoring input
+
+============= PHASE 1: STEADY-STATE (missing only) =============
+[SKIP] si_pin_10v/steady.in (already done)
+[SKIP] si_pin_100v/steady.in (already done)
+[SKIP] si_pin_1200v/steady.in (already done)
+[SKIP] si_schottky_10v/steady.in (already done)
+[SKIP] si_schottky_100v/steady.in (already done)
+[SKIP] si_schottky_1200v/steady.in (already done)
+[SKIP] si_mosfet_10v/steady.in (already done)
+[SKIP] si_mosfet_100v/steady.in (already done)
+[SKIP] si_mosfet_1200v/steady.in (already done)
+[SKIP] sic_pin_10v/steady.in (already done)
+[SKIP] sic_pin_100v/steady.in (already done)
+[SKIP] sic_pin_1200v/steady.in (already done)
+[SKIP] sic_schottky_10v/steady.in (already done)
+[SKIP] sic_schottky_100v/steady.in (already done)
+[SKIP] sic_schottky_1200v/steady.in (already done)
+[SKIP] sic_mosfet_10v/steady.in (already done)
+[SKIP] sic_mosfet_100v/steady.in (already done)
+
+=== [2026-04-20 02:59:45] RUN sic_mosfet_1200v/steady.in ===
