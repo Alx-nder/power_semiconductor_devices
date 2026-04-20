@@ -396,46 +396,37 @@ button.faded-clickable.active {
   gap: 0.75rem;
   margin-top: 0.75rem;
 }
+.proc-charts .chart-box {
+  position: relative;
+  height: 300px;
+}
+.proc-charts .chart-box canvas {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100% !important;
+  height: 100% !important;
+}
 @media (max-width: 980px) {
   .proc-charts { grid-template-columns: 1fr; }
 }
-.proc-workflow {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0.75rem;
+.proc-explain {
   margin-top: 0.75rem;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--paper);
+  padding: 0.7rem 1rem;
 }
-@media (max-width: 980px) {
-  .proc-workflow { grid-template-columns: 1fr; }
-}
-.proc-workflow .panel { padding: 0.8rem 1rem; }
-.proc-workflow h2 { margin: 0 0 0.5rem; }
-.proc-workflow p, .proc-workflow li {
+.proc-explain h2 { margin: 0 0 0.4rem; }
+.proc-explain p {
   font-size: 0.84rem;
   line-height: 1.55;
   color: var(--ink);
-}
-.proc-workflow ul {
-  padding-left: 1.2rem;
-  margin: 0.3rem 0 0.5rem;
-}
-.proc-workflow li { margin-bottom: 0.2rem; }
-.proc-workflow .step-label {
-  display: inline-block;
-  background: var(--accent);
-  color: #fff;
-  font-size: 0.7rem;
-  font-weight: 700;
-  padding: 0.1rem 0.45rem;
-  border-radius: 999px;
-  margin-right: 0.3rem;
-  vertical-align: middle;
-  letter-spacing: 0.04em;
+  margin: 0.25rem 0;
 }
 .flow-svg {
   display: block;
-  width: 100%;
-  margin: 0.3rem auto;
+  max-width: 460px;
+  margin: 0.5rem auto 0.2rem;
 }
 </style>
 </head>
@@ -591,118 +582,47 @@ button.faded-clickable.active {
         <span class="calc-result-item">R<sub>p</sub> = <span class="val" id="proc-rp">—</span></span>
         <span class="calc-result-item">ΔR<sub>p</sub> = <span class="val" id="proc-drp">—</span></span>
         <span class="calc-result-item">C<sub>peak</sub> = <span class="val" id="proc-cpeak">—</span></span>
-        <span class="calc-result-item">C<sub>sol</sub> = <span class="val" id="proc-csol">—</span></span>
+        <span class="calc-result-item">C<sub>ss</sub> = <span class="val" id="proc-csol">—</span></span>
         <span class="calc-result-item">C<sub>act</sub> = <span class="val" id="proc-cact">—</span></span>
         <span class="calc-result-item">R<sub>act</sub> = <span class="val" id="proc-ract">—</span></span>
       </div>
-      <div class="calc-eqs">C<sub>act</sub> = C<sub>peak</sub>/(1 + C<sub>peak</sub>/C<sub>sol</sub>) · (1 − e<sup>−κt</sup>) &ensp;|&ensp; C<sub>sol</sub>, κ: Arrhenius &ensp;— Simonka, TU Wien 2018</div>
-    </div>
-
-    <!-- Workflow explanation -->
-    <div class="proc-workflow">
-      <div class="panel">
-        <h2>How It Works</h2>
-        <p>In SiC device fabrication, you <strong>implant</strong> dopant atoms (Al) into the crystal, then <strong>anneal</strong> (heat) to activate them electrically. This calculator predicts how much of the implanted Al will become electrically active.</p>
-        <p style="margin-top:0.4rem"><strong>Two separate things happen during annealing:</strong></p>
-        <ul>
-          <li><strong>Diffusion</strong> — atoms spread out from where they landed. The profile gets wider and flatter, but the total number of atoms stays the same.</li>
-          <li><strong>Activation</strong> — atoms move onto lattice sites and become electrical acceptors. This is what the calculator predicts.</li>
-        </ul>
-        <p>The implant itself is essentially instantaneous — an ion beam shoots Al atoms into the crystal at high velocity. Each atom comes to rest in ~picoseconds. There is no "implant duration" parameter.</p>
-      </div>
-      <div class="panel">
-        <h2>Input → Output Flow</h2>
-        <svg class="flow-svg" viewBox="0 0 400 310" xmlns="http://www.w3.org/2000/svg">
-          <!-- Input boxes -->
-          <rect x="5" y="5" width="110" height="52" rx="6" fill="#f0f0f0" stroke="#bbb"/>
-          <text x="60" y="24" text-anchor="middle" font-size="9" font-family="Space Grotesk, sans-serif" font-weight="600" fill="#333">Energy (keV)</text>
-          <text x="60" y="38" text-anchor="middle" font-size="9" font-family="Space Grotesk, sans-serif" font-weight="600" fill="#333">Dose (cm⁻²)</text>
-          <text x="60" y="50" text-anchor="middle" font-size="7" font-family="IBM Plex Mono, monospace" fill="#888">implant params</text>
-          <rect x="145" y="5" width="110" height="52" rx="6" fill="#f0f0f0" stroke="#bbb"/>
-          <text x="200" y="24" text-anchor="middle" font-size="9" font-family="Space Grotesk, sans-serif" font-weight="600" fill="#333">Temperature (°C)</text>
-          <text x="200" y="38" text-anchor="middle" font-size="9" font-family="Space Grotesk, sans-serif" font-weight="600" fill="#333">Time (min)</text>
-          <text x="200" y="50" text-anchor="middle" font-size="7" font-family="IBM Plex Mono, monospace" fill="#888">anneal params</text>
-          <!-- Arrows down -->
-          <line x1="60" y1="57" x2="60" y2="80" stroke="#333" stroke-width="1.5" marker-end="url(#arrowhead)"/>
-          <line x1="200" y1="57" x2="200" y2="80" stroke="#333" stroke-width="1.5" marker-end="url(#arrowhead)"/>
-          <!-- Step 1 -->
-          <rect x="5" y="83" width="110" height="48" rx="6" fill="#e8f5e9" stroke="#1c7c54"/>
-          <text x="60" y="100" text-anchor="middle" font-size="8" font-family="Space Grotesk, sans-serif" font-weight="700" fill="#1c7c54">STEP 1</text>
-          <text x="60" y="113" text-anchor="middle" font-size="7.5" font-family="IBM Plex Mono, monospace" fill="#333">ΔRp = 2.62·E⁰·⁶³</text>
-          <text x="60" y="124" text-anchor="middle" font-size="7.5" font-family="IBM Plex Mono, monospace" fill="#333">C_peak = f·Dose/ΔRp</text>
-          <!-- Step 2 -->
-          <rect x="145" y="83" width="110" height="48" rx="6" fill="#e8f5e9" stroke="#1c7c54"/>
-          <text x="200" y="100" text-anchor="middle" font-size="8" font-family="Space Grotesk, sans-serif" font-weight="700" fill="#1c7c54">STEP 2</text>
-          <text x="200" y="113" text-anchor="middle" font-size="7.5" font-family="IBM Plex Mono, monospace" fill="#333">C_sol = Z·e^(-Ea/kT)</text>
-          <text x="200" y="124" text-anchor="middle" font-size="7.5" font-family="IBM Plex Mono, monospace" fill="#333">κ = Z·e^(-Ea/kT)</text>
-          <!-- Arrows to merge -->
-          <line x1="60" y1="131" x2="60" y2="168" stroke="#333" stroke-width="1.5"/>
-          <line x1="200" y1="131" x2="200" y2="168" stroke="#333" stroke-width="1.5"/>
-          <line x1="60" y1="168" x2="200" y2="168" stroke="#333" stroke-width="1.5"/>
-          <line x1="130" y1="168" x2="130" y2="185" stroke="#333" stroke-width="1.5" marker-end="url(#arrowhead)"/>
-          <!-- Step 3 -->
-          <rect x="30" y="188" width="200" height="48" rx="6" fill="#1c7c54" stroke="#1c7c54"/>
-          <text x="130" y="207" text-anchor="middle" font-size="9" font-family="Space Grotesk, sans-serif" font-weight="700" fill="#fff">STEP 3 — Activation</text>
-          <text x="130" y="222" text-anchor="middle" font-size="7.5" font-family="IBM Plex Mono, monospace" fill="rgba(255,255,255,0.9)">C_act = C_peak/(1+C_peak/C_sol)·(1-e^-κt)</text>
-          <!-- Arrow to output -->
-          <line x1="130" y1="236" x2="130" y2="258" stroke="#333" stroke-width="1.5" marker-end="url(#arrowhead)"/>
-          <!-- Output -->
-          <rect x="50" y="261" width="160" height="38" rx="6" fill="#fff" stroke="#1c7c54" stroke-width="2"/>
-          <text x="130" y="278" text-anchor="middle" font-size="9" font-family="Space Grotesk, sans-serif" font-weight="700" fill="#1c7c54">R_act = C_act / C_peak</text>
-          <text x="130" y="292" text-anchor="middle" font-size="7.5" font-family="IBM Plex Mono, monospace" fill="#888">% of atoms electrically active</text>
-          <!-- Legend box -->
-          <rect x="280" y="83" width="112" height="135" rx="6" fill="#fafafa" stroke="#ddd"/>
-          <text x="336" y="100" text-anchor="middle" font-size="8" font-family="Space Grotesk, sans-serif" font-weight="700" fill="#333">Key Terms</text>
-          <text x="290" y="116" font-size="7" font-family="IBM Plex Mono, monospace" fill="#555">C_peak</text>
-          <text x="330" y="116" font-size="7" font-family="Space Grotesk, sans-serif" fill="#888">peak conc.</text>
-          <text x="290" y="131" font-size="7" font-family="IBM Plex Mono, monospace" fill="#555">C_sol</text>
-          <text x="325" y="131" font-size="7" font-family="Space Grotesk, sans-serif" fill="#888">solubility limit</text>
-          <text x="290" y="146" font-size="7" font-family="IBM Plex Mono, monospace" fill="#555">κ</text>
-          <text x="305" y="146" font-size="7" font-family="Space Grotesk, sans-serif" fill="#888">activation rate</text>
-          <text x="290" y="161" font-size="7" font-family="IBM Plex Mono, monospace" fill="#555">R_act</text>
-          <text x="325" y="161" font-size="7" font-family="Space Grotesk, sans-serif" fill="#888">activation ratio</text>
-          <text x="290" y="176" font-size="7" font-family="IBM Plex Mono, monospace" fill="#555">Rp, ΔRp</text>
-          <text x="340" y="176" font-size="7" font-family="Space Grotesk, sans-serif" fill="#888">range, straggle</text>
-          <text x="290" y="196" font-size="6.5" font-family="Space Grotesk, sans-serif" fill="#aaa">All from Simonka</text>
-          <text x="290" y="208" font-size="6.5" font-family="Space Grotesk, sans-serif" fill="#aaa">TU Wien 2018, Ch. 3.4</text>
-          <!-- Arrowhead marker -->
-          <defs>
-            <marker id="arrowhead" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
-              <polygon points="0 0, 8 3, 0 6" fill="#333"/>
-            </marker>
-          </defs>
-        </svg>
-      </div>
-    </div>
-
-    <!-- What the charts show -->
-    <div class="proc-workflow" style="margin-top:0.5rem">
-      <div class="panel" style="grid-column: 1 / -1; padding: 0.6rem 1rem">
-        <h2 style="font-size:0.85rem">Reading the Charts Below</h2>
-        <p style="margin:0.2rem 0">
-          <span class="step-label">LEFT</span> Fixes your dose and time, sweeps temperature from 1400–1900 °C. Shows how much hotter you need to go for better activation.
-          <span class="step-label" style="margin-left:0.8rem">RIGHT</span> Fixes your dose and temperature, sweeps time from 0 to 120+ min. Shows whether more annealing time actually helps.
-          The <strong style="color:#d62728">red dot</strong> on each chart marks your current calculator settings.
-        </p>
-      </div>
+      <div class="calc-eqs">C<sub>act</sub> = C<sub>tot</sub>/(1 + C<sub>tot</sub>/C<sub>ss</sub>) · (1 − e<sup>−κt</sup>) &ensp;|&ensp; Analytical solution of Simonka Eq. 3.31, evaluated at depth R<sub>p</sub> where C<sub>tot</sub> = C<sub>peak</sub></div>
     </div>
 
     <div class="proc-charts">
       <div class="panel">
         <h2>Activation vs Temperature</h2>
         <div class="chart-wrap compact-chart">
-          <canvas id="proc-temp-chart" height="280"></canvas>
+          <div class="chart-box"><canvas id="proc-temp-chart"></canvas></div>
         </div>
       </div>
       <div class="panel">
         <h2>Activation vs Anneal Time</h2>
         <div class="chart-wrap compact-chart">
-          <canvas id="proc-time-chart" height="280"></canvas>
+          <div class="chart-box"><canvas id="proc-time-chart"></canvas></div>
         </div>
       </div>
     </div>
+
+    <div class="proc-explain">
+      <h2>Derivation — from Simonka Eq. 3.31 to the formula above</h2>
+      <div style="font-size:0.82rem;line-height:1.6;color:var(--ink);font-family:'IBM Plex Mono',monospace">
+        <p style="margin:0.2rem 0"><strong>1.</strong> Simonka's ODE (Eq. 3.31, §3.4.1):</p>
+        <p style="margin:0 0 0.3rem 1rem">dC<sub>act</sub>/dt = −κ · (C<sub>act</sub> − C<sub>tot</sub> / (1 + C<sub>tot</sub>/C<sub>ss</sub>))</p>
+        <p style="margin:0.2rem 0"><strong>2.</strong> Let C<sub>∞</sub> = C<sub>tot</sub> / (1 + C<sub>tot</sub>/C<sub>ss</sub>)  — the steady-state target. The ODE becomes:</p>
+        <p style="margin:0 0 0.3rem 1rem">dC<sub>act</sub>/dt = −κ · (C<sub>act</sub> − C<sub>∞</sub>)  →  standard 1st-order linear ODE</p>
+        <p style="margin:0.2rem 0"><strong>3.</strong> With initial condition C<sub>act</sub>(0) = 0, the analytical solution is:</p>
+        <p style="margin:0 0 0.3rem 1rem; color:#1c7c54; font-weight:700">C<sub>act</sub>(t) = C<sub>∞</sub> · (1 − e<sup>−κt</sup>) = C<sub>tot</sub> / (1 + C<sub>tot</sub>/C<sub>ss</sub>) · (1 − e<sup>−κt</sup>)</p>
+        <p style="margin:0.2rem 0"><strong>4.</strong> C<sub>ss</sub>(T) and κ(T) are Arrhenius: Z·exp(−E<sub>a</sub>/k<sub>B</sub>T). Parameters from Table 3.5.</p>
+      </div>
+      <div style="font-size:0.78rem;line-height:1.55;color:var(--muted);margin-top:0.5rem;font-family:'Space Grotesk',sans-serif">
+        <p style="margin:0.15rem 0"><strong>C<sub>ss</sub></strong> = solid solubility — the max dopant concentration the lattice can electrically activate at temperature T.</p>
+        <p style="margin:0.15rem 0"><strong>C<sub>tot</sub> vs C<sub>peak</sub></strong> — The model uses C<sub>tot</sub>(x), the local concentration at depth x. Our calculator evaluates at x = R<sub>p</sub> where C<sub>tot</sub> = C<sub>peak</sub> (the worst-case point). At shallower/deeper depths where C<sub>tot</sub> &lt; C<sub>peak</sub>, activation ratio is higher.</p>
+        <p style="margin:0.15rem 0"><strong style="color:#d62728">Red dot</strong> = your current settings. Left chart sweeps T. Right chart sweeps t.</p>
+      </div>
+    </div>
     <footer class="page-footer">
-      <span><strong>Model:</strong> Transient activation with Arrhenius C<sub>sol</sub>(T) and κ(T). Calibrated from Silvaco VP simulations reproducing Simonka's dissertation.</span>
+      <span><strong>Model:</strong> Analytical solution of Simonka Eq. 3.31 (transient activation ODE). C<sub>ss</sub>(T), κ(T): Arrhenius, Table 3.5. Calibrated against Silvaco VP simulations.</span>
       <span><strong>Implant:</strong> BCA Monte Carlo, Al→4H-SiC Si-face (0001) 4° off-axis. R<sub>p</sub> = 1.85·E<sup>0.91</sup>, ΔR<sub>p</sub> = 2.62·E<sup>0.63</sup> (nm, E in keV).</span>
       <span><strong>Valid range:</strong> E = 30–400 keV, T = 1500–1800 °C, t = 5–120 min.</span>
     </footer>
@@ -1646,7 +1566,7 @@ const AL_kB = 8.617e-5; // eV/K
 const AL_A_Rp = 1.8538, AL_B_Rp = 0.9129;   // Rp(nm) = A × E^B
 const AL_A_dRp = 2.6184, AL_B_dRp = 0.6254; // ΔRp(nm) = A × E^B
 const AL_f_a = 1.2393, AL_f_b = 0.5327, AL_f_c = 0.03340; // channeling
-const AL_Z_sol = 1.18e26, AL_Ea_sol = 2.577; // C_sol Arrhenius
+const AL_Z_sol = 1.18e26, AL_Ea_sol = 2.577; // C_ss Arrhenius (solid solubility)
 const AL_Z_kap = 5.70e6, AL_Ea_kap = 2.717;  // κ Arrhenius
 
 function alRp(E) { return AL_A_Rp * Math.pow(E, AL_B_Rp); }
@@ -1655,17 +1575,17 @@ function alF(E) { return AL_f_a - AL_f_b * Math.exp(-AL_f_c * E); }
 function alCpeak(E, dose) {
   return alF(E) * dose / (Math.sqrt(2 * Math.PI) * alDRp(E) * 1e-7);
 }
-function alCsol(T_C) {
+function alCss(T_C) {
   return AL_Z_sol * Math.exp(-AL_Ea_sol / (AL_kB * (T_C + 273.15)));
 }
 function alKappa(T_C) {
   return AL_Z_kap * Math.exp(-AL_Ea_kap / (AL_kB * (T_C + 273.15)));
 }
 function alCact(C_tot, T_C, t_min) {
-  const C_sol = alCsol(T_C);
+  const C_ss = alCss(T_C);
   const kappa = alKappa(T_C);
-  const C_ss = C_tot / (1 + C_tot / C_sol);
-  return Math.min(Math.max(C_ss * (1 - Math.exp(-kappa * t_min)), 0), C_tot);
+  const C_inf = C_tot / (1 + C_tot / C_ss);  // steady-state target
+  return Math.min(Math.max(C_inf * (1 - Math.exp(-kappa * t_min)), 0), C_tot);
 }
 
 function calcProcess() {
@@ -1678,14 +1598,14 @@ function calcProcess() {
   const Rp = alRp(E);
   const dRp = alDRp(E);
   const C_peak = alCpeak(E, dose);
-  const C_sol = alCsol(T);
+  const C_ss = alCss(T);
   const C_act = alCact(C_peak, T, t);
   const R_act = C_peak > 0 ? C_act / C_peak : 0;
 
   document.getElementById('proc-rp').textContent = Rp.toFixed(1) + ' nm';
   document.getElementById('proc-drp').textContent = dRp.toFixed(1) + ' nm';
   document.getElementById('proc-cpeak').textContent = C_peak.toExponential(2) + ' cm⁻³';
-  document.getElementById('proc-csol').textContent = C_sol.toExponential(2) + ' cm⁻³';
+  document.getElementById('proc-csol').textContent = C_ss.toExponential(2) + ' cm⁻³';
   document.getElementById('proc-cact').textContent = C_act.toExponential(2) + ' cm⁻³';
   document.getElementById('proc-ract').textContent = (R_act * 100).toFixed(1) + '%';
 
@@ -1705,6 +1625,16 @@ function renderProcCharts(E, dose, T, t, C_peak) {
     temps.push(tc);
     ractsT.push(alCact(C_peak, tc, t) / C_peak * 100);
   }
+  var procChartOpts = function(xLabel, xMin, xMax) {
+    return {
+      responsive: true, maintainAspectRatio: false, animation: false,
+      plugins: { legend: { position: 'top' } },
+      scales: {
+        x: { type: 'linear', title: { display: true, text: xLabel }, min: xMin, max: xMax, grid: { color: 'rgba(0,0,0,0.08)' } },
+        y: { type: 'linear', title: { display: true, text: 'Activation Ratio (%)' }, min: 0, max: 105, grid: { color: 'rgba(0,0,0,0.08)' } }
+      }
+    };
+  };
   procTempChart = new Chart(document.getElementById('proc-temp-chart'), {
     type: 'scatter',
     data: {
@@ -1724,21 +1654,12 @@ function renderProcCharts(E, dose, T, t, C_peak) {
         }
       ]
     },
-    options: {
-      responsive: true, animation: false,
-      plugins: { legend: { position: 'top' } },
-      scales: {
-        x: { type: 'linear', title: { display: true, text: 'Temperature (°C)' }, min: 1400, max: 1900, grid: { color: 'rgba(0,0,0,0.08)' } },
-        y: { type: 'linear', title: { display: true, text: 'Activation Ratio (%)' }, min: 0, max: 105, grid: { color: 'rgba(0,0,0,0.08)' } }
-      }
-    }
+    options: procChartOpts('Temperature (°C)', 1400, 1900)
   });
 
-  // Chart 2: R_act vs Time
-  const tMax = Math.max(120, Math.ceil(t * 1.3 / 10) * 10);
-  const tStep = Math.max(0.5, tMax / 200);
+  // Chart 2: R_act vs Time (fixed 120 min axis)
   const times = [], ractsTime = [];
-  for (let ti = 0; ti <= tMax; ti += tStep) {
+  for (let ti = 0; ti <= 120; ti += 0.6) {
     times.push(ti);
     ractsTime.push(alCact(C_peak, T, ti) / C_peak * 100);
   }
@@ -1761,14 +1682,7 @@ function renderProcCharts(E, dose, T, t, C_peak) {
         }
       ]
     },
-    options: {
-      responsive: true, animation: false,
-      plugins: { legend: { position: 'top' } },
-      scales: {
-        x: { type: 'linear', title: { display: true, text: 'Anneal Time (min)' }, min: 0, max: tMax + 5, grid: { color: 'rgba(0,0,0,0.08)' } },
-        y: { type: 'linear', title: { display: true, text: 'Activation Ratio (%)' }, min: 0, max: 105, grid: { color: 'rgba(0,0,0,0.08)' } }
-      }
-    }
+    options: procChartOpts('Anneal Time (min)', 0, 125)
   });
 }
 
