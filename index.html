@@ -399,6 +399,44 @@ button.faded-clickable.active {
 @media (max-width: 980px) {
   .proc-charts { grid-template-columns: 1fr; }
 }
+.proc-workflow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+  margin-top: 0.75rem;
+}
+@media (max-width: 980px) {
+  .proc-workflow { grid-template-columns: 1fr; }
+}
+.proc-workflow .panel { padding: 0.8rem 1rem; }
+.proc-workflow h2 { margin: 0 0 0.5rem; }
+.proc-workflow p, .proc-workflow li {
+  font-size: 0.84rem;
+  line-height: 1.55;
+  color: var(--ink);
+}
+.proc-workflow ul {
+  padding-left: 1.2rem;
+  margin: 0.3rem 0 0.5rem;
+}
+.proc-workflow li { margin-bottom: 0.2rem; }
+.proc-workflow .step-label {
+  display: inline-block;
+  background: var(--accent);
+  color: #fff;
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 0.1rem 0.45rem;
+  border-radius: 999px;
+  margin-right: 0.3rem;
+  vertical-align: middle;
+  letter-spacing: 0.04em;
+}
+.flow-svg {
+  display: block;
+  width: 100%;
+  margin: 0.3rem auto;
+}
 </style>
 </head>
 <body>
@@ -559,6 +597,96 @@ button.faded-clickable.active {
       </div>
       <div class="calc-eqs">C<sub>act</sub> = C<sub>peak</sub>/(1 + C<sub>peak</sub>/C<sub>sol</sub>) · (1 − e<sup>−κt</sup>) &ensp;|&ensp; C<sub>sol</sub>, κ: Arrhenius &ensp;— Simonka, TU Wien 2018</div>
     </div>
+
+    <!-- Workflow explanation -->
+    <div class="proc-workflow">
+      <div class="panel">
+        <h2>How It Works</h2>
+        <p>In SiC device fabrication, you <strong>implant</strong> dopant atoms (Al) into the crystal, then <strong>anneal</strong> (heat) to activate them electrically. This calculator predicts how much of the implanted Al will become electrically active.</p>
+        <p style="margin-top:0.4rem"><strong>Two separate things happen during annealing:</strong></p>
+        <ul>
+          <li><strong>Diffusion</strong> — atoms spread out from where they landed. The profile gets wider and flatter, but the total number of atoms stays the same.</li>
+          <li><strong>Activation</strong> — atoms move onto lattice sites and become electrical acceptors. This is what the calculator predicts.</li>
+        </ul>
+        <p>The implant itself is essentially instantaneous — an ion beam shoots Al atoms into the crystal at high velocity. Each atom comes to rest in ~picoseconds. There is no "implant duration" parameter.</p>
+      </div>
+      <div class="panel">
+        <h2>Input → Output Flow</h2>
+        <svg class="flow-svg" viewBox="0 0 400 310" xmlns="http://www.w3.org/2000/svg">
+          <!-- Input boxes -->
+          <rect x="5" y="5" width="110" height="52" rx="6" fill="#f0f0f0" stroke="#bbb"/>
+          <text x="60" y="24" text-anchor="middle" font-size="9" font-family="Space Grotesk, sans-serif" font-weight="600" fill="#333">Energy (keV)</text>
+          <text x="60" y="38" text-anchor="middle" font-size="9" font-family="Space Grotesk, sans-serif" font-weight="600" fill="#333">Dose (cm⁻²)</text>
+          <text x="60" y="50" text-anchor="middle" font-size="7" font-family="IBM Plex Mono, monospace" fill="#888">implant params</text>
+          <rect x="145" y="5" width="110" height="52" rx="6" fill="#f0f0f0" stroke="#bbb"/>
+          <text x="200" y="24" text-anchor="middle" font-size="9" font-family="Space Grotesk, sans-serif" font-weight="600" fill="#333">Temperature (°C)</text>
+          <text x="200" y="38" text-anchor="middle" font-size="9" font-family="Space Grotesk, sans-serif" font-weight="600" fill="#333">Time (min)</text>
+          <text x="200" y="50" text-anchor="middle" font-size="7" font-family="IBM Plex Mono, monospace" fill="#888">anneal params</text>
+          <!-- Arrows down -->
+          <line x1="60" y1="57" x2="60" y2="80" stroke="#333" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+          <line x1="200" y1="57" x2="200" y2="80" stroke="#333" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+          <!-- Step 1 -->
+          <rect x="5" y="83" width="110" height="48" rx="6" fill="#e8f5e9" stroke="#1c7c54"/>
+          <text x="60" y="100" text-anchor="middle" font-size="8" font-family="Space Grotesk, sans-serif" font-weight="700" fill="#1c7c54">STEP 1</text>
+          <text x="60" y="113" text-anchor="middle" font-size="7.5" font-family="IBM Plex Mono, monospace" fill="#333">ΔRp = 2.62·E⁰·⁶³</text>
+          <text x="60" y="124" text-anchor="middle" font-size="7.5" font-family="IBM Plex Mono, monospace" fill="#333">C_peak = f·Dose/ΔRp</text>
+          <!-- Step 2 -->
+          <rect x="145" y="83" width="110" height="48" rx="6" fill="#e8f5e9" stroke="#1c7c54"/>
+          <text x="200" y="100" text-anchor="middle" font-size="8" font-family="Space Grotesk, sans-serif" font-weight="700" fill="#1c7c54">STEP 2</text>
+          <text x="200" y="113" text-anchor="middle" font-size="7.5" font-family="IBM Plex Mono, monospace" fill="#333">C_sol = Z·e^(-Ea/kT)</text>
+          <text x="200" y="124" text-anchor="middle" font-size="7.5" font-family="IBM Plex Mono, monospace" fill="#333">κ = Z·e^(-Ea/kT)</text>
+          <!-- Arrows to merge -->
+          <line x1="60" y1="131" x2="60" y2="168" stroke="#333" stroke-width="1.5"/>
+          <line x1="200" y1="131" x2="200" y2="168" stroke="#333" stroke-width="1.5"/>
+          <line x1="60" y1="168" x2="200" y2="168" stroke="#333" stroke-width="1.5"/>
+          <line x1="130" y1="168" x2="130" y2="185" stroke="#333" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+          <!-- Step 3 -->
+          <rect x="30" y="188" width="200" height="48" rx="6" fill="#1c7c54" stroke="#1c7c54"/>
+          <text x="130" y="207" text-anchor="middle" font-size="9" font-family="Space Grotesk, sans-serif" font-weight="700" fill="#fff">STEP 3 — Activation</text>
+          <text x="130" y="222" text-anchor="middle" font-size="7.5" font-family="IBM Plex Mono, monospace" fill="rgba(255,255,255,0.9)">C_act = C_peak/(1+C_peak/C_sol)·(1-e^-κt)</text>
+          <!-- Arrow to output -->
+          <line x1="130" y1="236" x2="130" y2="258" stroke="#333" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+          <!-- Output -->
+          <rect x="50" y="261" width="160" height="38" rx="6" fill="#fff" stroke="#1c7c54" stroke-width="2"/>
+          <text x="130" y="278" text-anchor="middle" font-size="9" font-family="Space Grotesk, sans-serif" font-weight="700" fill="#1c7c54">R_act = C_act / C_peak</text>
+          <text x="130" y="292" text-anchor="middle" font-size="7.5" font-family="IBM Plex Mono, monospace" fill="#888">% of atoms electrically active</text>
+          <!-- Legend box -->
+          <rect x="280" y="83" width="112" height="135" rx="6" fill="#fafafa" stroke="#ddd"/>
+          <text x="336" y="100" text-anchor="middle" font-size="8" font-family="Space Grotesk, sans-serif" font-weight="700" fill="#333">Key Terms</text>
+          <text x="290" y="116" font-size="7" font-family="IBM Plex Mono, monospace" fill="#555">C_peak</text>
+          <text x="330" y="116" font-size="7" font-family="Space Grotesk, sans-serif" fill="#888">peak conc.</text>
+          <text x="290" y="131" font-size="7" font-family="IBM Plex Mono, monospace" fill="#555">C_sol</text>
+          <text x="325" y="131" font-size="7" font-family="Space Grotesk, sans-serif" fill="#888">solubility limit</text>
+          <text x="290" y="146" font-size="7" font-family="IBM Plex Mono, monospace" fill="#555">κ</text>
+          <text x="305" y="146" font-size="7" font-family="Space Grotesk, sans-serif" fill="#888">activation rate</text>
+          <text x="290" y="161" font-size="7" font-family="IBM Plex Mono, monospace" fill="#555">R_act</text>
+          <text x="325" y="161" font-size="7" font-family="Space Grotesk, sans-serif" fill="#888">activation ratio</text>
+          <text x="290" y="176" font-size="7" font-family="IBM Plex Mono, monospace" fill="#555">Rp, ΔRp</text>
+          <text x="340" y="176" font-size="7" font-family="Space Grotesk, sans-serif" fill="#888">range, straggle</text>
+          <text x="290" y="196" font-size="6.5" font-family="Space Grotesk, sans-serif" fill="#aaa">All from Simonka</text>
+          <text x="290" y="208" font-size="6.5" font-family="Space Grotesk, sans-serif" fill="#aaa">TU Wien 2018, Ch. 3.4</text>
+          <!-- Arrowhead marker -->
+          <defs>
+            <marker id="arrowhead" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+              <polygon points="0 0, 8 3, 0 6" fill="#333"/>
+            </marker>
+          </defs>
+        </svg>
+      </div>
+    </div>
+
+    <!-- What the charts show -->
+    <div class="proc-workflow" style="margin-top:0.5rem">
+      <div class="panel" style="grid-column: 1 / -1; padding: 0.6rem 1rem">
+        <h2 style="font-size:0.85rem">Reading the Charts Below</h2>
+        <p style="margin:0.2rem 0">
+          <span class="step-label">LEFT</span> Fixes your dose and time, sweeps temperature from 1400–1900 °C. Shows how much hotter you need to go for better activation.
+          <span class="step-label" style="margin-left:0.8rem">RIGHT</span> Fixes your dose and temperature, sweeps time from 0 to 120+ min. Shows whether more annealing time actually helps.
+          The <strong style="color:#d62728">red dot</strong> on each chart marks your current calculator settings.
+        </p>
+      </div>
+    </div>
+
     <div class="proc-charts">
       <div class="panel">
         <h2>Activation vs Temperature</h2>
