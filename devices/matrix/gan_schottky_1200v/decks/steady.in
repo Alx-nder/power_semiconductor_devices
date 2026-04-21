@@ -24,10 +24,11 @@ ELECTRODE name=cathode bottom
 DOPING uniform n.type conc=2.7649e+16
 DOPING uniform n.type conc=1e20 y.min=7.828 y.max=9.393
 
-CONTACT name=anode WORKFUNCTION=4.94 SURF.REC BARRIER
+CONTACT name=anode WORKFUNCTION=4.94 SURF.REC BARRIER E.TUNNEL PIPINYS ME.TUNNEL=0.20
 CONTACT name=cathode NEUTRAL
 
 MATERIAL material=GaN EDB=0.025 EAB=0.17
+MATERIAL material=GaN PIP.NT=1e7 PIP.ET=0.8
 MATERIAL material=GaN TAUN0=1e-9 TAUP0=1e-9
 MODELS MATERIAL=GaN FERMIDIRAC FLDMOB SRH INCOMPLETE TEMP=300 PRINT
 MOBILITY MATERIAL=GaN FMCT.N GANSAT.N
@@ -38,19 +39,18 @@ METHOD NEWTON DIRECT.256 TRAP MAXTRAPS=60 ITLIMIT=100 CLIMIT=1e-9 DVMAX=1e8 PR.T
 LOG outf=steady_forward.log
 SOLVE init
 SAVE outf=structure.str
-SOLVE vanode=0.100 vstep=0.100 vfinal=5.500 name=anode
+SOLVE vanode=0.100 vstep=0.100 vfinal=0.500 name=anode compliance=1e6 cname=anode
+SOLVE vstep=0.250 vfinal=5.500 name=anode compliance=1e6 cname=anode
 EXTRACT name="steady_forward" curve(v."anode", i."anode") outfile="steady_forward.csv"
 LOG OFF
 
 # Reverse IV
 SOLVE init
 LOG outf=steady_reverse.log
-SOLVE vanode=-2.0 vstep=-2.0 vfinal=-20.0 name=anode
-SOLVE vstep=-5.0 vfinal=-100.0 name=anode
-SOLVE vstep=-10.0 vfinal=-500.0 name=anode
-SOLVE vstep=-5.0 vfinal=-1000.0 name=anode
-SOLVE vstep=-5.0 vfinal=-1400.0 name=anode compliance=1e-5 cname=anode
-SOLVE vstep=-2.0 vfinal=-1550.0 name=anode compliance=1e-5 cname=anode
+SOLVE vanode=-5.0 vstep=-5.0 vfinal=-50.0 name=anode
+SOLVE vstep=-25.0 vfinal=-200.0 name=anode
+SOLVE vstep=-50.0 vfinal=-800.0 name=anode
+SOLVE vstep=-100.0 vfinal=-1000.0 name=anode compliance=1e-5 cname=anode
 EXTRACT name="steady_reverse" curve(v."anode", i."anode") outfile="steady_reverse.csv"
 LOG OFF
 

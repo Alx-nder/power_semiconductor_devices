@@ -859,9 +859,10 @@ function renderSteady(entry) {
     }
     if (d.reverse && d.reverse.voltage?.length) {
       const xNeg = [], yAbs = [];
+      const reverseNoiseFloor = state.logY ? 1e-18 : 0;
       for (let i = 0; i < d.reverse.voltage.length; i++) {
         const absI = Math.abs(d.reverse.current[i]);
-        if (absI >= 1e-25) {
+        if (absI >= reverseNoiseFloor) {
           xNeg.push(-Math.abs(d.reverse.voltage[i]));
           yAbs.push(absI);
         }
