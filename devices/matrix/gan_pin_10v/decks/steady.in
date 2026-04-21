@@ -33,23 +33,22 @@ MATERIAL material=GaN TAUN0=1e-9 TAUP0=1e-9
 MODELS MATERIAL=GaN FERMIDIRAC FLDMOB SRH INCOMPLETE TEMP=300 PRINT
 MOBILITY MATERIAL=GaN FMCT.N GANSAT.N
 IMPACT MATERIAL=GaN N.OGUZMAN P.OGUZMAN EDGE
-METHOD NEWTON DIRECT.256
+METHOD NEWTON DIRECT.256 TRAP MAXTRAPS=60 ITLIMIT=100 CLIMIT=1e-9 DVMAX=1e8 PR.TOLER=1e-40 CR.TOLER=1e-40 PX.TOLER=1e-5 CX.TOLER=1e-5
 
 # Forward IV
 LOG outf=steady_forward.log
 SOLVE init
 SAVE outf=structure.str
-SOLVE vanode=0.020 vstep=0.020 vfinal=4.000 name=anode
+SOLVE vanode=0.020 vstep=0.020 vfinal=4.000 name=anode compliance=1e6 cname=anode
 EXTRACT name="steady_forward" curve(v."anode", i."anode") outfile="steady_forward.csv"
 LOG OFF
 
 # Reverse IV
 SOLVE init
 LOG outf=steady_reverse.log
-SOLVE vanode=-0.1 vstep=-0.1 vfinal=-1.0 name=anode
-SOLVE vstep=-0.5 vfinal=-5.0 name=anode
-SOLVE vstep=-0.5 vfinal=-10.0 name=anode compliance=1e-5 cname=anode
-SOLVE vstep=-0.25 vfinal=-15.0 name=anode compliance=1e-5 cname=anode
+SOLVE vanode=-0.25 vstep=-0.25 vfinal=-2.0 name=anode
+SOLVE vstep=-0.5 vfinal=-8.0 name=anode
+SOLVE vstep=-0.25 vfinal=-13.5 name=anode compliance=1e-5 cname=anode
 EXTRACT name="steady_reverse" curve(v."anode", i."anode") outfile="steady_reverse.csv"
 LOG OFF
 

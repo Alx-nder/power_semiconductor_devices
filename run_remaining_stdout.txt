@@ -57,3 +57,14 @@ nohup: ignoring input
 [PASS] sic_pin_100v/switching.in
 
 === [2026-04-20 21:21:31] RUN sic_pin_1200v/switching.in ===
+[FAIL] sic_pin_1200v/switching.in rc=143
+[SKIP] sic_schottky_10v/switching.in (already done)
+[SKIP] sic_schottky_100v/switching.in (already done)
+
+=== [2026-04-21 07:37:08] RUN sic_schottky_1200v/switching.in ===
+[FAIL] sic_schottky_1200v/switching.in rc=143
+
+=== [2026-04-21 07:41:40] RUN sic_mosfet_10v/switching.in ===
+[PASS] sic_mosfet_10v/switching.in
+
+=== [2026-04-21 08:40:08] RUN sic_mosfet_100v/switching.in ===

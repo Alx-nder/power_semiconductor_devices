@@ -738,7 +738,7 @@ function buildMaterialRow() {
     if (modeKey === 'steady') {
       return (m.forward?.voltage?.length > 0) || (m.reverse?.voltage?.length > 0);
     }
-    return m.trace?.x?.length > 0;
+    return (m.trace?.time?.length > 0) || (m.trace?.x?.length > 0);
   }
   
   // Order: GaAs, Si, SiC, GaN, Diamond
@@ -802,15 +802,31 @@ function buildMaterialRow() {
   });
 }
 
-function seriesDataset(name, color, x, y) {
+function withAlpha(color, alpha) {
+  if (!color || color[0] !== '#' || (color.length !== 7 && color.length !== 4)) return color;
+  let r, g, b;
+  if (color.length === 7) {
+    r = parseInt(color.slice(1, 3), 16);
+    g = parseInt(color.slice(3, 5), 16);
+    b = parseInt(color.slice(5, 7), 16);
+  } else {
+    r = parseInt(color[1] + color[1], 16);
+    g = parseInt(color[2] + color[2], 16);
+    b = parseInt(color[3] + color[3], 16);
+  }
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+}
+
+function seriesDataset(name, color, x, y, options = {}) {
   const pts = x.map((vx, i) => ({ x: vx, y: y[i] }));
   return {
     label: name,
     data: pts,
-    borderColor: color,
-    backgroundColor: color,
-    borderWidth: 2,
-    pointRadius: 0,
+    borderColor: options.borderColor || color,
+    backgroundColor: options.backgroundColor || color,
+    borderWidth: options.borderWidth || 2,
+    borderDash: options.borderDash || [],
+    pointRadius: options.pointRadius ?? 0,
     showLine: true,
     tension: 0
   };
@@ -849,11 +865,29 @@ function chartOptions(xLabel, yLabel, logY = false, yMax = null, yMin = null) {
 function renderSteady(entry) {
   const fwdSets = [];
   const revSets = [];
+  const mosfetDashPatterns = [[], [8, 3], [4, 2], [2, 2], [10, 2, 2, 2]];
 
   Object.entries(entry.materials).forEach(([mat, d]) => {
     if (!state.materials[mat]) return;
     const color = d.color || '#666';
-    if (d.forward && d.forward.voltage?.length) {
+    if (state.family === 'mosfet' && Array.isArray(d.forward_family) && d.forward_family.length) {
+      d.forward_family.forEach((curve, idx) => {
+        if (!curve.voltage?.length) return;
+        const yAbs = curve.current.map(v => Math.abs(v));
+        const gateLabel = Number.isFinite(curve.gate_voltage) ? curve.gate_voltage : curve.label;
+        fwdSets.push(seriesDataset(
+          `${mat} | Vg=${gateLabel} V`,
+          color,
+          curve.voltage,
+          yAbs,
+          {
+            borderColor: withAlpha(color, Math.max(0.4, 1 - idx * 0.12)),
+            backgroundColor: withAlpha(color, Math.max(0.4, 1 - idx * 0.12)),
+            borderDash: mosfetDashPatterns[idx % mosfetDashPatterns.length]
+          }
+        ));
+      });
+    } else if (d.forward && d.forward.voltage?.length) {
       const yAbs = d.forward.current.map(v => Math.abs(v));
       fwdSets.push(seriesDataset(mat, color, d.forward.voltage, yAbs));
     }
@@ -876,18 +910,20 @@ function renderSteady(entry) {
 
   if (fwdSets.length) {
     const fwdYMax = state.family === 'mosfet' ? null : 100;
+    const steadyYLabel = state.family === 'mosfet' ? '|I_D| (A)' : '|J| (A/cm²)';
     forwardChart = new Chart(document.getElementById('forward-chart'), {
       type: 'scatter',
       data: { datasets: fwdSets },
-      options: chartOptions('Voltage (V)', '|J| (A/cm²)', state.logY, fwdYMax, state.logY ? 1e-10 : null)
+      options: chartOptions('Voltage (V)', steadyYLabel, state.logY, fwdYMax, state.logY ? 1e-10 : null)
     });
   }
 
   if (revSets.length) {
+    const reverseYLabel = state.family === 'mosfet' ? '|I_D| (A)' : '|J| (A/cm²)';
     reverseChart = new Chart(document.getElementById('reverse-chart'), {
       type: 'scatter',
       data: { datasets: revSets },
-      options: chartOptions('Voltage (V)', '|J| (A/cm²)', true, null, 1e-22)
+      options: chartOptions('Voltage (V)', reverseYLabel, true, null, 1e-22)
     });
   }
 }
@@ -897,8 +933,11 @@ function renderTransient(entry) {
 
   Object.entries(entry.materials).forEach(([mat, d]) => {
     if (!state.materials[mat]) return;
-    if (!d.trace || !d.trace.x?.length) return;
-    sets.push(seriesDataset(mat, d.color || '#666', d.trace.x, d.trace.y));
+    if (!d.trace) return;
+    const time = d.trace.time || d.trace.x;
+    const current = d.trace.current || d.trace.y;
+    if (!time?.length || !current?.length) return;
+    sets.push(seriesDataset(mat, d.color || '#666', time, current));
   });
 
   document.getElementById('transient-none').style.display = sets.length ? 'none' : '';
@@ -907,7 +946,7 @@ function renderTransient(entry) {
     transientChart = new Chart(document.getElementById('transient-chart'), {
       type: 'scatter',
       data: { datasets: sets },
-      options: chartOptions('Control Sweep (V)', 'J (A/cm²)', false)
+      options: chartOptions('Time (s)', 'Current (A)', false)
     });
   }
 }
@@ -1373,7 +1412,7 @@ function renderDPTCircuit() {
   }
 
   // Title
-  txt(260, 18, 'Double Pulse Test — Half-Bridge Topology', '11', 'middle', '600');
+  txt(260, 18, 'Reverse Recovery Test', '11', 'middle', '600');
 
   // ── V_DC supply (left) ──
   el('circle', {cx:80,cy:100,r:18,fill:'none',stroke:'#333','stroke-width':'1.5'});

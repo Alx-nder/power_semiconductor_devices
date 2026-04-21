@@ -48,11 +48,39 @@ INTERFACE REGION=1 charge=1e10 s.n=1e4 s.p=1e4 s.i
 # Forward (on-state) IV
 SOLVE init
 SOLVE vgate=0 vdrain=0
-SOLVE vstep=1 vfinal=5 name=gate
+LOG outf=steady_forward_vg2.log
+SOLVE vgate=2
+SOLVE vstep=0.1 vfinal=2.000 name=drain
+SOLVE vstep=0.5 vfinal=2.000 name=drain
+EXTRACT name="steady_forward_vg2" curve(v."drain", i."drain") outfile="steady_forward_vg2.csv"
+LOG OFF
+
+SOLVE init
+SOLVE vgate=0 vdrain=0
+LOG outf=steady_forward_vg3.log
+SOLVE vgate=3
+SOLVE vstep=0.1 vfinal=2.000 name=drain
+SOLVE vstep=0.5 vfinal=2.000 name=drain
+EXTRACT name="steady_forward_vg3" curve(v."drain", i."drain") outfile="steady_forward_vg3.csv"
+LOG OFF
+
+SOLVE init
+SOLVE vgate=0 vdrain=0
+LOG outf=steady_forward_vg4.log
+SOLVE vgate=4
+SOLVE vstep=0.1 vfinal=2.000 name=drain
+SOLVE vstep=0.5 vfinal=2.000 name=drain
+EXTRACT name="steady_forward_vg4" curve(v."drain", i."drain") outfile="steady_forward_vg4.csv"
+LOG OFF
+
+SOLVE init
+SOLVE vgate=0 vdrain=0
 LOG outf=steady_forward.log
+SOLVE vgate=5
 SOLVE vstep=0.1 vfinal=2.000 name=drain
 SOLVE vstep=0.5 vfinal=2.000 name=drain
 EXTRACT name="steady_forward" curve(v."drain", i."drain") outfile="steady_forward.csv"
+EXTRACT name="steady_forward_vg5" curve(v."drain", i."drain") outfile="steady_forward_vg5.csv"
 LOG OFF
 
 # Breakdown (off-state)
