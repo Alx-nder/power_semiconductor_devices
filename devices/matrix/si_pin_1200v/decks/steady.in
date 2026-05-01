@@ -1,51 +1,48 @@
 GO VICTORYDEVICE SIMFLAGS="-P 8"
 
-
-# Nd from BV scaling: 1.370e+14 cm^-3
-# Drift estimate: 130.744 um
-
-MESH WIDTH=1e7
+MESH WIDTH=1e+07
+# Active area enforced: 10 um lateral span x WIDTH=1e+07 um = 1 cm^2.
 X.MESH loc=0.0 spac=0.5
 X.MESH loc=10.0 spac=0.5
+Y.MESH loc=0.000 spac=0.040
+Y.MESH loc=3.352 spac=0.134
+Y.MESH loc=3.489 spac=0.140
+Y.MESH loc=40.187 spac=1.607
+Y.MESH loc=80.375 spac=3.215
+Y.MESH loc=120.562 spac=4.593
+Y.MESH loc=137.423 spac=4.593
+Y.MESH loc=140.228 spac=1.072
+Y.MESH loc=143.033 spac=4.593
+Y.MESH loc=160.749 spac=4.593
 
-Y.MESH loc=0.000 spac=0.010
-Y.MESH loc=3.307 spac=0.010
-Y.MESH loc=68.025 spac=6.472
-Y.MESH loc=132.744 spac=0.010
-Y.MESH loc=158.893 spac=2.615
-
-REGION num=1 material=silicon x.min=0 x.max=10 y.min=0 y.max=3.307
-REGION num=2 material=silicon x.min=0 x.max=10 y.min=3.307 y.max=132.744
-REGION num=3 material=silicon x.min=0 x.max=10 y.min=132.744 y.max=158.893
+REGION num=1 material=silicon x.min=0 x.max=10.0 y.min=0 y.max=3.420
+REGION num=2 material=silicon x.min=0 x.max=10.0 y.min=3.420 y.max=140.228
+REGION num=3 material=silicon x.min=0 x.max=10.0 y.min=140.228 y.max=160.749
 
 ELECTRODE name=anode top
 ELECTRODE name=cathode bottom
 
-DOPING gauss p.type conc=1e20 peak=0 char=0.900 REGION=1
-DOPING uniform n.type conc=1.3703e+14 REGION=2
+DOPING gauss p.type conc=1e20 peak=0 char=0.950 dir=Y REGION=1
+DOPING uniform n.type conc=1.23663e+14 REGION=2
 DOPING uniform n.type conc=1e20 REGION=3
-
-CONTACT name=anode NEUTRAL
-CONTACT name=cathode NEUTRAL
 
 MATERIAL material=silicon
 MODELS MATERIAL=silicon FERMIDIRAC FLDMOB CONMOB SRH BGN AUGER TEMP=300 PRINT
 IMPACT SELB
 METHOD NEWTON
 
-# Forward IV
 LOG outf=steady_forward.log
 SOLVE init
 SAVE outf=structure.str
-SOLVE vanode=0.100 vstep=0.100 vfinal=3.200 name=anode
+SOLVE vanode=0.050 vstep=0.050 vfinal=1.000 name=anode
+SOLVE vstep=0.100 vfinal=1.100 name=anode
 EXTRACT name="steady_forward" curve(v."anode", i."anode") outfile="steady_forward.csv"
 LOG OFF
 
-# Reverse IV
 SOLVE init
 LOG outf=steady_reverse.log
-SOLVE vanode=-2.000 vstep=-2.000 vfinal=-600.000 name=anode
-SOLVE vstep=-5.000 vfinal=-1500.000 name=anode compliance=1e-5 cname=anode
+SOLVE vanode=-6.000 vstep=-6.000 vfinal=-240.000 name=anode
+SOLVE vstep=-15.000 vfinal=-1500.000 name=anode compliance=1e-3 cname=anode
 EXTRACT name="steady_reverse" curve(v."anode", i."anode") outfile="steady_reverse.csv"
 LOG OFF
 

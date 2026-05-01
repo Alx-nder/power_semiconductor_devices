@@ -1,0 +1,16 @@
+{
+  "Target_BV": 100.0,
+  "Design_BV": 600.0,
+  "Breakdown_Margin": 1.3,
+  "Nd_cm3": 7.460275492950744e+16,
+  "Ec_Vcm": 4242367.607245045,
+  "Wdep_um": 2.828609189714394,
+  "Drift_um": 5.0,
+  "Emitter_um": 0.0,
+  "Substrate_um": 1.5,
+  "Ronsp_ohm_cm2": 3.486353184572683e-05,
+  "Material": "GaN",
+  "Family": "mosfet",
+  "VoltageClass": "100V",
+  "Active_Area_cm2": 1.0
+}

@@ -1,0 +1,60 @@
+GO VICTORYDEVICE SIMFLAGS="-P 8"
+
+MESH WIDTH=1e+07
+# Active area enforced: 10 um lateral span x WIDTH=1e+07 um = 1 cm^2.
+X.MESH loc=0.0 spac=0.5
+X.MESH loc=10.0 spac=0.5
+Y.MESH loc=0.000 spac=0.040
+Y.MESH loc=1.960 spac=0.078
+Y.MESH loc=2.000 spac=0.481
+Y.MESH loc=2.040 spac=0.082
+Y.MESH loc=18.021 spac=0.721
+Y.MESH loc=36.041 spac=1.442
+Y.MESH loc=54.062 spac=2.059
+Y.MESH loc=61.682 spac=2.059
+Y.MESH loc=62.941 spac=0.481
+Y.MESH loc=64.200 spac=2.059
+Y.MESH loc=72.082 spac=2.059
+
+REGION num=1 material=silicon x.min=0 x.max=10.0 y.min=0 y.max=2.000
+REGION num=2 material=silicon x.min=0 x.max=10.0 y.min=2.000 y.max=62.941
+REGION num=3 material=silicon x.min=0 x.max=10.0 y.min=62.941 y.max=72.082
+
+ELECTRODE name=anode top
+ELECTRODE name=cathode bottom
+
+DOPING gauss p.type conc=1e20 peak=0 char=0.556 dir=Y REGION=1
+DOPING uniform n.type conc=3.11610e+14 REGION=2
+DOPING uniform n.type conc=1e20 REGION=3
+
+MATERIAL material=silicon
+MODELS MATERIAL=silicon FERMIDIRAC FLDMOB CONMOB SRH BGN AUGER TEMP=300 PRINT
+IMPACT SELB
+METHOD NEWTON
+
+SOLVE init
+SAVE OUTFILE=si_pin_600v_dpt.str
+
+GO VICTORYDEVICE SIMFLAGS="-P 8"
+
+.BEGIN
+V_DC     10  0   480
+V_GATE   1   0   PWL  0 0  1.0000e-07 0  1.1000e-06 10  6.1000e-06 10  7.1000e-06 0  9.1000e-06 0  1.0100e-05 10  1.2100e-05 10  1.3100e-05 0  2.1100e-05 0
+R_GATE   1   2   5.0
+L_LOAD   10  3   4.800000e-04
+M_SW     3   2   0   0   NMOD  W=10000  L=1e-4
+.MODEL NMOD NMOS LEVEL=1 VTO=3.0 KP=1e-08 LAMBDA=0.01 RD=0.5 RS=0.05 CBD=50e-12 CBS=50e-12
+ADIODE   3=anode  10=cathode  INFILE=si_pin_600v_dpt.str  WIDTH=1e+07
+.NODESET  v(1)=0  v(2)=0  v(3)=480  v(10)=480
+.NUMERIC  LTE=0.3  TOLTR=1e-5  VCHANGE=10
+.OPTIONS  PRINT RELPOT WRITE=20
+.LOG   OUTFILE=si_pin_600v_dpt
+.SAVE  OUTFILE=si_pin_600v_dpt_final
+.TRAN  5.275000e-09  2.110000e-05
+.END
+
+MODELS   DEVICE=ADIODE FERMIDIRAC FLDMOB CONMOB SRH BGN AUGER TEMP=300
+IMPACT   DEVICE=ADIODE SELB
+METHOD   NEWTON TRAP MAXTRAPS=50 ITLIMIT=50 CLIMIT=1e8 DVMAX=1e6
+
+QUIT

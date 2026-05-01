@@ -1,0 +1,16 @@
+{
+  "Target_BV": 100.0,
+  "Design_BV": 156.0,
+  "Breakdown_Margin": 1.56,
+  "Nd_cm3": 2394540636164753.0,
+  "Ec_Vcm": 335387.713752813,
+  "Wdep_um": 9.302666353185193,
+  "Drift_um": 11.628332941481492,
+  "Emitter_um": 0.0,
+  "Substrate_um": 6.0,
+  "Ronsp_ohm_cm2": 0.0022289166390637694,
+  "Material": "Si",
+  "Family": "mosfet",
+  "VoltageClass": "100V",
+  "Active_Area_cm2": 1.0
+}

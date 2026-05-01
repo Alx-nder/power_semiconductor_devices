@@ -1,51 +1,56 @@
 GO VICTORYDEVICE SIMFLAGS="-P 8"
 
-
-
-MESH WIDTH=1e7
+MESH WIDTH=1e+07
+# Active area enforced: 10 um lateral span x WIDTH=1e+07 um = 1 cm^2.
 X.MESH loc=0.0 spac=0.5
 X.MESH loc=10.0 spac=0.5
-Y.MESH loc=0.0 spac=2.501
-Y.MESH loc=100.048 spac=10.005
-Y.MESH loc=125.059 spac=0.750
-Y.MESH loc=150.071 spac=3.752
+Y.MESH loc=0.000 spac=0.040
+Y.MESH loc=39.332 spac=1.573
+Y.MESH loc=78.665 spac=3.147
+Y.MESH loc=117.997 spac=4.495
+Y.MESH loc=134.072 spac=4.495
+Y.MESH loc=136.808 spac=1.049
+Y.MESH loc=139.544 spac=4.495
+Y.MESH loc=157.329 spac=4.495
 
-REGION num=1 material=silicon x.min=0 x.max=10 y.min=0 y.max=150.071
+REGION num=1 material=silicon x.min=0 x.max=10.0 y.min=0 y.max=157.329
+
 ELECTRODE name=anode top
 ELECTRODE name=cathode bottom
 
-DOPING uniform n.type conc=1.3703e+14
-DOPING uniform n.type conc=1e20 y.min=125.059 y.max=150.071
+DOPING uniform n.type conc=1.23663e+14
+DOPING uniform n.type conc=1e20 y.min=136.808 y.max=157.329
 
 CONTACT name=anode WORKFUNCTION=4.87 SURF.REC BARRIER
-CONTACT name=cathode NEUTRAL
 
 MATERIAL material=silicon
 MODELS MATERIAL=silicon FERMIDIRAC FLDMOB CONMOB SRH BGN AUGER TEMP=300 PRINT
+IMPACT SELB
 METHOD NEWTON
 
-SOLVE INIT
-SOLVE VANODE=0.05 VSTEP=0.05 VFINAL=0.5 NAME=anode
-SOLVE VANODE=-0.5 VSTEP=-0.5 VFINAL=-5 NAME=anode
-SOLVE vstep=-50 vfinal=-1200 NAME=anode COMPLIANCE=1e-5 CNAME=cathode
-SAVE OUTFILE=si_schottky_1200v_fwd.str
+SOLVE init
+SAVE OUTFILE=si_schottky_1200v_dpt.str
 
 GO VICTORYDEVICE SIMFLAGS="-P 8"
 
 .BEGIN
-VPULSE   0  1  PULSE  -1200  30  100e-9  10e-9  10e-9  3e-6  7e-6
-R_SERIES 1  2  2.68
-ADIODE   2=anode  0=cathode  INFILE=si_schottky_1200v_fwd.str  WIDTH=1E7
-.NODESET  v(1)=-1200  v(2)=-1200
-.NUMERIC  LTE=0.3  TOLTR=1e-5  VCHANGE=10
+V_DC     10  0   960
+V_GATE   1   0   PWL  0 0  1.0000e-07 0  1.1000e-06 10  1.1100e-05 10  1.2100e-05 0  1.4100e-05 0  1.5100e-05 10  1.7100e-05 10  1.8100e-05 0  2.6100e-05 0
+R_GATE   1   2   5.0
+L_LOAD   10  3   1.920000e-03
+M_SW     3   2   0   0   NMOD  W=10000  L=1e-4
+.MODEL NMOD NMOS LEVEL=1 VTO=3.0 KP=1e-08 LAMBDA=0.01 RD=0.5 RS=0.05 CBD=50e-12 CBS=50e-12
+ADIODE   3=anode  10=cathode  INFILE=si_schottky_1200v_dpt.str  WIDTH=1e+07
+.NODESET  v(1)=0  v(2)=0  v(3)=960  v(10)=960
+.NUMERIC  LTE=0.3  TOLTR=1e-5  VCHANGE=19.2
 .OPTIONS  PRINT RELPOT WRITE=20
-.LOG   OUTFILE=si_schottky_1200v_rr
-.SAVE  OUTFILE=si_schottky_1200v_rr_final
-.TRAN  5e-9  7e-6
+.LOG   OUTFILE=si_schottky_1200v_dpt
+.SAVE  OUTFILE=si_schottky_1200v_dpt_final
+.TRAN  6.525000e-09  2.610000e-05
 .END
 
-MATERIAL material=silicon
-MODELS DEVICE=ADIODE FERMIDIRAC FLDMOB CONMOB SRH BGN AUGER TEMP=300
-METHOD NEWTON TRAP MAXTRAPS=50 CLIMIT=1e8 DVMAX=1e6
+MODELS   DEVICE=ADIODE FERMIDIRAC FLDMOB CONMOB SRH BGN AUGER TEMP=300
+IMPACT   DEVICE=ADIODE SELB
+METHOD   NEWTON TRAP MAXTRAPS=50 ITLIMIT=50 CLIMIT=1e8 DVMAX=1e6
 
 QUIT

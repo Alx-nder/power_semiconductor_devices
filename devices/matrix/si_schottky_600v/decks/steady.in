@@ -1,0 +1,46 @@
+GO VICTORYDEVICE SIMFLAGS="-P 8"
+
+MESH WIDTH=1e+07
+# Active area enforced: 10 um lateral span x WIDTH=1e+07 um = 1 cm^2.
+X.MESH loc=0.0 spac=0.5
+X.MESH loc=10.0 spac=0.5
+Y.MESH loc=0.000 spac=0.040
+Y.MESH loc=17.521 spac=0.701
+Y.MESH loc=35.041 spac=1.402
+Y.MESH loc=52.562 spac=2.002
+Y.MESH loc=59.722 spac=2.002
+Y.MESH loc=60.941 spac=0.467
+Y.MESH loc=62.160 spac=2.002
+Y.MESH loc=70.082 spac=2.002
+
+REGION num=1 material=silicon x.min=0 x.max=10.0 y.min=0 y.max=70.082
+
+ELECTRODE name=anode top
+ELECTRODE name=cathode bottom
+
+DOPING uniform n.type conc=3.11610e+14
+DOPING uniform n.type conc=1e20 y.min=60.941 y.max=70.082
+
+CONTACT name=anode WORKFUNCTION=4.87 SURF.REC BARRIER
+
+MATERIAL material=silicon
+MODELS MATERIAL=silicon FERMIDIRAC FLDMOB CONMOB SRH BGN AUGER TEMP=300 PRINT
+IMPACT SELB
+METHOD NEWTON
+
+LOG outf=steady_forward.log
+SOLVE init
+SAVE outf=structure.str
+SOLVE vanode=0.050 vstep=0.050 vfinal=1.000 name=anode
+SOLVE vstep=0.250 vfinal=18.753 name=anode
+EXTRACT name="steady_forward" curve(v."anode", i."anode") outfile="steady_forward.csv"
+LOG OFF
+
+SOLVE init
+LOG outf=steady_reverse.log
+SOLVE vanode=-3.000 vstep=-3.000 vfinal=-120.000 name=anode
+SOLVE vstep=-7.500 vfinal=-750.000 name=anode compliance=1e-3 cname=anode
+EXTRACT name="steady_reverse" curve(v."anode", i."anode") outfile="steady_reverse.csv"
+LOG OFF
+
+QUIT

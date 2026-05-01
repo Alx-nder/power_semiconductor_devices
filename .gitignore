@@ -1,5 +1,10 @@
 *.str
 *.log
+*.pid
+*_stdout.txt
+batch_output*.txt
+*_output*.txt
+nohup.out
 *.tif
 *.sta
 *.dop
@@ -22,6 +27,7 @@ knowledge_base/
 
 IMPLEMENTATION_PLAN.md
 PROCESS_INIT_PROMPT.md
+MATRIX_REBUILD_LOG.md
 prompt
 .codex
 .agents/
@@ -31,6 +37,7 @@ prompt
 
 run_*.sh
 finalize_and_push.sh
+old_scripts/
 
 index_old.html
 index_v2_backup.html

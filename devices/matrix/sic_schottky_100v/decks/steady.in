@@ -1,49 +1,49 @@
-GO VICTORYDEVICE SIMFLAGS="-P 16 -256"
+GO VICTORYDEVICE SIMFLAGS="-P 8"
+# 100 V and 600 V WBG smoke use default precision; high precision is reserved for higher-BV leakage/convergence runs.
 
-
-# Nd from BV scaling: 3.725e+17 cm^-3
-# Drift estimate: 0.622 um
-
-MESH WIDTH=1e7
+MESH WIDTH=1e+07
+# Active area enforced: 10 um lateral span x WIDTH=1e+07 um = 1 cm^2.
 X.MESH loc=0.0 spac=0.5
 X.MESH loc=10.0 spac=0.5
+Y.MESH loc=0.000 spac=0.040
+Y.MESH loc=0.519 spac=0.040
+Y.MESH loc=0.544 spac=0.040
+Y.MESH loc=0.574 spac=0.012
+Y.MESH loc=0.604 spac=0.040
+Y.MESH loc=1.037 spac=0.041
+Y.MESH loc=1.556 spac=0.052
+Y.MESH loc=2.074 spac=0.052
 
-Y.MESH loc=0.0 spac=0.012
-Y.MESH loc=0.093 spac=0.025
-Y.MESH loc=0.373 spac=0.037
-Y.MESH loc=0.560 spac=0.050
-Y.MESH loc=0.622 spac=0.024
-Y.MESH loc=1.422 spac=0.120
-
-REGION num=1 material=4H-SiC x.min=0 x.max=10 y.min=0 y.max=1.422
+REGION num=1 material=4H-SiC x.min=0 x.max=10.0 y.min=0 y.max=2.074
 
 ELECTRODE name=anode top
 ELECTRODE name=cathode bottom
 
-DOPING uniform n.type conc=3.7250e+17
-DOPING uniform n.type conc=1e20 y.min=0.622 y.max=1.422
+DOPING uniform n.type conc=7.31004e+17
+DOPING uniform n.type conc=1.00000e+20 y.min=0.574 y.max=2.074
 
 CONTACT name=anode WORKFUNCTION=4.85 SURF.REC BARRIER
 CONTACT name=cathode NEUTRAL
 
-MATERIAL REGION=1
+MATERIAL material=4H-SiC
+# Clean 4H-SiC BV block: ANALYTIC+CONWELL with SIC4H0001 anisotropic impact.
 MODELS REGION=1 FERMIDIRAC ANALYTIC CONWELL SRH BGN AUGER INCOMPLETE TEMP=300 PRINT
 IMPACT REGION=1 ANISOTROPIC E.SIDE SIC4H0001
-METHOD NEWTON GUMMEL TRAP climit=1.e-9 maxtraps=8
+METHOD NEWTON TRAP MAXTRAPS=80 ITLIMIT=100
 
-# Forward IV
 LOG outf=steady_forward.log
 SOLVE init
 SAVE outf=structure.str
-SOLVE vanode=0.050 vstep=0.050 vfinal=3.500 name=anode
+SOLVE vanode=0.250 vstep=0.250 vfinal=1.000 name=anode
+SOLVE vstep=0.250 vfinal=5.500 name=anode compliance=1e6 cname=anode
 EXTRACT name="steady_forward" curve(v."anode", i."anode") outfile="steady_forward.csv"
 LOG OFF
 
-# Reverse IV
 SOLVE init
-LOG outf=steady_reverse.log
-SOLVE vanode=-0.500 vstep=-0.500 vfinal=-50.000 name=anode compliance=1e-5 cname=anode
-SOLVE vstep=-1.250 vfinal=-125.000 name=anode compliance=1e-5 cname=anode
+LOG outf=steady_reverse.log J.ELECTRON J.HOLE
+SOLVE vanode=-1.000 vstep=-1.000 vfinal=-20.000 name=anode
+SOLVE vstep=-5.000 vfinal=-100.000 name=anode
+SOLVE vstep=-10.000 vfinal=-110.000 name=anode compliance=1e-5 cname=anode
 EXTRACT name="steady_reverse" curve(v."anode", i."anode") outfile="steady_reverse.csv"
 LOG OFF
 

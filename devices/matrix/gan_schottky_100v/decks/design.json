@@ -1,0 +1,16 @@
+{
+  "Target_BV": 100.0,
+  "Design_BV": 120.0,
+  "Breakdown_Margin": 1.2,
+  "Nd_cm3": 6.378445824263704e+17,
+  "Ec_Vcm": 5547576.487130903,
+  "Wdep_um": 0.4326213447561194,
+  "Drift_um": 0.5840388154207612,
+  "Emitter_um": 0.0,
+  "Substrate_um": 1.5,
+  "Ronsp_ohm_cm2": 4.763027428575179e-07,
+  "Material": "GaN",
+  "Family": "schottky",
+  "VoltageClass": "100V",
+  "Active_Area_cm2": 1.0
+}

@@ -1,0 +1,62 @@
+GO VICTORYDEVICE SIMFLAGS="-P 8 -256"
+# Reverse-only resume deck for sic_mosfet_600v after the full steady deck timed out post-forward.
+
+MESH WIDTH=2.5e+07
+# Active area enforced: 4 um lateral span x WIDTH=2.5e+07 um = 1 cm^2.
+X.MESH loc=0.00 spac=0.1
+X.MESH loc=1.00 spac=0.05
+X.MESH loc=1.20 spac=0.02
+X.MESH loc=1.30 spac=0.02
+X.MESH loc=1.50 spac=0.05
+X.MESH loc=2.50 spac=0.1
+X.MESH loc=4.00 spac=0.1
+Y.MESH loc=-0.100 spac=0.020
+Y.MESH loc=-0.050 spac=0.010
+Y.MESH loc=0.000 spac=0.010
+Y.MESH loc=0.250 spac=0.040
+Y.MESH loc=0.750 spac=0.040
+Y.MESH loc=1.500 spac=0.040
+Y.MESH loc=2.186 spac=0.233
+Y.MESH loc=4.371 spac=0.233
+Y.MESH loc=6.557 spac=0.233
+Y.MESH loc=8.742 spac=0.058
+Y.MESH loc=10.491 spac=0.233
+
+REGION num=1 material=Air x.min=0.0 x.max=1.2 y.min=-0.10 y.max=0.0
+REGION num=2 material=sio2 x.min=1.2 x.max=4.0 y.min=-0.10 y.max=0.0
+REGION num=3 material=4H-SiC y.min=0.0 y.max=10.491
+
+ELECTRODE name=source x.min=0.0 x.max=1.2 y.min=0.0 y.max=0.0 material=aluminum
+ELECTRODE name=gate x.min=1.3 x.max=4.0 y.min=-0.10 y.max=-0.10 material=aluminum
+ELECTRODE name=drain bottom material=aluminum
+
+DOPING uniform n.type conc=3.81041e+16 REGION=3
+DOPING gauss p.type conc=1.00000e+18 peak=0 char=0.500 dir=Y x.min=0.0 x.max=1.8
+DOPING gauss p.type conc=1.00000e+19 peak=0 char=0.200 dir=Y x.min=0.0 x.max=0.6
+DOPING gauss n.type conc=1.00000e+20 peak=0 char=0.100 dir=Y x.min=0.7 x.max=1.400
+DOPING uniform n.type conc=1.00000e+19 y.min=8.742 y.max=10.491
+
+MATERIAL material=sio2 PERMITTIVITY=3.9
+MATERIAL material=4H-SiC
+MODELS MATERIAL=4H-SiC FLDMOB FERMIDIRAC ANALYTIC CONWELL SRH BGN AUGER INCOMPLETE TEMP=300 PRINT
+IMPACT ANISOTROPIC EDGE SIC4H0001
+METHOD NEWTON TRAP MAXTRAPS=60 ITLIMIT=100 CLIMIT=1e-6 DVMAX=0.5
+CONTACT name=gate N.POLYSILICON
+CONTACT name=source NEUTRAL
+CONTACT name=drain NEUTRAL
+INTERFACE REGION=2 charge=2.5e12 s.n=1e4 s.p=1e4 s.i
+
+SOLVE init
+LOG outf=steady_reverse.log
+SOLVE vgate=0 vdrain=0
+SOLVE vdrain=1.000 vstep=1.000 vfinal=20.000 name=drain
+SOLVE vstep=2.000 vfinal=100.000 name=drain
+METHOD NEWTON GUMMEL TRAP CLIMIT=1e-10 MAXTRAPS=120 ITLIMIT=150 DVMAX=0.5
+SOLVE vstep=1.000 vfinal=140.000 name=drain
+SOLVE vstep=5.000 vfinal=250.000 name=drain
+SOLVE vstep=10.000 vfinal=750.000 name=drain compliance=1e-5 cname=drain
+EXTRACT name="steady_reverse" curve(v."drain", i."drain") outfile="steady_reverse.csv"
+LOG OFF
+
+SAVE outf=structure.str
+QUIT

@@ -1,0 +1,16 @@
+{
+  "Target_BV": 1200.0,
+  "Design_BV": 1440.0,
+  "Breakdown_Margin": 1.2,
+  "Nd_cm3": 123662594295368.73,
+  "Ec_Vcm": 231565.66564669934,
+  "Wdep_um": 124.37076938659928,
+  "Drift_um": 136.80784632525922,
+  "Emitter_um": 3.4201961581314806,
+  "Substrate_um": 20.52117694878888,
+  "Ronsp_ohm_cm2": 0.5077749040619742,
+  "Material": "Si",
+  "Family": "pin",
+  "VoltageClass": "1.2kV",
+  "Active_Area_cm2": 1.0
+}

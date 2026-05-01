@@ -1,0 +1,16 @@
+{
+  "Target_BV": 100.0,
+  "Design_BV": 120.0,
+  "Breakdown_Margin": 1.2,
+  "Nd_cm3": 3397399991064071.0,
+  "Ec_Vcm": 350378.70874564914,
+  "Wdep_um": 6.849731276743289,
+  "Drift_um": 7.534704404417618,
+  "Emitter_um": 0.0,
+  "Substrate_um": 6.0,
+  "Ronsp_ohm_cm2": 0.0010179304775969353,
+  "Material": "Si",
+  "Family": "schottky",
+  "VoltageClass": "100V",
+  "Active_Area_cm2": 1.0
+}

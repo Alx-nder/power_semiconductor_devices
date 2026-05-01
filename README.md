@@ -12,4 +12,4 @@ Public repo contents are intentionally limited to:
 Scope:
 - Device families: PIN, Schottky, MOSFET
 - Materials: Si, 4H-SiC, GaN
-- Voltage classes: 10V, 100V, 1200V
+- Voltage classes: 100V, 600V, 1.2kV, 12kV

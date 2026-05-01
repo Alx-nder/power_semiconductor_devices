@@ -1,0 +1,16 @@
+{
+  "Target_BV": 12000.0,
+  "Design_BV": 14400.0,
+  "Breakdown_Margin": 1.2,
+  "Nd_cm3": 1235032397392380.5,
+  "Ec_Vcm": 2540819.0308736004,
+  "Wdep_um": 113.3492769459374,
+  "Drift_um": 153.0215238770155,
+  "Emitter_um": 0.0,
+  "Substrate_um": 30.604304775403104,
+  "Ronsp_ohm_cm2": 0.08593481596812433,
+  "Material": "4H-SiC",
+  "Family": "schottky",
+  "VoltageClass": "12kV",
+  "Active_Area_cm2": 1.0
+}

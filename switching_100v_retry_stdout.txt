@@ -1,8 +1,0 @@
-nohup: ignoring input
-[14:42:53] START sic_pin_100v/switching.in
-[14:48:46] DONE sic_pin_100v rc=0
-[14:48:46] START sic_mosfet_100v/switching.in
-[15:00:49] DONE sic_mosfet_100v rc=0
-[15:00:49] START gan_mosfet_100v/switching.in
-[15:09:17] DONE gan_mosfet_100v rc=0
-ALL DONE

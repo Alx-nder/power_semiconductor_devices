@@ -1,0 +1,16 @@
+{
+  "Target_BV": 600.0,
+  "Design_BV": 1100.0,
+  "Breakdown_Margin": 1.2,
+  "Nd_cm3": 3.8104075242031096e+16,
+  "Ec_Vcm": 3900635.492345195,
+  "Wdep_um": 5.640106603955668,
+  "Drift_um": 8.178154575735718,
+  "Emitter_um": 1.4720678236324292,
+  "Substrate_um": 1.6356309151471438,
+  "Ronsp_ohm_cm2": 0.00014886029237482504,
+  "Material": "4H-SiC",
+  "Family": "pin",
+  "VoltageClass": "600V",
+  "Active_Area_cm2": 1.0
+}

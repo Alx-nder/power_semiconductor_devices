@@ -1,49 +1,83 @@
-GO VICTORYDEVICE SIMFLAGS="-P 16 -256"
+GO VICTORYDEVICE SIMFLAGS="-P 8"
+# Schottky forward setup uses default precision; reverse BV pass below uses 256-bit precision.
 
-
-# Nd from BV scaling: 1.356e+16 cm^-3
-# Drift estimate: 11.295 um
-
-MESH WIDTH=1e7
+MESH WIDTH=1e+07
+# Active area enforced: 10 um lateral span x WIDTH=1e+07 um = 1 cm^2.
 X.MESH loc=0.0 spac=0.5
 X.MESH loc=10.0 spac=0.5
+Y.MESH loc=0.000 spac=0.040
+Y.MESH loc=3.128 spac=0.125
+Y.MESH loc=6.255 spac=0.250
+Y.MESH loc=9.383 spac=0.313
+Y.MESH loc=10.112 spac=0.313
+Y.MESH loc=10.425 spac=0.070
+Y.MESH loc=10.738 spac=0.313
+Y.MESH loc=12.510 spac=0.313
 
-Y.MESH loc=0.0 spac=0.226
-Y.MESH loc=1.694 spac=0.452
-Y.MESH loc=6.777 spac=0.678
-Y.MESH loc=10.166 spac=0.904
-Y.MESH loc=11.295 spac=0.068
-Y.MESH loc=13.554 spac=0.339
-
-REGION num=1 material=4H-SiC x.min=0 x.max=10 y.min=0 y.max=13.554
+REGION num=1 material=4H-SiC x.min=0 x.max=10.0 y.min=0 y.max=12.510
 
 ELECTRODE name=anode top
 ELECTRODE name=cathode bottom
 
-DOPING uniform n.type conc=1.3559e+16
-DOPING uniform n.type conc=1e20 y.min=11.295 y.max=13.554
+DOPING uniform n.type conc=2.66080e+16
+DOPING uniform n.type conc=1.00000e+20 y.min=10.425 y.max=12.510
 
 CONTACT name=anode WORKFUNCTION=4.85 SURF.REC BARRIER
 CONTACT name=cathode NEUTRAL
 
-MATERIAL REGION=1
+MATERIAL material=4H-SiC
+# Clean 4H-SiC BV block: ANALYTIC+CONWELL with SIC4H0001 anisotropic impact.
 MODELS REGION=1 FERMIDIRAC ANALYTIC CONWELL SRH BGN AUGER INCOMPLETE TEMP=300 PRINT
 IMPACT REGION=1 ANISOTROPIC E.SIDE SIC4H0001
-METHOD NEWTON GUMMEL TRAP climit=1.e-9 maxtraps=8
+METHOD NEWTON TRAP MAXTRAPS=80 ITLIMIT=100
 
-# Forward IV
 LOG outf=steady_forward.log
 SOLVE init
 SAVE outf=structure.str
-SOLVE vanode=0.100 vstep=0.100 vfinal=5.000 name=anode
+SOLVE vanode=0.250 vstep=0.250 vfinal=1.000 name=anode
+SOLVE vstep=0.250 vfinal=5.500 name=anode compliance=1e6 cname=anode
 EXTRACT name="steady_forward" curve(v."anode", i."anode") outfile="steady_forward.csv"
 LOG OFF
 
-# Reverse IV
+GO VICTORYDEVICE SIMFLAGS="-P 8 -256"
+# WBG low-leakage reverse sweeps and mixed-mode transitions intentionally use 256-bit precision.
+
+MESH WIDTH=1e+07
+# Active area enforced: 10 um lateral span x WIDTH=1e+07 um = 1 cm^2.
+X.MESH loc=0.0 spac=0.5
+X.MESH loc=10.0 spac=0.5
+Y.MESH loc=0.000 spac=0.040
+Y.MESH loc=3.128 spac=0.125
+Y.MESH loc=6.255 spac=0.250
+Y.MESH loc=9.383 spac=0.313
+Y.MESH loc=10.112 spac=0.313
+Y.MESH loc=10.425 spac=0.070
+Y.MESH loc=10.738 spac=0.313
+Y.MESH loc=12.510 spac=0.313
+
+REGION num=1 material=4H-SiC x.min=0 x.max=10.0 y.min=0 y.max=12.510
+
+ELECTRODE name=anode top
+ELECTRODE name=cathode bottom
+
+DOPING uniform n.type conc=2.66080e+16
+DOPING uniform n.type conc=1.00000e+20 y.min=10.425 y.max=12.510
+
+CONTACT name=anode WORKFUNCTION=4.85 SURF.REC BARRIER
+CONTACT name=cathode NEUTRAL
+
+MATERIAL material=4H-SiC
+# Clean 4H-SiC BV block: ANALYTIC+CONWELL with SIC4H0001 anisotropic impact.
+MODELS REGION=1 FERMIDIRAC ANALYTIC CONWELL SRH BGN AUGER INCOMPLETE TEMP=300 PRINT
+IMPACT REGION=1 ANISOTROPIC E.SIDE SIC4H0001
+METHOD NEWTON TRAP MAXTRAPS=80 ITLIMIT=100
+
 SOLVE init
-LOG outf=steady_reverse.log
-SOLVE vanode=-2.000 vstep=-2.000 vfinal=-600.000 name=anode compliance=1e-5 cname=anode
-SOLVE vstep=-5.000 vfinal=-1500.000 name=anode compliance=1e-5 cname=anode
+LOG outf=steady_reverse.log J.ELECTRON J.HOLE
+SOLVE vanode=-1.000 vstep=-1.000 vfinal=-20.000 name=anode
+SOLVE vstep=-5.000 vfinal=-100.000 name=anode
+SOLVE vstep=-10.000 vfinal=-250.000 name=anode
+SOLVE vstep=-25.000 vfinal=-1500.000 name=anode compliance=1e-5 cname=anode
 EXTRACT name="steady_reverse" curve(v."anode", i."anode") outfile="steady_reverse.csv"
 LOG OFF
 

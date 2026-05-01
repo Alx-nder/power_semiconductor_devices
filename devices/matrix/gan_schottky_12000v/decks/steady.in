@@ -1,0 +1,89 @@
+GO VICTORYDEVICE SIMFLAGS="-P 8"
+# Schottky forward setup uses default precision; reverse BV pass below uses 256-bit precision.
+
+MESH WIDTH=1e+07
+# Active area enforced: 10 um lateral span x WIDTH=1e+07 um = 1 cm^2.
+X.MESH loc=0.0 spac=0.5
+X.MESH loc=10.0 spac=0.5
+Y.MESH loc=0.000 spac=0.040
+Y.MESH loc=46.695 spac=1.868
+Y.MESH loc=93.391 spac=3.736
+Y.MESH loc=140.086 spac=4.670
+Y.MESH loc=150.982 spac=4.670
+Y.MESH loc=155.651 spac=1.038
+Y.MESH loc=160.321 spac=4.670
+Y.MESH loc=186.782 spac=4.670
+
+REGION num=1 material=GaN x.min=0 x.max=10.0 y.min=0 y.max=186.782
+
+ELECTRODE name=anode top
+ELECTRODE name=cathode bottom
+
+DOPING uniform n.type conc=1.07764e+15
+DOPING uniform n.type conc=5.00000e+19 y.min=155.651 y.max=186.782
+
+CONTACT name=anode WORKFUNCTION=4.94 SURF.REC BARRIER E.TUNNEL PIPINYS ME.TUNNEL=0.20
+CONTACT name=cathode NEUTRAL
+
+MATERIAL material=GaN EDB=0.025 EAB=0.17
+MATERIAL material=GaN PIP.NT=1e7 PIP.ET=0.8
+MATERIAL material=GaN TAUN0=1e-9 TAUP0=1e-9
+# Clean GaN BV block: FMCT.N/GANSAT.N mobility and Oguzman EDGE impact.
+MODELS MATERIAL=GaN FERMIDIRAC FLDMOB SRH INCOMPLETE TEMP=300 PRINT
+MOBILITY MATERIAL=GaN FMCT.N GANSAT.N
+IMPACT MATERIAL=GaN N.OGUZMAN P.OGUZMAN EDGE
+METHOD NEWTON DIRECT.256 TRAP MAXTRAPS=60 ITLIMIT=100 CLIMIT=1e-9 DVMAX=1e8 PR.TOLER=1e-40 CR.TOLER=1e-40 PX.TOLER=1e-5 CX.TOLER=1e-5
+
+LOG outf=steady_forward.log
+SOLVE init
+SAVE outf=structure.str
+SOLVE vanode=0.250 vstep=0.250 vfinal=1.000 name=anode
+SOLVE vstep=0.500 vfinal=17.429 name=anode compliance=1e6 cname=anode
+EXTRACT name="steady_forward" curve(v."anode", i."anode") outfile="steady_forward.csv"
+LOG OFF
+
+GO VICTORYDEVICE SIMFLAGS="-P 8 -256"
+# WBG low-leakage reverse sweeps and mixed-mode transitions intentionally use 256-bit precision.
+
+MESH WIDTH=1e+07
+# Active area enforced: 10 um lateral span x WIDTH=1e+07 um = 1 cm^2.
+X.MESH loc=0.0 spac=0.5
+X.MESH loc=10.0 spac=0.5
+Y.MESH loc=0.000 spac=0.040
+Y.MESH loc=46.695 spac=1.868
+Y.MESH loc=93.391 spac=3.736
+Y.MESH loc=140.086 spac=4.670
+Y.MESH loc=150.982 spac=4.670
+Y.MESH loc=155.651 spac=1.038
+Y.MESH loc=160.321 spac=4.670
+Y.MESH loc=186.782 spac=4.670
+
+REGION num=1 material=GaN x.min=0 x.max=10.0 y.min=0 y.max=186.782
+
+ELECTRODE name=anode top
+ELECTRODE name=cathode bottom
+
+DOPING uniform n.type conc=1.07764e+15
+DOPING uniform n.type conc=5.00000e+19 y.min=155.651 y.max=186.782
+
+CONTACT name=anode WORKFUNCTION=4.94 SURF.REC BARRIER E.TUNNEL PIPINYS ME.TUNNEL=0.20
+CONTACT name=cathode NEUTRAL
+
+MATERIAL material=GaN EDB=0.025 EAB=0.17
+MATERIAL material=GaN PIP.NT=1e7 PIP.ET=0.8
+MATERIAL material=GaN TAUN0=1e-9 TAUP0=1e-9
+# Clean GaN BV block: FMCT.N/GANSAT.N mobility and Oguzman EDGE impact.
+MODELS MATERIAL=GaN FERMIDIRAC FLDMOB SRH INCOMPLETE TEMP=300 PRINT
+MOBILITY MATERIAL=GaN FMCT.N GANSAT.N
+IMPACT MATERIAL=GaN N.OGUZMAN P.OGUZMAN EDGE
+METHOD NEWTON DIRECT.256 TRAP MAXTRAPS=60 ITLIMIT=100 CLIMIT=1e-9 DVMAX=1e8 PR.TOLER=1e-40 CR.TOLER=1e-40 PX.TOLER=1e-5 CX.TOLER=1e-5
+
+SOLVE init
+LOG outf=steady_reverse.log J.ELECTRON J.HOLE
+SOLVE vanode=-5.000 vstep=-5.000 vfinal=-100.000 name=anode
+SOLVE vstep=-50.000 vfinal=-1200.000 name=anode
+SOLVE vstep=-200.000 vfinal=-15000.000 name=anode compliance=1e-5 cname=anode
+EXTRACT name="steady_reverse" curve(v."anode", i."anode") outfile="steady_reverse.csv"
+LOG OFF
+
+QUIT

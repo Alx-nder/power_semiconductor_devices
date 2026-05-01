@@ -1,0 +1,16 @@
+{
+  "Target_BV": 1200.0,
+  "Design_BV": 1440.0,
+  "Breakdown_Margin": 1.2,
+  "Nd_cm3": 2.32170236143983e+16,
+  "Ec_Vcm": 3666399.2699995856,
+  "Wdep_um": 7.855118299759877,
+  "Drift_um": 11.389921534651823,
+  "Emitter_um": 2.050185876237328,
+  "Substrate_um": 2.2779843069303647,
+  "Ronsp_ohm_cm2": 0.00025519398359461783,
+  "Material": "GaN",
+  "Family": "pin",
+  "VoltageClass": "1.2kV",
+  "Active_Area_cm2": 1.0
+}
