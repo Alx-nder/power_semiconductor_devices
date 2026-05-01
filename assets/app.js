@@ -4,6 +4,7 @@ let reverseChart = null;
 let transientChart = null;
 let procTempChart = null;
 let procTimeChart = null;
+const DISPLAY_REVERSE_PLOTS = false;
 
 const state = {
   mode: 'steady',
@@ -77,9 +78,11 @@ function buildVoltageRow() {
   if (!classes.includes(state.voltage)) {
     state.voltage = classes[0];
   }
+  syncCalcBVToSelection();
   classes.forEach(v => {
     row.appendChild(btn(v, state.voltage === v, () => {
       state.voltage = v;
+      syncCalcBVToSelection();
       buildVoltageRow();
       renderAll();
     }));
@@ -98,7 +101,7 @@ function buildMaterialRow() {
     if (!classNode?.materials?.[mat]) return false;
     const m = classNode.materials[mat];
     if (modeKey === 'steady') {
-      return (m.forward?.voltage?.length > 0) || (m.reverse?.voltage?.length > 0);
+      return (m.forward?.voltage?.length > 0) || (m.forward_family?.some(curve => curve.voltage?.length) ?? false);
     }
     return (m.trace?.time?.length > 0) || (m.trace?.x?.length > 0);
   }
@@ -265,7 +268,6 @@ function fmtMetric(value, unit) {
 
 function renderSteady(entry) {
   const fwdSets = [];
-  const revSets = [];
   const mosfetDashPatterns = [[], [8, 3], [4, 2], [2, 2], [10, 2, 2, 2]];
 
   Object.entries(entry.materials).forEach(([mat, d]) => {
@@ -292,22 +294,9 @@ function renderSteady(entry) {
       const yAbs = d.forward.current.map(v => Math.abs(v));
       fwdSets.push(seriesDataset(mat, color, d.forward.voltage, yAbs));
     }
-    if (d.reverse && d.reverse.voltage?.length) {
-      const xNeg = [], yAbs = [];
-      const reverseNoiseFloor = state.logY ? 1e-18 : 0;
-      for (let i = 0; i < d.reverse.voltage.length; i++) {
-        const absI = Math.abs(d.reverse.current[i]);
-        if (absI >= reverseNoiseFloor) {
-          xNeg.push(-Math.abs(d.reverse.voltage[i]));
-          yAbs.push(absI);
-        }
-      }
-      if (xNeg.length) revSets.push(seriesDataset(mat, color, xNeg, yAbs));
-    }
   });
 
   show(byId('forward-none'), !fwdSets.length);
-  show(byId('reverse-none'), !revSets.length);
 
   if (fwdSets.length) {
     const fwdYMax = state.family === 'mosfet' ? null : 100;
@@ -316,15 +305,6 @@ function renderSteady(entry) {
       type: 'scatter',
       data: { datasets: fwdSets },
       options: chartOptions('Voltage (V)', steadyYLabel, state.logY, fwdYMax, state.logY ? 1e-10 : null)
-    });
-  }
-
-  if (revSets.length) {
-    const reverseYLabel = state.family === 'mosfet' ? '|I_D| (A)' : '|J| (A/cm²)';
-    reverseChart = new Chart(document.getElementById('reverse-chart'), {
-      type: 'scatter',
-      data: { datasets: revSets },
-      options: chartOptions('Voltage (V)', reverseYLabel, true, null, 1e-22)
     });
   }
 }
@@ -417,15 +397,19 @@ function renderPlots() {
   const transientCircuitBlock = document.getElementById('transient-circuit-block');
   const dptResultsBlock = document.getElementById('dpt-results-block');
   const dptCircuitBlock = document.getElementById('dpt-circuit-block');
+  const secondaryPanel = document.getElementById('secondary-panel');
+  const panelGrid = document.querySelector('.panel-grid');
   const axisToggle = document.querySelector('.axis-toggle');
 
   show(steadyForwardBlock, state.mode === 'steady');
-  show(steadyReverseBlock, state.mode === 'steady');
+  show(steadyReverseBlock, state.mode === 'steady' && DISPLAY_REVERSE_PLOTS);
   show(transientWaveformBlock, state.mode === 'transient' || state.mode === 'dpt');
   show(transientCircuitBlock, state.mode === 'transient');
   show(dptResultsBlock, state.mode === 'dpt');
   show(dptCircuitBlock, state.mode === 'dpt');
+  show(secondaryPanel, state.mode !== 'steady' || DISPLAY_REVERSE_PLOTS);
   show(axisToggle, state.mode === 'steady');
+  panelGrid.classList.toggle('steady-forward-only', state.mode === 'steady' && !DISPLAY_REVERSE_PLOTS);
 
   if (state.mode === 'steady') {
     renderSteady(classNode);
@@ -1026,6 +1010,27 @@ const CALC_MATS = {
   SiC: { eps_r: 9.7,  Ec0: 2.2e6, scaling: true  },
   GaN: { eps_r: 9.0,  Ec0: 3.3e6, scaling: true  },
 };
+
+function voltageClassToBV(voltageClass) {
+  if (!voltageClass) return null;
+  const normalized = voltageClass.trim().toLowerCase();
+  if (normalized.endsWith('kv')) {
+    return Math.round(parseFloat(normalized) * 1000);
+  }
+  if (normalized.endsWith('v')) {
+    return Math.round(parseFloat(normalized));
+  }
+  return null;
+}
+
+function syncCalcBVToSelection() {
+  const bv = voltageClassToBV(state.voltage);
+  const input = document.getElementById('calc-bv');
+  if (input && Number.isFinite(bv)) {
+    input.value = String(bv);
+    calcBV();
+  }
+}
 
 function calcBV() {
   const q  = 1.602e-19;

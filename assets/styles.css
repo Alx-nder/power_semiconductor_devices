@@ -115,6 +115,9 @@ button.active {
   gap: 0.75rem;
   align-items: start;
 }
+.panel-grid.steady-forward-only {
+  grid-template-columns: minmax(0, 1.35fr) minmax(360px, 0.9fr);
+}
 .panel {
   border: 1px solid var(--line);
   border-radius: 10px;
