@@ -1,5 +1,5 @@
 GO VICTORYDEVICE SIMFLAGS="-P 8 -256"
-# SiC MOSFET steady off-state uses 256-bit precision plus staged low-current reverse convergence rescue.
+# WBG MOSFET steady off-state uses 256-bit precision plus staged low-current reverse convergence rescue.
 
 MESH WIDTH=2.5e+07
 # Active area enforced: 4 um lateral span x WIDTH=2.5e+07 um = 1 cm^2.

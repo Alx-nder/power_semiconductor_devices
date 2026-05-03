@@ -41,9 +41,11 @@ LOG OFF
 
 SOLVE init
 LOG outf=steady_reverse.log J.ELECTRON J.HOLE
-SOLVE vanode=-1.000 vstep=-1.000 vfinal=-20.000 name=anode
-SOLVE vstep=-5.000 vfinal=-100.000 name=anode
-SOLVE vstep=-10.000 vfinal=-110.000 name=anode compliance=1e-5 cname=anode
+SOLVE vanode=-0.250 vstep=-0.250 vfinal=-5.000 name=anode
+METHOD NEWTON GUMMEL TRAP CLIMIT=1e-12 MAXTRAPS=120 ITLIMIT=150 DVMAX=0.25
+SOLVE vstep=-0.500 vfinal=-20.000 name=anode
+SOLVE vstep=-1.000 vfinal=-60.000 name=anode
+SOLVE vstep=-0.500 vfinal=-110.000 name=anode compliance=1e-5 cname=anode
 EXTRACT name="steady_reverse" curve(v."anode", i."anode") outfile="steady_reverse.csv"
 LOG OFF
 

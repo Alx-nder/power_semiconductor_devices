@@ -50,8 +50,11 @@ LOG OFF
 
 SOLVE init
 LOG outf=steady_reverse.log
-SOLVE vanode=-2.000 vstep=-2.000 vfinal=-20.000 name=anode
-SOLVE vstep=-10.000 vfinal=-110.000 name=anode compliance=1e-5 cname=anode
+SOLVE vanode=-0.500 vstep=-0.500 vfinal=-10.000 name=anode
+METHOD NEWTON DIRECT.256 TRAP MAXTRAPS=120 ITLIMIT=150 CLIMIT=1e-12 DVMAX=0.25 PR.TOLER=1e-40 CR.TOLER=1e-40 PX.TOLER=1e-5 CX.TOLER=1e-5
+SOLVE vstep=-1.000 vfinal=-40.000 name=anode
+SOLVE vstep=-2.000 vfinal=-80.000 name=anode
+SOLVE vstep=-0.500 vfinal=-110.000 name=anode compliance=1e-5 cname=anode
 EXTRACT name="steady_reverse" curve(v."anode", i."anode") outfile="steady_reverse.csv"
 LOG OFF
 

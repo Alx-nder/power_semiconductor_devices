@@ -51,8 +51,11 @@ LOG OFF
 
 SOLVE init
 LOG outf=steady_reverse.log
-SOLVE vanode=-2.000 vstep=-2.000 vfinal=-20.000 name=anode
-SOLVE vstep=-10.000 vfinal=-110.000 name=anode compliance=1e-5 cname=anode
+SOLVE vanode=-0.500 vstep=-0.500 vfinal=-10.000 name=anode
+METHOD NEWTON GUMMEL TRAP CLIMIT=1e-12 MAXTRAPS=120 ITLIMIT=150 DVMAX=0.25
+SOLVE vstep=-1.000 vfinal=-40.000 name=anode
+SOLVE vstep=-2.000 vfinal=-80.000 name=anode
+SOLVE vstep=-0.500 vfinal=-110.000 name=anode compliance=1e-5 cname=anode
 EXTRACT name="steady_reverse" curve(v."anode", i."anode") outfile="steady_reverse.csv"
 LOG OFF
 
