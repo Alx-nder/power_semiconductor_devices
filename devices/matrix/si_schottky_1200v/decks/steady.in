@@ -31,15 +31,13 @@ METHOD NEWTON
 LOG outf=steady_forward.log
 SOLVE init
 SAVE outf=structure.str
-SOLVE vanode=0.050 vstep=0.050 vfinal=1.000 name=anode
-SOLVE vstep=0.853 vfinal=102.355 name=anode
+SOLVE vanode=0.100 vstep=0.100 vfinal=5.000 name=anode
 EXTRACT name="steady_forward" curve(v."anode", i."anode") outfile="steady_forward.csv"
 LOG OFF
 
 SOLVE init
 LOG outf=steady_reverse.log
-SOLVE vanode=-6.000 vstep=-6.000 vfinal=-240.000 name=anode
-SOLVE vstep=-15.000 vfinal=-1500.000 name=anode compliance=1e-3 cname=anode
+SOLVE vanode=-1.000 vstep=-1.000 vfinal=-1500.000 name=anode compliance=1e-3 cname=anode
 EXTRACT name="steady_reverse" curve(v."anode", i."anode") outfile="steady_reverse.csv"
 LOG OFF
 

@@ -3,28 +3,26 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Power Device Matrix</title>
+<title>Power Device Lab</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
 <script src="data/device_data.js"></script>
-<link rel="stylesheet" href="assets/styles.css">
+<link rel="stylesheet" href="assets/styles.css?v=lab-20260513b">
+<link rel="stylesheet" href="assets/analysis.css?v=lab-20260513b">
 </head>
 <body>
 <main>
   <header>
     <div>
-      <h1>Power Device Matrix</h1>
-      <div class="sub">PIN, Schottky, MOSFET | 100V, 600V, 1.2kV | DC + double pulse test</div>
+      <h1>Power Device Lab</h1>
+      <div class="sub">Simulated I-V, double-pulse switching, and Baliga-referenced analytical loss estimates</div>
     </div>
     <div class="kpi" id="kpi">Loaded: 0 variants</div>
   </header>
 
   <section class="controls">
-    <div class="control-row" id="mode-row">
-      <span class="label">Mode</span>
-    </div>
     <div class="control-row" id="family-row">
       <span class="label">Family</span>
     </div>
@@ -36,185 +34,137 @@
     </div>
   </section>
 
-  <div class="calc-bar" id="drift-calc-bar">
-    <h3>Drift Region Calculator</h3>
-    <div class="calc-inputs">
-      <label>Material
-        <select id="calc-mat">
-          <option value="Si">Si</option>
-          <option value="SiC">4H-SiC</option>
-          <option value="GaN">GaN</option>
-        </select>
-      </label>
-      <label>Target BV (V)
-        <input type="number" id="calc-bv" value="600" min="1" max="50000" step="1">
-      </label>
-    </div>
-    <div class="calc-results" id="calc-results">
-      <span class="calc-result-item">N<sub>d,max</sub> = <span class="val" id="calc-nd">—</span></span>
-      <span class="calc-result-item">W<sub>d,min</sub> = <span class="val" id="calc-wd">—</span></span>
-      <span class="calc-result-item">E<sub>c</sub> = <span class="val" id="calc-ec">—</span></span>
-    </div>
-    <div class="calc-eqs">NPT: N<sub>d</sub> = ε<sub>s</sub>E<sub>c</sub>² / 2qBV &ensp;|&ensp; W<sub>d</sub> = 2BV / E<sub>c</sub> &ensp;— Baliga, <i>Fundamentals of Power Semiconductor Devices</i>, 2nd ed.</div>
-  </div>
-
-  <section class="panel-grid">
-    <div class="panel" id="primary-panel">
-      <div class="plot-header">
-        <h2 id="plot-title">Comparison</h2>
-        <div class="axis-toggle">
-          <span>Y-axis</span>
-          <button id="btn-log">Log</button>
-          <button id="btn-lin" class="active">Linear</button>
-        </div>
+  <section class="lab-grid">
+    <div class="panel lab-card analysis-card" id="analysis-section">
+      <h2>User-Defined Device Analysis</h2>
+      <div class="analysis-controls compact-analysis-controls">
+        <label>Material
+          <select id="analysis-material">
+            <option value="Si">Si</option>
+            <option value="SiC">4H-SiC</option>
+            <option value="GaN">GaN</option>
+          </select>
+        </label>
+        <label>Target BV (V)
+          <input type="number" id="analysis-bv" value="600" min="1" step="1">
+        </label>
+        <label>Current Density (A/cm²)
+          <input type="number" id="analysis-current-density" value="100" min="0.001" step="10">
+        </label>
+        <label>Active Area (cm²)
+          <input type="number" id="analysis-area" value="1" min="0.0001" step="0.1">
+        </label>
+        <label>Switching Freq. (Hz)
+          <input type="number" id="analysis-frequency" value="100000" min="1" step="10000">
+        </label>
+        <label>Duty Ratio
+          <input type="number" id="analysis-duty" value="0.5" min="0" max="1" step="0.05">
+        </label>
       </div>
-      <div id="steady-forward-block">
-        <div class="chart-wrap compact-chart">
-          <canvas id="forward-chart" height="300"></canvas>
-          <div class="no-data" id="forward-none" hidden>No forward data</div>
-        </div>
+      <div class="metric-grid analysis-metrics">
+        <div class="metric-card"><span class="label">N<sub>d,max</sub></span><span class="value" id="analysis-nd">—</span></div>
+        <div class="metric-card"><span class="label">W<sub>d,min</sub></span><span class="value" id="analysis-wd">—</span></div>
+        <div class="metric-card"><span class="label">R<sub>drift,sp</sub></span><span class="value" id="analysis-ronsp">—</span></div>
+        <div class="metric-card"><span class="label">I</span><span class="value" id="analysis-current">—</span></div>
+        <div class="metric-card"><span class="label">V<sub>drop</sub></span><span class="value" id="analysis-vdrop">—</span></div>
+        <div class="metric-card"><span class="label">P<sub>cond</sub></span><span class="value" id="analysis-pcond">—</span></div>
       </div>
-      <div id="transient-waveform-block" hidden>
-        <div class="chart-wrap compact-chart">
-          <canvas id="transient-chart" height="300"></canvas>
-          <div class="no-data" id="transient-none" hidden>No switching data</div>
-        </div>
-      </div>
-      <div id="dpt-results-block" hidden>
-        <div class="metric-grid" id="dpt-metrics"></div>
-      </div>
-
-    </div>
-
-    <div class="panel" id="secondary-panel">
-      <div class="panel-header">
-        <h2 id="secondary-title">Reverse Breakdown</h2>
-      </div>
-      <div id="steady-reverse-block">
-        <div class="chart-wrap compact-chart faded-panel" id="reverse-wrap">
-          <canvas id="reverse-chart" height="300"></canvas>
-          <div class="no-data" id="reverse-none" hidden>No reverse data</div>
-        </div>
-      </div>
-      <div id="transient-circuit-block" hidden>
-        <div class="circuit-diagram" id="circuit-diagram">
-          <h3>Test Circuit</h3>
-          <svg id="circuit-svg" class="dev-svg" viewBox="0 0 520 280" xmlns="http://www.w3.org/2000/svg"></svg>
-        </div>
-      </div>
-      <div id="dpt-circuit-block" hidden>
-        <div class="circuit-diagram" id="dpt-circuit-diagram">
-          <h3>DPT Circuit</h3>
-          <svg id="dpt-circuit-svg" class="dev-svg" viewBox="0 0 520 300" xmlns="http://www.w3.org/2000/svg"></svg>
-        </div>
-      </div>
-    </div>
-
-    <div class="panel side-panel">
-      <div id="device-svg-wrap">
-        <h3>Device Cross-Section</h3>
-        <svg id="dev-svg" class="dev-svg" viewBox="0 0 300 210" xmlns="http://www.w3.org/2000/svg"></svg>
-        <div class="svg-legend" id="svg-legend"></div>
-      </div>
-      <h2>Decks</h2>
-      <small class="mono">steady.in + switching.in</small>
-      <div class="decks-wrap">
+      <div class="analysis-note">Uses the selected family above, then compares only against simulated devices in that family.</div>
+      <div class="analysis-table-wrap compact-comparison">
         <table>
           <thead>
             <tr>
               <th>Material</th>
               <th>Class</th>
-              <th>Status</th>
-              <th>Steady</th>
-              <th>Switch</th>
+              <th>Design BV</th>
+              <th>R<sub>on,sp</sub></th>
+              <th>V @ J</th>
+              <th>P<sub>cond</sub></th>
+              <th>I<sub>RM</sub></th>
+              <th>Q<sub>rr</sub></th>
+              <th>t<sub>rr</sub></th>
+              <th>E<sub>sw</sub></th>
+              <th>P<sub>sw</sub></th>
             </tr>
           </thead>
-          <tbody id="deck-body"></tbody>
+          <tbody id="analysis-comparison-body"></tbody>
         </table>
+      </div>
+      <div class="formula-citations">
+        <span>Drift: Baliga Eq. 1.9, 1.10, 1.11; resistance form Eq. 3.25.</span>
+        <span>Critical field: Baliga Eq. 3.22 for Si and Eq. 3.23 for 4H-SiC. GaN uses the same project scaling form and is labeled as an extension.</span>
+        <span>Loss: MOSFET on-state term follows Baliga Eq. 6.242; switching rows use P<sub>sw</sub> = E<sub>sw</sub>f<sub>sw</sub>.</span>
+      </div>
+    </div>
+
+    <div class="panel lab-card" id="iv-card">
+      <div class="plot-header">
+        <h2 id="plot-title">Steady I-V</h2>
+      </div>
+      <div id="steady-forward-block">
+        <div class="chart-wrap compact-chart">
+          <canvas id="forward-chart" height="250"></canvas>
+          <div class="no-data" id="forward-none" hidden>No I-V data</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel lab-card" id="dpt-card">
+      <div class="panel-header">
+        <h2 id="secondary-title">Reverse Recovery + Switching Loss</h2>
+      </div>
+      <div id="transient-waveform-block">
+        <div class="chart-wrap compact-chart">
+          <canvas id="transient-chart" height="250"></canvas>
+          <div class="no-data" id="transient-none" hidden>No switching data</div>
+        </div>
+      </div>
+      <div id="dpt-results-block">
+        <div class="metric-grid dpt-metrics" id="dpt-metrics"></div>
       </div>
     </div>
   </section>
 
-  <section id="process-section" hidden>
-    <div class="calc-bar">
-      <h3>Al Activation — 4H-SiC</h3>
-      <div class="calc-inputs">
-        <label>Energy (keV)
-          <input type="number" id="proc-energy" value="100" min="10" max="500" step="10">
-        </label>
-        <label>Dose (cm⁻²)
-          <select id="proc-dose">
-            <option value="1e13">1×10¹³</option>
-            <option value="5e13">5×10¹³</option>
-            <option value="1e14" selected>1×10¹⁴</option>
-            <option value="5e14">5×10¹⁴</option>
-            <option value="1e15">1×10¹⁵</option>
-          </select>
-        </label>
-        <label>Anneal T (°C)
-          <input type="number" id="proc-temp" value="1700" min="1400" max="1900" step="25">
-        </label>
-        <label>Time (min)
-          <input type="number" id="proc-time" value="30" min="0.1" max="360" step="5">
-        </label>
+  <section class="panel formula-section" id="formula-panel">
+      <h2>Analytical Formula Sources</h2>
+      <div class="formula-list">
+        <span>W<sub>D</sub> = 2BV/E<sub>C</sub> — Baliga Eq. 1.9.</span>
+        <span>N<sub>D</sub> = ε<sub>S</sub>E<sub>C</sub>²/(2qBV) — Baliga Eq. 1.10.</span>
+        <span>R<sub>on,sp</sub> = 4BV²/(ε<sub>S</sub>µ<sub>n</sub>E<sub>C</sub>³) — Baliga Eq. 1.11, repeated as Eq. 3.24.</span>
+        <span>R<sub>on,sp</sub> = W<sub>PP</sub>/(qµ<sub>n</sub>N<sub>D</sub>) — Baliga Eq. 3.25.</span>
+        <span>E<sub>C</sub>(N<sub>D</sub>) scaling — Baliga Eq. 3.22 for Si and Eq. 3.23 for 4H-SiC.</span>
+        <span>MOSFET P<sub>ON</sub> = (t<sub>ON</sub>/T)R<sub>ON</sub>I<sub>ON</sub>² — Baliga Eq. 6.242.</span>
       </div>
-      <div class="calc-results" id="proc-results">
-        <span class="calc-result-item">R<sub>p</sub> = <span class="val" id="proc-rp">—</span></span>
-        <span class="calc-result-item">ΔR<sub>p</sub> = <span class="val" id="proc-drp">—</span></span>
-        <span class="calc-result-item">C<sub>peak</sub> = <span class="val" id="proc-cpeak">—</span></span>
-        <span class="calc-result-item">C<sub>ss</sub> = <span class="val" id="proc-csol">—</span></span>
-        <span class="calc-result-item">C<sub>act</sub> = <span class="val" id="proc-cact">—</span></span>
-        <span class="calc-result-item">R<sub>act</sub> = <span class="val" id="proc-ract">—</span></span>
-      </div>
-      <div class="calc-eqs">C<sub>act</sub> = C<sub>tot</sub>/(1 + C<sub>tot</sub>/C<sub>ss</sub>) · (1 − e<sup>−κt</sup>) &ensp;|&ensp; Analytical solution of Simonka Eq. 3.31, evaluated at depth R<sub>p</sub> where C<sub>tot</sub> = C<sub>peak</sub></div>
-    </div>
+  </section>
 
-    <div class="proc-charts">
-      <div class="panel">
-        <h2>Activation vs Temperature</h2>
-        <div class="chart-wrap compact-chart">
-          <div class="chart-box"><canvas id="proc-temp-chart"></canvas></div>
-        </div>
-      </div>
-      <div class="panel">
-        <h2>Activation vs Anneal Time</h2>
-        <div class="chart-wrap compact-chart">
-          <div class="chart-box"><canvas id="proc-time-chart"></canvas></div>
-        </div>
-      </div>
+  <section class="panel deck-section" id="deck-section">
+    <h2>Decks</h2>
+    <small class="mono">steady.in + switching.in</small>
+    <div class="decks-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Material</th>
+            <th>Class</th>
+            <th>Status</th>
+            <th>Steady</th>
+            <th>Switch</th>
+          </tr>
+        </thead>
+        <tbody id="deck-body"></tbody>
+      </table>
     </div>
-
-    <div class="proc-explain">
-      <h2>Derivation — from Simonka Eq. 3.31 to the formula above</h2>
-      <div class="derivation-steps">
-        <p><strong>1.</strong> Simonka's ODE (Eq. 3.31, §3.4.1):</p>
-        <p class="derivation-indent">dC<sub>act</sub>/dt = −κ · (C<sub>act</sub> − C<sub>tot</sub> / (1 + C<sub>tot</sub>/C<sub>ss</sub>))</p>
-        <p><strong>2.</strong> Let C<sub>∞</sub> = C<sub>tot</sub> / (1 + C<sub>tot</sub>/C<sub>ss</sub>)  — the steady-state target. The ODE becomes:</p>
-        <p class="derivation-indent">dC<sub>act</sub>/dt = −κ · (C<sub>act</sub> − C<sub>∞</sub>)  →  standard 1st-order linear ODE</p>
-        <p><strong>3.</strong> With initial condition C<sub>act</sub>(0) = 0, the analytical solution is:</p>
-        <p class="derivation-formula">C<sub>act</sub>(t) = C<sub>∞</sub> · (1 − e<sup>−κt</sup>) = C<sub>tot</sub> / (1 + C<sub>tot</sub>/C<sub>ss</sub>) · (1 − e<sup>−κt</sup>)</p>
-        <p><strong>4.</strong> C<sub>ss</sub>(T) and κ(T) are Arrhenius: Z·exp(−E<sub>a</sub>/k<sub>B</sub>T). Parameters from Table 3.5.</p>
-      </div>
-      <div class="derivation-notes">
-        <p><strong>C<sub>ss</sub></strong> = solid solubility — the max dopant concentration the lattice can electrically activate at temperature T.</p>
-        <p><strong>C<sub>tot</sub> vs C<sub>peak</sub></strong> — The model uses C<sub>tot</sub>(x), the local concentration at depth x. Our calculator evaluates at x = R<sub>p</sub> where C<sub>tot</sub> = C<sub>peak</sub> (the worst-case point). At shallower/deeper depths where C<sub>tot</sub> &lt; C<sub>peak</sub>, activation ratio is higher.</p>
-        <p><strong class="red-dot">Red dot</strong> = your current settings. Left chart sweeps T. Right chart sweeps t.</p>
-      </div>
-    </div>
-    <footer class="page-footer">
-      <span><strong>Model:</strong> Analytical solution of Simonka Eq. 3.31 (transient activation ODE). C<sub>ss</sub>(T), κ(T): Arrhenius, Table 3.5. Calibrated against Silvaco VP simulations.</span>
-      <span><strong>Implant:</strong> BCA Monte Carlo, Al→4H-SiC Si-face (0001) 4° off-axis. R<sub>p</sub> = 1.85·E<sup>0.91</sup>, ΔR<sub>p</sub> = 2.62·E<sup>0.63</sup> (nm, E in keV).</span>
-      <span><strong>Valid range:</strong> E = 30–400 keV, T = 1500–1800 °C, t = 5–120 min.</span>
-    </footer>
   </section>
 
   <footer class="page-footer" id="main-footer">
-    <span><strong>Assumptions:</strong> 1-D abrupt NPT junction, uniform drift doping, no edge termination. WBG: E<sub>c</sub>(N<sub>d</sub>) = E<sub>c0</sub>(N<sub>d</sub>/10<sup>16</sup>)<sup>1/8</sup> (Konstantinov).</span>
+    <span><strong>Assumptions:</strong> 1-D drift design, uniform drift doping, no edge termination. W<sub>D</sub> and N<sub>D</sub>: Baliga Eq. 1.9 and Eq. 1.10.</span>
     <span><strong>Constants (Baliga Table 1.1):</strong> Si ε<sub>r</sub>=11.7, E<sub>c0</sub>=3.0×10⁵ V/cm &ensp;|&ensp; 4H-SiC ε<sub>r</sub>=9.7, E<sub>c0</sub>=2.2×10⁶ &ensp;|&ensp; GaN ε<sub>r</sub>=9.0, E<sub>c0</sub>=3.3×10⁶ V/cm.</span>
-    <span><strong>Note:</strong> Calculator gives ideal <em>minimum</em> W<sub>d</sub> and <em>maximum</em> N<sub>d</sub>. Simulated devices use added margin and realistic profiles.</span>
+    <span><strong>Critical field:</strong> Baliga Eq. 3.22 for Si and Eq. 3.23 for 4H-SiC. GaN is explicitly treated as a project extension.</span>
   </footer>
 </main>
 
-<script src="assets/app.js"></script>
+<script src="assets/calculators.js?v=lab-20260513b"></script>
+<script src="assets/analysis.js?v=lab-20260513b"></script>
+<script src="assets/app.js?v=lab-20260513b"></script>
 </body>
 </html>

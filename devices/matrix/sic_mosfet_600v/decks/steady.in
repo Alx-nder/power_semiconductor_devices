@@ -1,5 +1,5 @@
 GO VICTORYDEVICE SIMFLAGS="-P 8 -256"
-# WBG MOSFET steady off-state uses 256-bit precision plus staged low-current reverse convergence rescue.
+# WBG MOSFET steady off-state uses 256-bit precision for low-current reverse leakage.
 
 MESH WIDTH=2.5e+07
 # Active area enforced: 4 um lateral span x WIDTH=2.5e+07 um = 1 cm^2.
@@ -52,7 +52,7 @@ SOLVE init
 SOLVE vgate=0 vdrain=0
 LOG outf=steady_forward_vg10.log
 SOLVE vstep=0.500 vfinal=10 name=gate
-SOLVE vstep=0.500 vfinal=5.000 name=drain
+SOLVE vstep=0.100 vfinal=5.000 name=drain
 EXTRACT name="steady_forward_vg10" curve(v."drain", i."drain") outfile="steady_forward_vg10.csv"
 LOG OFF
 
@@ -60,7 +60,7 @@ SOLVE init
 SOLVE vgate=0 vdrain=0
 LOG outf=steady_forward.log
 SOLVE vstep=0.500 vfinal=15 name=gate
-SOLVE vstep=0.500 vfinal=5.000 name=drain
+SOLVE vstep=0.100 vfinal=5.000 name=drain
 EXTRACT name="steady_forward" curve(v."drain", i."drain") outfile="steady_forward.csv"
 EXTRACT name="steady_forward_vg15" curve(v."drain", i."drain") outfile="steady_forward_vg15.csv"
 LOG OFF
@@ -68,12 +68,7 @@ LOG OFF
 SOLVE init
 LOG outf=steady_reverse.log
 SOLVE vgate=0 vdrain=0
-SOLVE vdrain=1.000 vstep=1.000 vfinal=20.000 name=drain
-SOLVE vstep=2.000 vfinal=100.000 name=drain
-METHOD NEWTON GUMMEL TRAP CLIMIT=1e-10 MAXTRAPS=120 ITLIMIT=150 DVMAX=0.5
-SOLVE vstep=0.500 vfinal=130.000 name=drain
-SOLVE vstep=2.000 vfinal=250.000 name=drain
-SOLVE vstep=5.000 vfinal=750.000 name=drain compliance=1e-5 cname=drain
+SOLVE vdrain=1.000 vstep=1.000 vfinal=750.000 name=drain compliance=1e-5 cname=drain
 EXTRACT name="steady_reverse" curve(v."drain", i."drain") outfile="steady_reverse.csv"
 LOG OFF
 

@@ -37,8 +37,7 @@ METHOD NEWTON DIRECT.256 TRAP MAXTRAPS=60 ITLIMIT=100 CLIMIT=1e-9 DVMAX=1e8 PR.T
 LOG outf=steady_forward.log
 SOLVE init
 SAVE outf=structure.str
-SOLVE vanode=0.250 vstep=0.250 vfinal=1.000 name=anode
-SOLVE vstep=0.250 vfinal=5.500 name=anode compliance=1e6 cname=anode
+SOLVE vanode=0.100 vstep=0.100 vfinal=5.000 name=anode compliance=1e6 cname=anode
 EXTRACT name="steady_forward" curve(v."anode", i."anode") outfile="steady_forward.csv"
 LOG OFF
 
@@ -80,10 +79,7 @@ METHOD NEWTON DIRECT.256 TRAP MAXTRAPS=60 ITLIMIT=100 CLIMIT=1e-9 DVMAX=1e8 PR.T
 
 SOLVE init
 LOG outf=steady_reverse.log J.ELECTRON J.HOLE
-SOLVE vanode=-1.000 vstep=-1.000 vfinal=-20.000 name=anode
-SOLVE vstep=-5.000 vfinal=-100.000 name=anode
-SOLVE vstep=-10.000 vfinal=-250.000 name=anode
-SOLVE vstep=-25.000 vfinal=-1500.000 name=anode compliance=1e-5 cname=anode
+SOLVE vanode=-1.000 vstep=-1.000 vfinal=-1500.000 name=anode compliance=1e-5 cname=anode
 EXTRACT name="steady_reverse" curve(v."anode", i."anode") outfile="steady_reverse.csv"
 LOG OFF
 

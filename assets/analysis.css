@@ -1,0 +1,63 @@
+.analysis-grid {
+  display: grid;
+  grid-template-columns: minmax(260px, 0.8fr) minmax(320px, 1fr);
+  gap: 0.75rem;
+  align-items: start;
+}
+.analysis-panel-wide {
+  grid-column: 1 / -1;
+}
+.analysis-controls {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 0.5rem;
+}
+.compact-analysis-controls {
+  grid-template-columns: repeat(2, minmax(130px, 1fr));
+}
+.analysis-controls label {
+  color: var(--muted);
+  font-size: 0.78rem;
+}
+.analysis-controls select,
+.analysis-controls input {
+  display: block;
+  width: 100%;
+  margin-top: 0.18rem;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: #fafafa;
+  color: var(--ink);
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.82rem;
+  padding: 0.32rem 0.42rem;
+}
+.analysis-note {
+  margin-top: 0.55rem;
+  color: var(--muted);
+  font-size: 0.76rem;
+  line-height: 1.45;
+}
+.analysis-metrics {
+  grid-template-columns: repeat(3, minmax(92px, 1fr));
+}
+.analysis-table-wrap {
+  overflow: auto;
+  max-height: 360px;
+}
+.compact-comparison {
+  max-height: 210px;
+  margin-top: 0.55rem;
+}
+.dpt-metrics {
+  grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+}
+.analysis-table-wrap th,
+.analysis-table-wrap td {
+  white-space: nowrap;
+}
+@media (max-width: 980px) {
+  .analysis-grid { grid-template-columns: 1fr; }
+  .compact-analysis-controls,
+  .analysis-metrics { grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); }
+}

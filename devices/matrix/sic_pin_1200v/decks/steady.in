@@ -44,20 +44,13 @@ METHOD NEWTON GUMMEL TRAP CLIMIT=1e-9 MAXTRAPS=40
 LOG outf=steady_forward.log
 SOLVE init
 SAVE outf=structure.str
-SOLVE vanode=0.250 vstep=0.250 vfinal=1.000 name=anode
-SOLVE vstep=0.250 vfinal=5.500 name=anode compliance=1e6 cname=anode
+SOLVE vanode=0.100 vstep=0.100 vfinal=5.000 name=anode compliance=1e6 cname=anode
 EXTRACT name="steady_forward" curve(v."anode", i."anode") outfile="steady_forward.csv"
 LOG OFF
 
 SOLVE init
 LOG outf=steady_reverse.log
-SOLVE vanode=-2.000 vstep=-2.000 vfinal=-20.000 name=anode
-SOLVE vstep=-5.000 vfinal=-100.000 name=anode
-METHOD NEWTON GUMMEL TRAP CLIMIT=1e-10 MAXTRAPS=80 ITLIMIT=120 DVMAX=1.0
-SOLVE vstep=-10.000 vfinal=-300.000 name=anode
-METHOD NEWTON TRAP CLIMIT=1e-10 MAXTRAPS=80 ITLIMIT=120 DVMAX=2.0
-SOLVE vstep=-20.000 vfinal=-800.000 name=anode
-SOLVE vstep=-10.000 vfinal=-1500.000 name=anode compliance=1e-5 cname=anode
+SOLVE vanode=-1.000 vstep=-1.000 vfinal=-1500.000 name=anode compliance=1e-5 cname=anode
 EXTRACT name="steady_reverse" curve(v."anode", i."anode") outfile="steady_reverse.csv"
 LOG OFF
 
