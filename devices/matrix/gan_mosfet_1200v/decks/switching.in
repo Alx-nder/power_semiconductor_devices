@@ -1,5 +1,5 @@
-GO VICTORYDEVICE SIMFLAGS="-P 8 -256"
-# WBG low-leakage reverse sweeps and mixed-mode transitions intentionally use 256-bit precision.
+GO VICTORYDEVICE SIMFLAGS="-P 8 -160"
+# WBG low-leakage reverse sweeps and mixed-mode transitions intentionally use 160-bit precision.
 
 MESH WIDTH=2.5e+07
 # Active area enforced: 4 um lateral span x WIDTH=2.5e+07 um = 1 cm^2.
@@ -58,8 +58,8 @@ SOLVE vstep=10 vfinal=200 name=drain
 SOLVE vstep=20 vfinal=960 name=drain
 SAVE OUTFILE=gan_mosfet_1200v_dpt.str
 
-GO VICTORYDEVICE SIMFLAGS="-P 8 -256"
-# WBG low-leakage reverse sweeps and mixed-mode transitions intentionally use 256-bit precision.
+GO VICTORYDEVICE SIMFLAGS="-P 8 -160"
+# WBG low-leakage reverse sweeps and mixed-mode transitions intentionally use 160-bit precision.
 
 .BEGIN
 V_DC     10  0   960

@@ -1,0 +1,2391 @@
+
+*** this is deckbuild version 5.2.40.R ***
+
+GO VICTORYDEVICE SIMFLAGS="-P 8 -160"
+Executing /opt/sedatools2025/lib/victoryd/2.0.1.R/x86_64-linux/victorydevice160.exe -P 8
+
+                                 VICTORY DEVICE
+
+                Version: 2.0.1.R (Thu Dec 11 21:10:37 PST 2025)
+                           Copyright (c) 2004 - 2025
+                        Silvaco Inc. All rights reserved
+        ===============================================================
+          Victory Device                                    : Enabled   
+          Victory Device 2D Simulator                       : Enabled   
+          Victory Device 3D Simulator                       : Enabled   
+          Victory Device 2D Single Event Effects            : Enabled   
+          Victory Device 3D Single Event Effects            : Enabled   
+          Victory Device 2D MixedMode                       : Enabled   
+          Victory Device 3D MixedMode                       : Enabled   
+          Victory Device 2D REM                             : Enabled   
+          Victory Device 3D REM                             : Enabled   
+          Victory Device 2D Optical                         : Enabled   
+          Victory Device 3D Optical                         : Enabled   
+          Victory Device 2D Giga                            : Enabled   
+          Victory Device 3D Giga                            : Enabled   
+          Victory Device 2D Chemistry                       : Enabled   
+          Victory Device 3D Chemistry                       : Enabled   
+          Victory Device 2D Organic                         : Enabled   
+          Victory Device 3D Organic                         : Enabled   
+          Victory Device 2D Quantum                         : Enabled   
+          Victory Device 3D Quantum                         : Enabled   
+        ===============================================================
+                          Current SFLM Server: FLEXlm
+                                SMDB Locations: 
+     /opt/sedatools2025/lib/victoryd/2.0.1.R/common/smdb/ATLAS_current/T1.0
+                /opt/sedatools2025/lib/smdb/2.16.0.R/common/T1.0
+        ===============================================================
+                         Executing on host: silvaco540
+                       Using: 8 CPUs (48 CPUs available)
+                            Using: 160-bit precision
+
+                            Thu May 28 09:48:10 2026
+        ===============================================================
+
+
+VICTORYDEVICE> # WBG steady IV rebuild: 2 um x-span, 0.1 um mesh, gaussian-only doping, 160-bit precision.
+VICTORYDEVICE> 
+VICTORYDEVICE> MESH WIDTH=5e+07
+VICTORYDEVICE> # Active area enforced: 2 um lateral span x WIDTH=5e+07 um = 1 cm^2.
+VICTORYDEVICE> X.MESH loc=0.0 spac=0.1
+VICTORYDEVICE> X.MESH loc=2.0 spac=0.1
+VICTORYDEVICE> Y.MESH loc=0.000 spac=0.100
+VICTORYDEVICE> Y.MESH loc=7.745 spac=0.100
+VICTORYDEVICE> Y.MESH loc=9.294 spac=0.100
+VICTORYDEVICE> 
+VICTORYDEVICE> REGION num=1 material=GaN x.min=0 x.max=2.0 y.min=0 y.max=7.745
+VICTORYDEVICE> REGION num=2 material=GaN x.min=0 x.max=2.0 y.min=7.745 y.max=9.294
+VICTORYDEVICE> 
+VICTORYDEVICE> ELECTRODE name=anode top
+VICTORYDEVICE> ELECTRODE name=cathode bottom
+VICTORYDEVICE> 
+VICTORYDEVICE> DOPING gauss n.type conc=3.32481e+16 peak=3.873 char=77.450 dir=Y REGION=1
+
+Adding (surface only) box to "anode".
+Adding box to contact "anode"
+
+Adding (surface only) box to "cathode".
+Adding box to contact "cathode"
+
+
+
+Starting: Victory Device 2D Simulator module. 
+
+Mesh statistics:
+1953 nodes
+3680 triangles
+
+Electrode 1 (anode)
+  Number of boundary points: 21
+  Dimension in microns:
+         min      max
+  x        0        2
+  y        0        0
+
+Electrode 2 (cathode)
+  Number of boundary points: 21
+  Dimension in microns:
+         min      max
+  x        0        2
+  y    9.294    9.294
+
+VICTORYDEVICE> DOPING gauss n.type conc=5.00000e+19 peak=9.294 char=0.516 dir=Y REGION=2
+VICTORYDEVICE> 
+VICTORYDEVICE> CONTACT name=anode WORKFUNCTION=4.94 SURF.REC BARRIER E.TUNNEL PIPINYS ME.TUNNEL=0.20
+Setting anode workfunction to 4.94
+VICTORYDEVICE> CONTACT name=cathode NEUTRAL
+Setting cathode workfunction to 0
+VICTORYDEVICE> 
+VICTORYDEVICE> MATERIAL material=GaN EDB=0.025 EAB=0.17
+VICTORYDEVICE> MATERIAL material=GaN PIP.NT=1e7 PIP.ET=0.8
+VICTORYDEVICE> MATERIAL material=GaN TAUN0=1e-9 TAUP0=1e-9
+VICTORYDEVICE> # Clean GaN BV block: FMCT.N/GANSAT.N mobility and Oguzman EDGE impact.
+VICTORYDEVICE> MODELS MATERIAL=GaN FERMIDIRAC FLDMOB SRH INCOMPLETE TEMP=300 PRINT
+VICTORYDEVICE> MOBILITY MATERIAL=GaN FMCT.N GANSAT.N
+VICTORYDEVICE> IMPACT MATERIAL=GaN N.OGUZMAN P.OGUZMAN EDGE
+VICTORYDEVICE> METHOD NEWTON GUMMEL
+VICTORYDEVICE> 
+VICTORYDEVICE> LOG outf=steady_forward.log
+VICTORYDEVICE> SOLVE init
+
+
+CONSTANTS:
+  Boltzmann's constant   = 1.38066e-23 J/K
+  Elementary charge      = 1.60219e-19 C
+  Permittivity in vacuum = 8.85419e-14 F/cm
+  Temperature            = 300 K
+  Thermal voltage        = 0.025852 V
+
+
+REGIONAL MATERIAL PARAMETERS (average value for each region):
+  Region       :            1           2
+  Name         :                         
+  Material     :          GaN         GaN
+  Type         :    semicond.   semicond.
+
+ Band Parameters
+  Epsilon      :          8.9         8.9
+  Eg  (eV)     :       3.4376      3.4376
+  Chi (eV)     :         4.31        4.31
+  Nc (per cc)  :     2.24e+18    2.24e+18
+  Nv (per cc)  :     2.51e+19    2.51e+19
+  ni (per cc)  :  1.00103e-10 1.00103e-10
+
+ Effective Richardson Constants
+  An**         :        24.03       24.03
+  Ap**         :          120         120
+
+ Incomplete Ionization Parameters
+  Gv           :            4           4
+  Ed  (eV)     :        0.025       0.025
+  Ea  (eV)     :         0.17        0.17
+
+ Recombination Parameters
+  taun0        :        1e-09       1e-09
+  taup0        :        1e-09       1e-09
+  taun         :        1e-09       1e-09
+  taup         :        1e-09       1e-09
+  lt.taun      :         1.42        1.42
+  lt.taup      :         1.42        1.42
+  etrap        :            0           0
+
+ Impact Ionization Parameters
+  model        :   selberherr  selberherr
+  a.nt         :        0.588       0.588
+  a.pt         :        0.588       0.588
+  an1          :     2.52e+08    2.52e+08
+  an2          :     2.52e+08    2.52e+08
+  ap1          :     5.37e+06    5.37e+06
+  ap2          :     5.37e+06    5.37e+06
+  b.nt         :        0.248       0.248
+  b.pt         :        0.248       0.248
+  betan        :            1           1
+  betap        :            1           1
+  bn1          :     3.41e+07    3.41e+07
+  bn2          :     3.41e+07    3.41e+07
+  bp1          :     1.96e+07    1.96e+07
+  bp2          :     1.96e+07    1.96e+07
+  egran        :            0           0
+  m.ant        :            1           1
+  m.apt        :            1           1
+  m.bnt        :            1           1
+  m.bpt        :            1           1
+
+ Tunneling Parameters (Note: Some may be overridden at specific contacts)
+  me.tunnel    :          0.2         0.2
+  mh.tunnel    :      1.49112     1.49112
+
+ Thermal Velocities
+  vn (cm/s)    :  2.61331e+07 2.61331e+07
+  vp (cm/s)    :  1.16784e+07 1.16784e+07
+
+ Saturation Velocities
+  vsatn (cm/s) :   1.9064e+07  1.9064e+07
+  alphan.fld   :      2.4e+07     2.4e+07
+  tnomn.fld(K) :          600         600
+  deltan.fld   :       (n/a)       (n/a) 
+  thetan.fld   :          0.8         0.8
+  vsatp (cm/s) :        1e+06       1e+06
+  alphap.fld   :      2.4e+07     2.4e+07
+  tnomp.fld(K) :          600         600
+  deltap.fld   :       (n/a)       (n/a) 
+  thetap.fld   :          0.8         0.8
+
+
+REGIONAL MODEL FLAGS:
+  Region       :       1      2
+  srh          :    true   true
+  consrh       :   false  false
+  klasrh       :   false  false
+  schsrh       :   false  false
+  auger        :   false  false
+  klaaug       :   false  false
+  hnsaug       :   false  false
+  picaug       :   false  false
+  kerraug      :   false  false
+  richter.aug  :   false  false
+  solar.aug    :   false  false
+  optr         :   false  false
+  solar.optr   :   false  false
+  spontaneous  :   false  false
+  langevin     :   false  false
+  koster       :   false  false
+  bgn          :   false  false
+  bgn.bennett  :   false  false
+  bgn.delalamo :   false  false
+  bgn.klaassen :   false  false
+  bgn.lades    :   false  false
+  bgn.lindefelt:   false  false
+  bgn.net.dopin:   false  false
+  incomplete   :    true   true
+  inc.two_level:   false  false
+  inc.ion      :   false  false
+  ioniz        :   false  false
+  inc.cryo     :   false  false
+  inc.cryo(2L) :   false  false
+  bbt          :   false  false
+  bbt.std      :   false  false
+  bbtauto      :   false  false
+  bbt.kane     :   false  false
+  bbt.jtat     :   false  false
+  bbt.tddb     :   false  false
+  bbt.hurkx    :   false  false
+  bbt.schenk   :   false  false
+  bbt.heigl    :   false  false
+  tat(local)   :   false  false
+  tat(coulomb) :   false  false
+  impact       :    true   true
+  boltzmann    :   false  false
+  fermi-dirac  :    true   true
+  cubic35      :   false  false
+  kanda        :   false  false
+
+
+REGIONAL MOBILITY MODEL SUMMARY:
+
+  Region #1:
+
+    Models active for Electrons:
+
+      GANSAT Parallel-field-dependent Mobility Model: 
+
+        n1  = 7.2033
+        n2  = 0.7857
+        an  = 6.1973
+        ec  = 220894
+
+      Saturation-velocity (VSAT) Model:
+
+        vsat  = 1.9064e+07
+
+      Farahmand Model:
+
+        mu1   = 295
+        mu2   = 1460.7
+        ncrit = 1e+17
+        alpha = 0.66
+        beta  = -1.02
+        gamma = 3.02
+        delta = -3.84
+        eps   = 0.81
+
+    Models active for Holes:
+
+      VSAT Parallel-field-dependent Mobility Model: 
+
+        beta  = 1
+     betaexp  = 0
+
+      Saturation-velocity (VSAT) Model:
+
+        vsat  = 1e+06
+
+      Temperature-dependent Mobility Model:
+
+        mu  = 8
+        tmu = 1.5
+
+  Region #2:
+
+    Models active for Electrons:
+
+      GANSAT Parallel-field-dependent Mobility Model: 
+
+        n1  = 7.2033
+        n2  = 0.7857
+        an  = 6.1973
+        ec  = 220894
+
+      Saturation-velocity (VSAT) Model:
+
+        vsat  = 1.9064e+07
+
+      Farahmand Model:
+
+        mu1   = 295
+        mu2   = 1460.7
+        ncrit = 1e+17
+        alpha = 0.66
+        beta  = -1.02
+        gamma = 3.02
+        delta = -3.84
+        eps   = 0.81
+
+    Models active for Holes:
+
+      VSAT Parallel-field-dependent Mobility Model: 
+
+        beta  = 1
+     betaexp  = 0
+
+      Saturation-velocity (VSAT) Model:
+
+        vsat  = 1e+06
+
+      Temperature-dependent Mobility Model:
+
+        mu  = 8
+        tmu = 1.5
+
+
+REGIONAL INCOMPLETE IONIZATION MODEL SUMMARY:
+
+  Region #1: Donor Parameters
+
+    Parameters for dopant species Generic Donor
+
+                   gc = : 2.000000e+00
+
+             inc.sign = : 1.000000e-12 cm^-2 
+
+                   ed = : 2.500000e-02 eV 
+
+  Region #1: Acceptor Parameters
+
+    Parameters for dopant species Generic Acceptor
+
+                   gv = : 4.000000e+00
+
+             inc.sigp = : 1.000000e-12 cm^-2 
+
+                   ea = : 1.700000e-01 eV 
+
+  Region #2: Donor Parameters
+
+    Parameters for dopant species Generic Donor
+
+                   gc = : 2.000000e+00
+
+             inc.sign = : 1.000000e-12 cm^-2 
+
+                   ed = : 2.500000e-02 eV 
+
+  Region #2: Acceptor Parameters
+
+    Parameters for dopant species Generic Acceptor
+
+                   gv = : 4.000000e+00
+
+             inc.sigp = : 1.000000e-12 cm^-2 
+
+                   ea = : 1.700000e-01 eV 
+
+
+ELECTRODE CONTACT PARAMETERS:
+  Name       Num Workfunction  Resistance  Con.Resist Capacitance  Inductance
+                         (eV)      (Ohms) (Ohms cm^2)    (Farads)   (Henries)
+  anode        1    4.940e+00   0.000e+00   0.000e+00   0.000e+00   0.000e+00
+  cathode      2    0.000e+00   0.000e+00   0.000e+00   0.000e+00   0.000e+00
+
+
+Performing initial guess simulation. 
+
+
+init               psi    psi 
+SPEEDS(160)         x     rhs 
+   i    j   m    -5.00* -26.0*
+------------------------------
+   1        N    -1.299 -16.97
+   2        N    -1.889 -17.84
+   3        N    -2.626 -19.42
+   4        N    -4.189 -22.57
+   5        N    -7.33* -28.9*
+
+Time for initial point:    2.89 sec.
+Total time:                9.49 sec.
+
+
+VICTORYDEVICE> SAVE outf=structure.str
+
+
+Structure file: structure.str written at Thu May 28 09:48:20 2026
+
+
+VICTORYDEVICE> SOLVE vanode=0.100 vstep=0.100 vfinal=5.000 name=anode compliance=1e6 cname=anode
+
+Performing steady-state simulation. 
+
+Obtaining static solution: 
+
+V(anode) = 0.1      
+
+prev               psi     n      p     psi     n      p  
+SPEEDS(160)         x      x      x     rhs    rhs    rhs 
+   i    j   m    -5.00* -5.00* -5.00* -26.0* -17.3* -17.3*
+----------------------------------------------------------
+   1    1   G    -1.871               -17.88              
+        2   G    -2.777               -19.59              
+        3   G    -4.473               -23.00              
+        4   G    -7.88*               -29.8*              
+        5   G           -4.296               -11.14       
+        6   G                  -44.4*               -51.9*
+   2    1   G    -6.12*               -25.96              
+        2   G           -9.68*               -16.11       
+        3   G                  -50.6*               -58.1*
+
+Electrode       Va(V)      In(A)       Ip(A)       Ic(A)       It(A)    
+========================================================================
+anode         1.000e-01   3.561e-03   1.325e-43   3.561e-03   3.561e-03 
+cathode       0.000e+00  -3.561e-03  -2.792e-54  -3.561e-03  -3.561e-03 
+Total                                                         2.782e-20 
+
+Time for bias point:       0.93 sec.
+Total time:               12.22 sec.
+
+
+Obtaining static solution: 
+
+V(anode) = 0.2      
+
+proj(1)            psi     n      p     psi     n      p  
+SPEEDS(160)         x      x      x     rhs    rhs    rhs 
+   i    j   m    -5.00* -5.00* -5.00* -26.0* -17.3* -17.3*
+----------------------------------------------------------
+   1    1   G    -2.609               -19.14              
+        2   G    -4.118               -22.18              
+        3   G    -7.16*               -28.3*              
+        4   G           -2.621               -8.627       
+        5   G                  -44.5*               -52.0*
+   2    1   G    -4.433               -22.73              
+        2   G    -7.77*               -29.5*              
+        3   G           -6.45*               -12.83       
+        4   G                  -48.7*               -56.3*
+
+Electrode       Va(V)      In(A)       Ip(A)       Ic(A)       It(A)    
+========================================================================
+anode         2.000e-01   1.522e-01   1.379e-43   1.522e-01   1.522e-01 
+cathode       0.000e+00  -1.522e-01  -2.792e-54  -1.522e-01  -1.522e-01 
+Total                                                         8.950e-17 
+
+Time for bias point:       0.95 sec.
+Total time:               13.20 sec.
+
+
+Obtaining static solution: 
+
+V(anode) = 0.3      
+
+proj(2)            psi     n      p     psi     n      p  
+SPEEDS(160)         x      x      x     rhs    rhs    rhs 
+   i    j   m    -5.00* -5.00* -5.00* -26.0* -17.3* -17.3*
+----------------------------------------------------------
+   1    1   G    -2.848               -19.54              
+        2   G    -4.597               -23.05              
+        3   G    -8.11*               -30.1*              
+        4   G           -0.973               -6.149       
+        5   G                  -46.0*               -53.9*
+   2    1   G    -2.446               -18.78              
+        2   G    -3.828               -21.51              
+        3   G    -6.57*               -27.0*              
+        4   G           -3.430               -9.524       
+        5   G                  -46.6*               -54.2*
+   3    1   G    -4.891               -23.52              
+        2   G    -8.67*               -31.1*              
+        3   G           -5.69*               -11.72       
+        4   G                  -49.0*               -56.7*
+
+Electrode       Va(V)      In(A)       Ip(A)       Ic(A)       It(A)    
+========================================================================
+anode         3.000e-01   5.885e+00   1.381e-43   5.885e+00   5.885e+00 
+cathode       0.000e+00  -5.885e+00  -2.792e-54  -5.885e+00  -5.885e+00 
+Total                                                         3.005e-15 
+
+Time for bias point:       1.39 sec.
+Total time:               14.64 sec.
+
+
+Obtaining static solution: 
+
+V(anode) = 0.4      
+
+proj(2)            psi     n      p     psi     n      p  
+SPEEDS(160)         x      x      x     rhs    rhs    rhs 
+   i    j   m    -5.00* -5.00* -5.00* -26.0* -17.3* -17.3*
+----------------------------------------------------------
+   1    1   G    -2.973               -19.72              
+        2   G    -4.845               -23.47              
+        3   G    -8.60*               -31.0*              
+        4   G            0.316               -6.141       
+        5   G                  -44.7*               -52.9*
+   2    1   G    -1.437               -16.75              
+        2   G    -2.030               -17.69              
+        3   G    -2.866               -19.43              
+        4   G    -4.597               -22.91              
+        5   G    -8.07*               -29.9*              
+        6   G           -0.826               -7.036       
+        7   G                  -45.2*               -53.1*
+   3    1   G    -2.452               -18.62              
+        2   G    -3.767               -21.27              
+        3   G    -6.42*               -26.6*              
+        4   G           -1.905               -8.017       
+        5   G                  -46.1*               -54.0*
+   4    1   G    -3.346               -20.40              
+        2   G    -5.56*               -24.83              
+        3   G           -2.516               -9.211       
+        4   G                  -47.1*               -55.2*
+   5    1   G    -3.996               -21.70              
+        2   G    -6.87*               -27.4*              
+        3   G           -3.556               -9.561       
+        4   G                  -47.6*               -55.6*
+   6    1   G    -4.992               -23.69              
+        2   G    -8.85*               -31.4*              
+        3   G           -4.132               -11.52       
+        4   G                  -48.8*               -57.6*
+   7    1   G    -5.57*               -24.85              
+        2   G           -5.08*               -11.14       
+        3   G                  -49.2*               -57.2*
+
+Electrode       Va(V)      In(A)       Ip(A)       Ic(A)       It(A)    
+========================================================================
+anode         4.000e-01   1.163e+02   1.406e-43   1.163e+02   1.163e+02 
+cathode       0.000e+00  -1.163e+02  -2.795e-54  -1.163e+02  -1.163e+02 
+Total                                                         4.942e-13 
+
+Time for bias point:       3.09 sec.
+Total time:               17.76 sec.
+
+
+Obtaining static solution: 
+
+V(anode) = 0.5      
+
+proj(2)            psi     n      p     psi     n      p  
+SPEEDS(160)         x      x      x     rhs    rhs    rhs 
+   i    j   m    -5.00* -5.00* -5.00* -26.0* -17.3* -17.3*
+----------------------------------------------------------
+   1    1   G    -2.875               -19.49              
+        2   G    -4.644               -23.04              
+        3   G    -8.19*               -30.1*              
+        4   G            0.436               -5.686       
+        5   G                  -42.5*               -52.0*
+   2    1   G    -1.147               -16.19              
+        2   G    -1.679               -16.83              
+        3   G    -2.084               -17.84              
+        4   G    -2.995               -19.73              
+        5   G    -4.872               -23.50              
+        6   G    -8.63*               -31.0*              
+        7   G           -0.546               -6.188       
+        8   G                  -44.1*               -52.5*
+   3    1   G    -1.837               -17.47              
+        2   G    -2.655               -19.00              
+        3   G    -4.165               -22.04              
+        4   G    -7.20*               -28.1*              
+        5   G           -0.919               -7.495       
+        6   G                  -44.8*               -54.5*
+   4    1   G    -2.378               -18.49              
+        2   G    -3.660               -21.03              
+        3   G    -6.19*               -26.1*              
+        4   G           -1.064               -7.394       
+        5   G                  -45.1*               -53.7*
+   5    1   G    -2.534               -18.75              
+        2   G    -3.918               -21.55              
+        3   G    -6.71*               -27.1*              
+        4   G           -1.325               -7.610       
+        5   G                  -45.3*               -53.9*
+   6    1   G    -2.780               -19.26              
+        2   G    -4.419               -22.55              
+        3   G    -7.71*               -29.1*              
+        4   G           -1.793               -8.553       
+        5   G                  -46.0*               -54.9*
+   7    1   G    -3.236               -20.18              
+        2   G    -5.34*               -24.39              
+        3   G           -1.913               -8.246       
+        4   G                  -46.0*               -54.6*
+   8    1   G    -3.343               -20.40              
+        2   G    -5.56*               -24.83              
+        3   G           -2.175               -8.450       
+        4   G                  -46.1*               -54.8*
+   9    1   G    -3.607               -20.93              
+        2   G    -6.09*               -25.88              
+        3   G           -2.605               -9.672       
+        4   G                  -46.9*               -56.7*
+  10    1   G    -4.046               -21.80              
+        2   G    -6.96*               -27.6*              
+        3   G           -2.715               -9.013       
+        4   G                  -46.7*               -55.3*
+  11    1   G    -4.151               -22.01              
+        2   G    -7.17*               -28.1*              
+        3   G           -3.013               -9.316       
+        4   G                  -47.0*               -55.7*
+  12    1   G    -4.449               -22.61              
+        2   G    -7.77*               -29.2*              
+        3   G           -3.388               -10.33       
+        4   G                  -47.9*               -56.6*
+  13    1   G    -4.823               -23.36              
+        2   G    -8.52*               -30.7*              
+        3   G           -3.524               -9.797       
+        4   G                  -47.5*               -56.1*
+  14    1   G    -4.959               -23.63              
+        2   G    -8.79*               -31.3*              
+        3   G           -3.862               -10.21       
+        4   G                  -47.9*               -56.5*
+  15    1   G    -5.30*               -24.30              
+        2   G           -4.172               -10.79       
+        3   G                  -48.6*               -57.1*
+  17        N    -5.49* -4.172 -47.1* -27.0* -14.54 -61.0*
+
+Electrode       Va(V)      In(A)       Ip(A)       Ic(A)       It(A)    
+========================================================================
+anode         5.000e-01   4.935e+02   1.501e-43   4.935e+02   4.935e+02 
+cathode       0.000e+00  -4.935e+02  -2.803e-54  -4.935e+02  -4.935e+02 
+Total                                                         3.404e-09 
+
+Time for bias point:       7.19 sec.
+Total time:               25.00 sec.
+
+
+Obtaining static solution: 
+
+V(anode) = 0.6      
+
+proj(2)            psi     n      p     psi     n      p  
+SPEEDS(160)         x      x      x     rhs    rhs    rhs 
+   i    j   m    -5.00* -5.00* -5.00* -26.0* -17.3* -17.3*
+----------------------------------------------------------
+   1    1   G    -2.664               -19.08              
+        2   G    -4.218               -22.20              
+        3   G    -7.34*               -28.5*              
+        4   G            0.113               -5.494       
+        5   G                  -42.3*               -51.7*
+   2    1   G    -1.706               -16.88              
+        2   G    -2.135               -17.92              
+        3   G    -3.092               -19.89              
+        4   G    -5.06*               -23.83              
+        5   G           -0.445               -6.370       
+        6   G                  -43.8*               -52.8*
+   3    1   G    -2.012               -17.64              
+        2   G    -2.822               -19.34              
+        3   G    -4.504               -22.72              
+        4   G    -7.88*               -29.5*              
+        5   G           -0.648               -7.090       
+        6   G                  -44.4*               -53.6*
+   4    1   G    -2.170               -17.99              
+        2   G    -3.161               -20.03              
+        3   G    -5.19*               -24.09              
+        4   G           -0.873               -7.901       
+        5   G                  -45.1*               -54.5*
+   5    1   G    -2.362               -18.40              
+        2   G    -3.563               -20.83              
+        3   G    -6.00*               -25.70              
+        4   G           -1.203               -7.474       
+        5   G                  -45.0*               -53.9*
+   6    1   G    -2.632               -18.99              
+        2   G    -4.154               -22.02              
+        3   G    -7.18*               -28.1*              
+        4   G           -1.162               -7.404       
+        5   G                  -44.9*               -53.8*
+   7    1   G    -2.566               -18.86              
+        2   G    -4.026               -21.76              
+        3   G    -6.92*               -27.6*              
+        4   G           -1.207               -7.554       
+        5   G                  -45.1*               -54.0*
+   8    1   G    -2.614               -18.96              
+        2   G    -4.119               -21.95              
+        3   G    -7.11*               -27.9*              
+        4   G           -1.354               -8.026       
+        5   G                  -45.5*               -54.5*
+   9    1   G    -2.769               -19.26              
+        2   G    -4.423               -22.56              
+        3   G    -7.72*               -29.1*              
+        4   G           -1.617               -8.288       
+        5   G                  -45.9*               -54.7*
+  10    1   G    -3.041               -19.80              
+        2   G    -4.961               -23.63              
+        3   G    -8.79*               -31.3*              
+        4   G           -1.679               -7.947       
+        5   G                  -45.5*               -54.4*
+  11    1   G    -3.123               -19.95              
+        2   G    -5.11*               -23.93              
+        3   G           -1.684               -8.001       
+        4   G                  -45.5*               -54.4*
+  12    1   G    -3.128               -19.96              
+        2   G    -5.12*               -23.96              
+        3   G           -1.802               -8.321       
+        4   G                  -45.8*               -54.7*
+  13    1   G    -3.244               -20.19              
+        2   G    -5.35*               -24.42              
+        3   G           -2.039               -9.220       
+        4   G                  -46.5*               -55.6*
+  14    1   G    -3.478               -20.66              
+        2   G    -5.82*               -25.36              
+        3   G           -2.207               -8.474       
+        4   G                  -46.0*               -54.9*
+  15    1   G    -3.640               -20.99              
+        2   G    -6.15*               -26.0*              
+        3   G           -2.185               -8.460       
+        4   G                  -46.0*               -54.9*
+  17        N    -3.426 -2.182 -46.1* -23.03 -11.03 -59.3*
+  18        N    -5.95* -5.15* -47.7* -31.8* -16.33 -62.5*
+
+Electrode       Va(V)      In(A)       Ip(A)       Ic(A)       It(A)    
+========================================================================
+anode         6.000e-01   9.970e+02   1.639e-43   9.970e+02   9.970e+02 
+cathode       0.000e+00  -9.970e+02  -2.814e-54  -9.970e+02  -9.970e+02 
+Total                                                        -4.629e-09 
+
+Time for bias point:       7.27 sec.
+Total time:               32.33 sec.
+
+
+Obtaining static solution: 
+
+V(anode) = 0.7      
+
+proj(2)            psi     n      p     psi     n      p  
+SPEEDS(160)         x      x      x     rhs    rhs    rhs 
+   i    j   m    -5.00* -5.00* -5.00* -26.0* -17.3* -17.3*
+----------------------------------------------------------
+   1    1   G    -2.973               -19.69              
+        2   G    -4.841               -23.43              
+        3   G    -8.59*               -30.9*              
+        4   G           -0.198               -5.713       
+        5   G                  -42.5*               -52.0*
+   2    1   G    -1.887               -17.35              
+        2   G    -2.548               -18.78              
+        3   G    -3.950               -21.61              
+        4   G    -6.78*               -27.3*              
+        5   G           -0.668               -6.376       
+        6   G                  -43.8*               -52.8*
+   3    1   G    -2.188               -18.03              
+        2   G    -3.197               -20.10              
+        3   G    -5.26*               -24.23              
+        4   G           -0.813               -6.955       
+        5   G                  -44.2*               -53.5*
+   4    1   G    -2.311               -18.29              
+        2   G    -3.455               -20.62              
+        3   G    -5.78*               -25.27              
+        4   G           -0.914               -7.631       
+        5   G                  -44.7*               -54.3*
+   5    1   G    -2.399               -18.47              
+        2   G    -3.639               -20.99              
+        3   G    -6.15*               -26.0*              
+        4   G           -1.015               -7.956       
+        5   G                  -45.4*               -55.1*
+   6    1   G    -2.490               -18.66              
+        2   G    -3.827               -21.36              
+        3   G    -6.52*               -26.8*              
+        4   G           -1.144               -8.005       
+        5   G                  -45.4*               -54.4*
+   7    1   G    -2.609               -18.91              
+        2   G    -4.071               -21.85              
+        3   G    -7.01*               -27.7*              
+        4   G           -1.327               -7.749       
+        5   G                  -45.2*               -54.2*
+   8    1   G    -2.782               -19.26              
+        2   G    -4.424               -22.56              
+        3   G    -7.72*               -29.1*              
+        4   G           -1.434               -7.632       
+        5   G                  -45.1*               -54.1*
+   9    1   G    -2.854               -19.43              
+        2   G    -4.590               -22.89              
+        3   G    -8.05*               -29.8*              
+        4   G           -1.368               -7.624       
+        5   G                  -45.0*               -54.1*
+  10    1   G    -2.785               -19.29              
+        2   G    -4.454               -22.62              
+        3   G    -7.78*               -29.3*              
+        4   G           -1.367               -7.736       
+        5   G                  -45.2*               -54.2*
+  11    1   G    -2.783               -19.29              
+        2   G    -4.451               -22.61              
+        3   G    -7.77*               -29.3*              
+        4   G           -1.426               -8.039       
+        5   G                  -45.4*               -54.6*
+  12    1   G    -2.844               -19.41              
+        2   G    -4.572               -22.85              
+        3   G    -8.01*               -29.7*              
+        4   G           -1.546               -8.662       
+        5   G                  -46.0*               -55.4*
+  13    1   G    -2.968               -19.65              
+        2   G    -4.816               -23.34              
+        3   G    -8.50*               -30.7*              
+        4   G           -1.736               -8.122       
+        5   G                  -45.6*               -54.6*
+  14    1   G    -3.163               -20.04              
+        2   G    -5.20*               -24.12              
+        3   G           -1.787               -7.960       
+        4   G                  -45.4*               -54.4*
+  15    1   G    -3.230               -20.16              
+        2   G    -5.33*               -24.36              
+        3   G           -1.726               -7.970       
+        4   G                  -45.4*               -54.5*
+  17        N    -2.821 -1.734 -45.1* -22.12 -10.13 -57.7*
+  18        N    -4.937 -4.177 -46.5* -29.8* -14.18 -60.4*
+  19        N    -10.0* -9.40* -51.9* -38.7* -23.4* -69.8*
+
+Electrode       Va(V)      In(A)       Ip(A)       Ic(A)       It(A)    
+========================================================================
+anode         7.000e-01   1.540e+03   1.798e-43   1.540e+03   1.540e+03 
+cathode       0.000e+00  -1.540e+03  -2.826e-54  -1.540e+03  -1.540e+03 
+Total                                                         7.259e-17 
+
+Time for bias point:       7.56 sec.
+Total time:               39.94 sec.
+
+
+Obtaining static solution: 
+
+V(anode) = 0.8      
+
+proj(2)            psi     n      p     psi     n      p  
+SPEEDS(160)         x      x      x     rhs    rhs    rhs 
+   i    j   m    -5.00* -5.00* -5.00* -26.0* -17.3* -17.3*
+----------------------------------------------------------
+   1    1   G    -3.407               -20.55              
+        2   G    -5.71*               -25.16              
+        3   G           -0.392               -5.988       
+        4   G                  -42.8*               -52.3*
+   2    1   G    -2.377               -18.43              
+        2   G    -3.600               -20.90              
+        3   G    -6.07*               -25.85              
+        4   G           -1.216               -6.745       
+        5   G                  -44.1*               -53.2*
+   3    1   G    -2.681               -19.05              
+        2   G    -4.214               -22.13              
+        3   G    -7.30*               -28.3*              
+        4   G           -1.350               -7.242       
+        5   G                  -44.4*               -53.9*
+   4    1   G    -2.807               -19.31              
+        2   G    -4.471               -22.65              
+        3   G    -7.81*               -29.3*              
+        4   G           -1.433               -7.865       
+        5   G                  -44.9*               -54.6*
+   5    1   G    -2.886               -19.47              
+        2   G    -4.632               -22.97              
+        3   G    -8.13*               -30.0*              
+        4   G           -1.497               -8.183       
+        5   G                  -45.4*               -55.4*
+   6    1   G    -2.947               -19.59              
+        2   G    -4.756               -23.22              
+        3   G    -8.38*               -30.5*              
+        4   G           -1.555               -8.337       
+        5   G                  -46.0*               -56.2*
+   7    1   G    -3.003               -19.71              
+        2   G    -4.869               -23.45              
+        3   G    -8.61*               -30.9*              
+        4   G           -1.618               -8.453       
+        5   G                  -46.3*               -55.4*
+   8    1   G    -3.064               -19.83              
+        2   G    -4.992               -23.69              
+        3   G    -8.86*               -31.4*              
+        4   G           -1.696               -8.547       
+        5   G                  -46.0*               -55.1*
+   9    1   G    -3.140               -19.98              
+        2   G    -5.15*               -24.00              
+        3   G           -1.801               -8.414       
+        4   G                  -45.8*               -54.9*
+  10    1   G    -3.243               -20.19              
+        2   G    -5.35*               -24.42              
+        3   G           -1.947               -8.264       
+        4   G                  -45.6*               -54.8*
+  11    1   G    -3.387               -20.48              
+        2   G    -5.64*               -25.00              
+        3   G           -1.989               -8.179       
+        4   G                  -45.5*               -54.7*
+  12    1   G    -3.422               -20.55              
+        2   G    -5.72*               -25.14              
+        3   G           -1.914               -8.161       
+        4   G                  -45.5*               -54.7*
+  13    1   G    -3.345               -20.40              
+        2   G    -5.56*               -24.84              
+        3   G           -1.882               -8.219       
+        4   G                  -45.5*               -54.7*
+  14    1   G    -3.312               -20.34              
+        2   G    -5.50*               -24.71              
+        3   G           -1.890               -8.380       
+        4   G                  -45.7*               -54.9*
+  15    1   G    -3.320               -20.35              
+        2   G    -5.52*               -24.74              
+        3   G           -1.938               -8.767       
+        4   G                  -46.0*               -55.4*
+  17        N    -3.223 -1.933 -44.4* -22.54 -10.21 -56.4*
+  18        N    -5.41* -4.804 -47.1* -30.4* -14.81 -61.2*
+
+Electrode       Va(V)      In(A)       Ip(A)       Ic(A)       It(A)    
+========================================================================
+anode         8.000e-01   2.098e+03   1.972e-43   2.098e+03   2.098e+03 
+cathode       0.000e+00  -2.098e+03  -2.839e-54  -2.098e+03  -2.098e+03 
+Total                                                        -1.335e-07 
+
+Time for bias point:       6.77 sec.
+Total time:               46.78 sec.
+
+
+Obtaining static solution: 
+
+V(anode) = 0.9      
+
+proj(2)            psi     n      p     psi     n      p  
+SPEEDS(160)         x      x      x     rhs    rhs    rhs 
+   i    j   m    -5.00* -5.00* -5.00* -26.0* -17.3* -17.3*
+----------------------------------------------------------
+   1    1   G    -3.730               -21.18              
+        2   G    -6.35*               -26.4*              
+        3   G           -0.523               -6.180       
+        4   G                  -43.0*               -52.5*
+   2    1   G    -2.799               -19.30              
+        2   G    -4.466               -22.65              
+        3   G    -7.81*               -29.3*              
+        4   G           -1.656               -7.094       
+        5   G                  -44.4*               -53.5*
+   3    1   G    -3.110               -19.91              
+        2   G    -5.08*               -23.85              
+        3   G           -1.788               -7.528       
+        4   G                  -44.7*               -54.2*
+   4    1   G    -3.238               -20.17              
+        2   G    -5.34*               -24.37              
+        3   G           -1.869               -8.101       
+        4   G                  -45.1*               -54.9*
+   5    1   G    -3.317               -20.33              
+        2   G    -5.50*               -24.69              
+        3   G           -1.929               -8.401       
+        4   G                  -45.5*               -55.5*
+   6    1   G    -3.374               -20.44              
+        2   G    -5.61*               -24.92              
+        3   G           -1.976               -8.554       
+        4   G                  -46.0*               -56.2*
+   7    1   G    -3.420               -20.54              
+        2   G    -5.70*               -25.11              
+        3   G           -2.017               -8.670       
+        4   G                  -46.6*               -56.8*
+   8    1   G    -3.459               -20.62              
+        2   G    -5.79*               -25.27              
+        3   G           -2.057               -8.763       
+        4   G                  -47.2*               -56.4*
+   9    1   G    -3.498               -20.70              
+        2   G    -5.86*               -25.43              
+        3   G           -2.100               -8.840       
+        4   G                  -46.8*               -56.0*
+  10    1   G    -3.540               -20.78              
+        2   G    -5.95*               -25.60              
+        3   G           -2.151               -8.906       
+        4   G                  -46.5*               -55.7*
+  11    1   G    -3.590               -20.89              
+        2   G    -6.05*               -25.81              
+        3   G           -2.217               -8.965       
+        4   G                  -46.3*               -55.5*
+  12    1   G    -3.655               -21.02              
+        2   G    -6.18*               -26.1*              
+        3   G           -2.305               -8.832       
+        4   G                  -46.1*               -55.3*
+  13    1   G    -3.742               -21.19              
+        2   G    -6.35*               -26.4*              
+        3   G           -2.423               -8.707       
+        4   G                  -46.0*               -55.2*
+  14    1   G    -3.860               -21.43              
+        2   G    -6.59*               -26.9*              
+        3   G           -2.470               -8.629       
+        4   G                  -45.9*               -55.1*
+  15    1   G    -3.907               -21.52              
+        2   G    -6.68*               -27.1*              
+        3   G           -2.390               -8.599       
+        4   G                  -45.9*               -55.1*
+  17        N    -3.206 -2.388 -45.5* -23.44 -11.46 -58.8*
+  18        N    -6.12* -5.34* -47.4* -32.2* -16.32 -62.6*
+
+Electrode       Va(V)      In(A)       Ip(A)       Ic(A)       It(A)    
+========================================================================
+anode         9.000e-01   2.659e+03   2.155e-43   2.659e+03   2.659e+03 
+cathode       0.000e+00  -2.659e+03  -2.852e-54  -2.659e+03  -2.659e+03 
+Total                                                        -7.253e-09 
+
+Time for bias point:       6.52 sec.
+Total time:               53.35 sec.
+
+
+Obtaining static solution: 
+
+V(anode) = 1        
+
+proj(2)            psi     n      p     psi     n      p  
+SPEEDS(160)         x      x      x     rhs    rhs    rhs 
+   i    j   m    -5.00* -5.00* -5.00* -26.0* -17.3* -17.3*
+----------------------------------------------------------
+   1    1   G    -3.985               -21.67              
+        2   G    -6.86*               -27.4*              
+        3   G           -0.622               -6.257       
+        4   G                  -43.1*               -52.7*
+   2    1   G    -3.142               -19.98              
+        2   G    -5.15*               -24.00              
+        3   G           -1.977               -7.348       
+        4   G                  -44.6*               -53.8*
+   3    1   G    -3.435               -20.54              
+        2   G    -5.72*               -25.13              
+        3   G           -2.107               -7.743       
+        4   G                  -44.9*               -54.4*
+   4    1   G    -3.560               -20.80              
+        2   G    -5.98*               -25.63              
+        3   G           -2.187               -8.275       
+        4   G                  -45.2*               -55.1*
+   5    1   G    -3.638               -20.96              
+        2   G    -6.13*               -25.95              
+        3   G           -2.246               -8.551       
+        4   G                  -45.6*               -55.7*
+   6    1   G    -3.694               -21.08              
+        2   G    -6.25*               -26.2*              
+        3   G           -2.292               -8.705       
+        4   G                  -46.1*               -56.2*
+   7    1   G    -3.739               -21.17              
+        2   G    -6.34*               -26.4*              
+        3   G           -2.331               -8.819       
+        4   G                  -46.5*               -56.7*
+   8    1   G    -3.775               -21.24              
+        2   G    -6.41*               -26.5*              
+        3   G           -2.364               -8.911       
+        4   G                  -47.0*               -57.2*
+   9    1   G    -3.807               -21.31              
+        2   G    -6.48*               -26.7*              
+        3   G           -2.394               -8.988       
+        4   G                  -47.5*               -57.2*
+  10    1   G    -3.836               -21.37              
+        2   G    -6.54*               -26.8*              
+        3   G           -2.424               -9.053       
+        4   G                  -47.6*               -56.8*
+  11    1   G    -3.864               -21.43              
+        2   G    -6.60*               -26.9*              
+        3   G           -2.455               -9.110       
+        4   G                  -47.2*               -56.5*
+  12    1   G    -3.894               -21.49              
+        2   G    -6.66*               -27.0*              
+        3   G           -2.490               -9.161       
+        4   G                  -46.9*               -56.2*
+  13    1   G    -3.929               -21.56              
+        2   G    -6.73*               -27.2*              
+        3   G           -2.534               -9.208       
+        4   G                  -46.7*               -56.0*
+  14    1   G    -3.972               -21.65              
+        2   G    -6.81*               -27.3*              
+        3   G           -2.591               -9.251       
+        4   G                  -46.5*               -55.8*
+  15    1   G    -4.027               -21.76              
+        2   G    -6.93*               -27.6*              
+        3   G           -2.665               -9.152       
+        4   G                  -46.4*               -55.7*
+  17        N    -3.447 -2.666 -45.1* -23.99 -11.76 -58.0*
+  18        N    -6.64* -5.92* -48.0* -33.3* -17.4* -63.8*
+
+Electrode       Va(V)      In(A)       Ip(A)       Ic(A)       It(A)    
+========================================================================
+anode         1.000e+00   3.220e+03   2.345e-43   3.220e+03   3.220e+03 
+cathode       0.000e+00  -3.220e+03  -2.865e-54  -3.220e+03  -3.220e+03 
+Total                                                        -6.918e-10 
+
+Time for bias point:       6.35 sec.
+Total time:               59.76 sec.
+
+
+Obtaining static solution: 
+
+V(anode) = 1.1      
+
+proj(2)            psi     n      p     psi     n      p  
+SPEEDS(160)         x      x      x     rhs    rhs    rhs 
+   i    j   m    -5.00* -5.00* -5.00* -26.0* -17.3* -17.3*
+----------------------------------------------------------
+   1    1   G    -4.188               -22.05              
+        2   G    -7.25*               -28.2*              
+        3   G           -0.702               -6.244       
+        4   G                  -43.3*               -52.9*
+   2    1   G    -3.427               -20.53              
+        2   G    -5.71*               -25.10              
+        3   G           -2.243               -7.566       
+        4   G                  -44.8*               -54.0*
+   3    1   G    -3.708               -21.07              
+        2   G    -6.26*               -26.2*              
+        3   G           -2.373               -7.920       
+        4   G                  -45.0*               -54.6*
+   4    1   G    -3.834               -21.33              
+        2   G    -6.52*               -26.7*              
+        3   G           -2.453               -8.415       
+        4   G                  -45.3*               -55.2*
+   5    1   G    -3.912               -21.49              
+        2   G    -6.67*               -27.0*              
+        3   G           -2.512               -8.679       
+        4   G                  -45.7*               -55.8*
+   6    1   G    -3.967               -21.61              
+        2   G    -6.79*               -27.2*              
+        3   G           -2.557               -8.832       
+        4   G                  -46.1*               -56.3*
+
+Electrode       Va(V)      In(A)       Ip(A)       Ic(A)       It(A)    
+========================================================================
+anode         1.100e+00   3.782e+03   2.543e-43   3.782e+03   3.782e+03 
+cathode       0.000e+00  -3.782e+03  -2.877e-54  -3.782e+03  -3.782e+03 
+Total                                                         2.792e-11 
+
+Time for bias point:       2.51 sec.
+Total time:                1.04 min.
+
+
+Obtaining static solution: 
+
+V(anode) = 1.2      
+
+proj(2)            psi     n      p     psi     n      p  
+SPEEDS(160)         x      x      x     rhs    rhs    rhs 
+   i    j   m    -5.00* -5.00* -5.00* -26.0* -17.3* -17.3*
+----------------------------------------------------------
+   1    1   G    -3.717               -21.09              
+        2   G    -6.28*               -26.2*              
+        3   G           -0.766               -6.234       
+        4   G                  -43.4*               -53.0*
+   2    1   G    -3.629               -20.92              
+        2   G    -6.11*               -25.88              
+        3   G           -2.194               -7.758       
+        4   G                  -44.9*               -54.1*
+   3    1   G    -3.652               -20.97              
+        2   G    -6.15*               -25.98              
+        3   G           -2.215               -8.081       
+        4   G                  -45.1*               -54.8*
+   4    1   G    -3.670               -21.01              
+        2   G    -6.19*               -26.1*              
+        3   G           -2.233               -8.547       
+        4   G                  -45.4*               -55.4*
+   5    1   G    -3.686               -21.05              
+        2   G    -6.23*               -26.1*              
+        3   G           -2.248               -8.786       
+        4   G                  -45.7*               -55.8*
+   6    1   G    -3.699               -21.08              
+        2   G    -6.26*               -26.2*              
+        3   G           -2.263               -8.915       
+        4   G                  -46.1*               -56.3*
+   7    1   G    -3.712               -21.11              
+        2   G    -6.28*               -26.3*              
+        3   G           -2.278               -8.950       
+        4   G                  -46.5*               -56.7*
+   8    1   G    -3.725               -21.14              
+        2   G    -6.31*               -26.3*              
+        3   G           -2.293               -8.976       
+        4   G                  -46.9*               -56.8*
+   9    1   G    -3.738               -21.17              
+        2   G    -6.34*               -26.4*              
+        3   G           -2.309               -8.997       
+        4   G                  -47.1*               -56.4*
+  10    1   G    -3.753               -21.20              
+        2   G    -6.37*               -26.4*              
+        3   G           -2.327               -9.014       
+        4   G                  -46.8*               -56.2*
+  11    1   G    -3.770               -21.24              
+        2   G    -6.40*               -26.5*              
+        3   G           -2.348               -9.030       
+        4   G                  -46.6*               -56.0*
+  12    1   G    -3.790               -21.28              
+        2   G    -6.45*               -26.6*              
+        3   G           -2.375               -9.044       
+        4   G                  -46.4*               -55.8*
+  13    1   G    -3.815               -21.33              
+        2   G    -6.50*               -26.7*              
+        3   G           -2.409               -9.059       
+        4   G                  -46.3*               -55.7*
+  14    1   G    -3.848               -21.40              
+        2   G    -6.56*               -26.8*              
+        3   G           -2.451               -9.029       
+        4   G                  -46.1*               -55.5*
+  15    1   G    -3.889               -21.48              
+        2   G    -6.65*               -27.0*              
+        3   G           -2.504               -8.918       
+        4   G                  -46.0*               -55.4*
+  17        N    -3.171 -2.506 -44.9* -23.67 -11.34 -57.6*
+  18        N    -6.17* -5.61* -47.6* -32.7* -16.61 -63.0*
+
+Electrode       Va(V)      In(A)       Ip(A)       Ic(A)       It(A)    
+========================================================================
+anode         1.200e+00   4.335e+03   2.743e-43   4.335e+03   4.335e+03 
+cathode       0.000e+00  -4.335e+03  -2.890e-54  -4.335e+03  -4.335e+03 
+Total                                                        -5.119e-09 
+
+Time for bias point:       6.45 sec.
+Total time:                1.15 min.
+
+
+Obtaining static solution: 
+
+V(anode) = 1.3      
+
+proj(2)            psi     n      p     psi     n      p  
+SPEEDS(160)         x      x      x     rhs    rhs    rhs 
+   i    j   m    -5.00* -5.00* -5.00* -26.0* -17.3* -17.3*
+----------------------------------------------------------
+   1    1   G    -4.025               -21.69              
+        2   G    -6.89*               -27.4*              
+        3   G           -0.833               -6.240       
+        4   G                  -43.4*               -53.0*
+   2    1   G    -3.673               -20.99              
+        2   G    -6.19*               -26.0*              
+        3   G           -2.235               -7.888       
+        4   G                  -45.0*               -54.2*
+   3    1   G    -3.697               -21.05              
+        2   G    -6.24*               -26.1*              
+        3   G           -2.259               -8.166       
+        4   G                  -45.2*               -54.8*
+   4    1   G    -3.718               -21.09              
+        2   G    -6.28*               -26.2*              
+        3   G           -2.281               -8.495       
+        4   G                  -45.4*               -55.4*
+   5    1   G    -3.737               -21.14              
+        2   G    -6.32*               -26.3*              
+        3   G           -2.301               -8.547       
+        4   G                  -45.7*               -55.8*
+   6    1   G    -3.755               -21.18              
+        2   G    -6.36*               -26.4*              
+        3   G           -2.319               -8.592       
+        4   G                  -46.1*               -56.2*
+   7    1   G    -3.771               -21.22              
+        2   G    -6.40*               -26.5*              
+        3   G           -2.337               -8.637       
+        4   G                  -46.4*               -56.6*
+   8    1   G    -3.786               -21.25              
+        2   G    -6.43*               -26.5*              
+        3   G           -2.353               -8.678       
+        4   G                  -46.7*               -56.9*
+   9    1   G    -3.801               -21.28              
+        2   G    -6.46*               -26.6*              
+        3   G           -2.370               -8.715       
+        4   G                  -47.0*               -56.8*
+  10    1   G    -3.815               -21.32              
+        2   G    -6.49*               -26.7*              
+        3   G           -2.387               -8.751       
+        4   G                  -47.2*               -56.6*
+  11    1   G    -3.830               -21.35              
+        2   G    -6.52*               -26.7*              
+        3   G           -2.405               -8.785       
+        4   G                  -47.0*               -56.4*
+  12    1   G    -3.846               -21.39              
+        2   G    -6.56*               -26.8*              
+        3   G           -2.424               -8.816       
+        4   G                  -46.8*               -56.2*
+  13    1   G    -3.864               -21.43              
+        2   G    -6.59*               -26.9*              
+        3   G           -2.446               -8.845       
+        4   G                  -46.6*               -56.1*
+  14    1   G    -3.885               -21.47              
+        2   G    -6.64*               -27.0*              
+        3   G           -2.472               -8.873       
+        4   G                  -46.5*               -55.9*
+  15    1   G    -3.911               -21.52              
+        2   G    -6.69*               -27.1*              
+        3   G           -2.505               -8.900       
+        4   G                  -46.3*               -55.8*
+  17        N    -3.188 -2.504 -44.9* -23.67 -11.40 -57.7*
+  18        N    -6.11* -5.70* -47.6* -32.9* -16.69 -63.1*
+
+Electrode       Va(V)      In(A)       Ip(A)       Ic(A)       It(A)    
+========================================================================
+anode         1.300e+00   4.886e+03   2.948e-43   4.886e+03   4.886e+03 
+cathode       0.000e+00  -4.886e+03  -2.903e-54  -4.886e+03  -4.886e+03 
+Total                                                        -4.633e-09 
+
+Time for bias point:       6.53 sec.
+Total time:                1.26 min.
+
+
+Obtaining static solution: 
+
+V(anode) = 1.4      
+
+proj(2)            psi     n      p     psi     n      p  
+SPEEDS(160)         x      x      x     rhs    rhs    rhs 
+   i    j   m    -5.00* -5.00* -5.00* -26.0* -17.3* -17.3*
+----------------------------------------------------------
+   1    1   G    -4.663               -22.89              
+        2   G    -8.15*               -29.9*              
+        3   G           -0.874               -6.228       
+        4   G                  -43.5*               -53.2*
+   2    1   G    -4.119               -21.80              
+        2   G    -7.05*               -27.7*              
+        3   G           -2.733               -8.064       
+        4   G                  -45.2*               -54.4*
+
+Electrode       Va(V)      In(A)       Ip(A)       Ic(A)       It(A)    
+========================================================================
+anode         1.400e+00   5.435e+03   3.156e-43   5.435e+03   5.435e+03 
+cathode       0.000e+00  -5.435e+03  -2.916e-54  -5.435e+03  -5.435e+03 
+Total                                                         8.078e-11 
+
+Time for bias point:       0.84 sec.
+Total time:                1.27 min.
+
+
+Obtaining static solution: 
+
+V(anode) = 1.5      
+
+proj(2)            psi     n      p     psi     n      p  
+SPEEDS(160)         x      x      x     rhs    rhs    rhs 
+   i    j   m    -5.00* -5.00* -5.00* -26.0* -17.3* -17.3*
+----------------------------------------------------------
+   1    1   G    -3.924               -21.44              
+        2   G    -6.66*               -26.9*              
+        3   G           -0.914               -5.924       
+        4   G                  -43.6*               -53.2*
+   2    1   G    -3.805               -21.21              
+        2   G    -6.43*               -26.5*              
+        3   G           -2.327               -7.824       
+        4   G                  -44.9*               -54.3*
+   3    1   G    -3.814               -21.24              
+        2   G    -6.45*               -26.5*              
+        3   G           -2.337               -8.153       
+        4   G                  -45.0*               -54.9*
+   4    1   G    -3.820               -21.26              
+        2   G    -6.47*               -26.5*              
+        3   G           -2.346               -8.454       
+        4   G                  -45.2*               -55.3*
+   5    1   G    -3.825               -21.27              
+        2   G    -6.48*               -26.6*              
+        3   G           -2.353               -8.577       
+        4   G                  -45.5*               -55.6*
+   6    1   G    -3.829               -21.29              
+        2   G    -6.49*               -26.6*              
+        3   G           -2.360               -8.662       
+        4   G                  -45.8*               -56.0*
+   7    1   G    -3.833               -21.30              
+        2   G    -6.50*               -26.6*              
+        3   G           -2.368               -8.731       
+        4   G                  -46.0*               -56.3*
+   8    1   G    -3.837               -21.32              
+        2   G    -6.51*               -26.7*              
+        3   G           -2.375               -8.788       
+        4   G                  -46.3*               -56.6*
+   9    1   G    -3.841               -21.33              
+        2   G    -6.52*               -26.7*              
+        3   G           -2.382               -8.831       
+        4   G                  -46.6*               -56.9*
+  10    1   G    -3.845               -21.35              
+        2   G    -6.54*               -26.7*              
+        3   G           -2.389               -8.867       
+        4   G                  -46.9*               -57.2*
+  11    1   G    -3.850               -21.36              
+        2   G    -6.55*               -26.8*              
+        3   G           -2.396               -8.896       
+        4   G                  -47.2*               -56.9*
+  12    1   G    -3.855               -21.37              
+        2   G    -6.56*               -26.8*              
+        3   G           -2.404               -8.920       
+        4   G                  -47.2*               -56.7*
+  13    1   G    -3.860               -21.39              
+        2   G    -6.57*               -26.8*              
+        3   G           -2.412               -8.939       
+        4   G                  -47.0*               -56.5*
+  14    1   G    -3.866               -21.41              
+        2   G    -6.59*               -26.8*              
+        3   G           -2.422               -8.954       
+        4   G                  -46.9*               -56.3*
+  15    1   G    -3.873               -21.43              
+        2   G    -6.60*               -26.9*              
+        3   G           -2.432               -8.967       
+        4   G                  -46.7*               -56.2*
+  17        N    -3.270 -2.434 -44.6* -23.53 -10.85 -57.2*
+  18        N    -6.01* -5.75* -47.4* -32.6* -16.35 -62.8*
+
+Electrode       Va(V)      In(A)       Ip(A)       Ic(A)       It(A)    
+========================================================================
+anode         1.500e+00   5.974e+03   3.366e-43   5.974e+03   5.974e+03 
+cathode       0.000e+00  -5.974e+03  -2.929e-54  -5.974e+03  -5.974e+03 
+Total                                                        -1.083e-08 
+
+Time for bias point:       6.34 sec.
+Total time:                1.38 min.
+
+
+Obtaining static solution: 
+
+V(anode) = 1.6      
+
+proj(2)            psi     n      p     psi     n      p  
+SPEEDS(160)         x      x      x     rhs    rhs    rhs 
+   i    j   m    -5.00* -5.00* -5.00* -26.0* -17.3* -17.3*
+----------------------------------------------------------
+   1    1   G    -4.239               -22.05              
+        2   G    -7.28*               -28.1*              
+        3   G           -0.962               -6.223       
+        4   G                  -43.6*               -53.3*
+   2    1   G    -3.849               -21.27              
+        2   G    -6.50*               -26.6*              
+        3   G           -2.360               -8.110       
+        4   G                  -44.9*               -54.8*
+   3    1   G    -3.859               -21.30              
+        2   G    -6.53*               -26.6*              
+        3   G           -2.372               -8.365       
+        4   G                  -45.2*               -55.2*
+   4    1   G    -3.866               -21.32              
+        2   G    -6.54*               -26.7*              
+        3   G           -2.380               -8.525       
+        4   G                  -45.5*               -55.6*
+   5    1   G    -3.870               -21.34              
+        2   G    -6.56*               -26.7*              
+        3   G           -2.389               -8.647       
+        4   G                  -45.8*               -55.9*
+   6    1   G    -3.875               -21.35              
+        2   G    -6.57*               -26.7*              
+        3   G           -2.397               -8.724       
+        4   G                  -46.0*               -56.2*
+   7    1   G    -3.878               -21.37              
+        2   G    -6.58*               -26.8*              
+        3   G           -2.404               -8.784       
+        4   G                  -46.3*               -56.5*
+   8    1   G    -3.882               -21.39              
+        2   G    -6.59*               -26.8*              
+        3   G           -2.411               -8.828       
+        4   G                  -46.6*               -56.8*
+   9    1   G    -3.886               -21.40              
+        2   G    -6.60*               -26.8*              
+        3   G           -2.419               -8.859       
+        4   G                  -46.8*               -57.1*
+  10    1   G    -3.889               -21.42              
+        2   G    -6.61*               -26.9*              
+        3   G           -2.426               -8.879       
+        4   G                  -47.1*               -57.3*
+  11    1   G    -3.893               -21.43              
+        2   G    -6.63*               -26.9*              
+        3   G           -2.433               -8.888       
+        4   G                  -47.3*               -57.2*
+  12    1   G    -3.898               -21.44              
+        2   G    -6.64*               -26.9*              
+        3   G           -2.440               -8.893       
+        4   G                  -47.6*               -57.0*
+  13    1   G    -3.902               -21.46              
+        2   G    -6.65*               -26.9*              
+        3   G           -2.447               -8.898       
+        4   G                  -47.3*               -56.8*
+  14    1   G    -3.906               -21.47              
+        2   G    -6.66*               -27.0*              
+        3   G           -2.455               -8.905       
+        4   G                  -47.2*               -56.6*
+  15    1   G    -3.911               -21.49              
+        2   G    -6.67*               -27.0*              
+        3   G           -2.463               -8.912       
+        4   G                  -47.0*               -56.5*
+  17        N    -3.321 -2.462 -44.7* -23.59 -10.89 -57.3*
+  18        N    -6.01* -5.82* -47.5* -32.9* -16.45 -62.9*
+
+Electrode       Va(V)      In(A)       Ip(A)       Ic(A)       It(A)    
+========================================================================
+anode         1.600e+00   6.510e+03   3.578e-43   6.510e+03   6.510e+03 
+cathode       0.000e+00  -6.510e+03  -2.942e-54  -6.510e+03  -6.510e+03 
+Total                                                        -1.006e-08 
+
+Time for bias point:       6.31 sec.
+Total time:                1.48 min.
+
+
+Obtaining static solution: 
+
+V(anode) = 1.7      
+
+proj(2)            psi     n      p     psi     n      p  
+SPEEDS(160)         x      x      x     rhs    rhs    rhs 
+   i    j   m    -5.00* -5.00* -5.00* -26.0* -17.3* -17.3*
+----------------------------------------------------------
+   1    1   G    -5.06*               -23.48              
+        2   G           -0.985               -6.216       
+        3   G                  -43.7*               -53.3*
+   2    1   G    -4.341               -22.04              
+        2   G    -7.38*               -28.1*              
+        3   G           -2.864               -8.036       
+        4   G                  -45.1*               -54.5*
+
+Electrode       Va(V)      In(A)       Ip(A)       Ic(A)       It(A)    
+========================================================================
+anode         1.700e+00   7.044e+03   3.790e-43   7.044e+03   7.044e+03 
+cathode       0.000e+00  -7.044e+03  -2.955e-54  -7.044e+03  -7.044e+03 
+Total                                                         4.377e-10 
+
+Time for bias point:       0.73 sec.
+Total time:                1.50 min.
+
+
+Obtaining static solution: 
+
+V(anode) = 1.8      
+
+proj(2)            psi     n      p     psi     n      p  
+SPEEDS(160)         x      x      x     rhs    rhs    rhs 
+   i    j   m    -5.00* -5.00* -5.00* -26.0* -17.3* -17.3*
+----------------------------------------------------------
+   1    1   G    -4.111               -21.71              
+        2   G    -6.99*               -27.5*              
+        3   G           -1.006               -5.903       
+        4   G                  -43.7*               -53.4*
+   2    1   G    -3.976               -21.45              
+        2   G    -6.72*               -26.9*              
+        3   G           -2.444               -7.904       
+        4   G                  -44.8*               -54.5*
+   3    1   G    -3.977               -21.47              
+        2   G    -6.73*               -27.0*              
+        3   G           -2.451               -8.219       
+        4   G                  -44.9*               -55.0*
+   4    1   G    -3.978               -21.48              
+        2   G    -6.74*               -27.0*              
+        3   G           -2.456               -8.358       
+        4   G                  -45.1*               -55.2*
+   5    1   G    -3.977               -21.49              
+        2   G    -6.74*               -27.0*              
+        3   G           -2.460               -8.449       
+        4   G                  -45.3*               -55.5*
+   6    1   G    -3.975               -21.50              
+        2   G    -6.74*               -27.0*              
+        3   G           -2.464               -8.512       
+        4   G                  -45.5*               -55.7*
+   7    1   G    -3.974               -21.51              
+        2   G    -6.75*               -27.1*              
+        3   G           -2.468               -8.568       
+        4   G                  -45.8*               -56.0*
+   8    1   G    -3.973               -21.52              
+        2   G    -6.75*               -27.1*              
+        3   G           -2.472               -8.619       
+        4   G                  -46.0*               -56.2*
+   9    1   G    -3.973               -21.53              
+        2   G    -6.75*               -27.1*              
+        3   G           -2.476               -8.661       
+        4   G                  -46.2*               -56.4*
+  10    1   G    -3.973               -21.53              
+        2   G    -6.76*               -27.1*              
+        3   G           -2.480               -8.696       
+        4   G                  -46.4*               -56.7*
+  11    1   G    -3.972               -21.54              
+        2   G    -6.76*               -27.1*              
+        3   G           -2.485               -8.730       
+        4   G                  -46.6*               -56.9*
+  12    1   G    -3.973               -21.55              
+        2   G    -6.77*               -27.1*              
+        3   G           -2.488               -8.759       
+        4   G                  -46.8*               -57.1*
+  13    1   G    -3.973               -21.56              
+        2   G    -6.77*               -27.2*              
+        3   G           -2.492               -8.784       
+        4   G                  -47.0*               -57.1*
+  14    1   G    -3.973               -21.57              
+        2   G    -6.77*               -27.2*              
+        3   G           -2.497               -8.809       
+        4   G                  -47.3*               -56.9*
+  15    1   G    -3.974               -21.58              
+        2   G    -6.78*               -27.2*              
+        3   G           -2.501               -8.828       
+        4   G                  -47.3*               -56.8*
+  17        N    -3.229 -2.503 -44.7* -23.67 -10.70 -57.2*
+  18        N    -5.96* -6.04* -47.5* -33.0* -16.38 -62.8*
+
+Electrode       Va(V)      In(A)       Ip(A)       Ic(A)       It(A)    
+========================================================================
+anode         1.800e+00   7.567e+03   4.004e-43   7.567e+03   7.567e+03 
+cathode       0.000e+00  -7.567e+03  -2.968e-54  -7.567e+03  -7.567e+03 
+Total                                                        -1.558e-08 
+
+Time for bias point:       6.27 sec.
+Total time:                1.60 min.
+
+
+Obtaining static solution: 
+
+V(anode) = 1.9      
+
+proj(2)            psi     n      p     psi     n      p  
+SPEEDS(160)         x      x      x     rhs    rhs    rhs 
+   i    j   m    -5.00* -5.00* -5.00* -26.0* -17.3* -17.3*
+----------------------------------------------------------
+   1    1   G    -4.436               -22.30              
+        2   G    -7.61*               -28.6*              
+        3   G           -1.033               -6.193       
+        4   G                  -43.8*               -53.4*
+   2    1   G    -4.025               -21.50              
+        2   G    -6.79*               -27.0*              
+        3   G           -2.472               -8.008       
+        4   G                  -44.7*               -54.7*
+   3    1   G    -4.029               -21.52              
+        2   G    -6.81*               -27.1*              
+        3   G           -2.480               -8.199       
+        4   G                  -44.9*               -55.0*
+   4    1   G    -4.029               -21.54              
+        2   G    -6.82*               -27.1*              
+        3   G           -2.485               -8.322       
+        4   G                  -45.2*               -55.3*
+   5    1   G    -4.026               -21.55              
+        2   G    -6.82*               -27.1*              
+        3   G           -2.490               -8.414       
+        4   G                  -45.4*               -55.5*
+   6    1   G    -4.024               -21.56              
+        2   G    -6.82*               -27.1*              
+        3   G           -2.494               -8.488       
+        4   G                  -45.6*               -55.8*
+   7    1   G    -4.022               -21.57              
+        2   G    -6.82*               -27.2*              
+        3   G           -2.498               -8.549       
+        4   G                  -45.8*               -56.0*
+   8    1   G    -4.020               -21.57              
+        2   G    -6.83*               -27.2*              
+        3   G           -2.502               -8.603       
+        4   G                  -46.0*               -56.2*
+   9    1   G    -4.019               -21.58              
+        2   G    -6.83*               -27.2*              
+        3   G           -2.507               -8.650       
+        4   G                  -46.2*               -56.4*
+  10    1   G    -4.018               -21.59              
+        2   G    -6.83*               -27.2*              
+        3   G           -2.510               -8.686       
+        4   G                  -46.4*               -56.7*
+  11    1   G    -4.016               -21.60              
+        2   G    -6.83*               -27.2*              
+        3   G           -2.514               -8.718       
+        4   G                  -46.6*               -56.9*
+  12    1   G    -4.015               -21.61              
+        2   G    -6.84*               -27.2*              
+        3   G           -2.518               -8.748       
+        4   G                  -46.8*               -57.1*
+  13    1   G    -4.015               -21.61              
+        2   G    -6.84*               -27.3*              
+        3   G           -2.522               -8.775       
+        4   G                  -47.0*               -57.3*
+  14    1   G    -4.015               -21.62              
+        2   G    -6.84*               -27.3*              
+        3   G           -2.526               -8.796       
+        4   G                  -47.2*               -57.2*
+
+Electrode       Va(V)      In(A)       Ip(A)       Ic(A)       It(A)    
+========================================================================
+anode         1.900e+00   8.079e+03   4.214e-43   8.079e+03   8.079e+03 
+cathode       0.000e+00  -8.079e+03  -2.980e-54  -8.079e+03  -8.079e+03 
+Total                                                         1.492e-10 
+
+Time for bias point:       5.42 sec.
+Total time:                1.69 min.
+
+
+Obtaining static solution: 
+
+V(anode) = 2        
+
+proj(2)            psi     n      p     psi     n      p  
+SPEEDS(160)         x      x      x     rhs    rhs    rhs 
+   i    j   m    -5.00* -5.00* -5.00* -26.0* -17.3* -17.3*
+----------------------------------------------------------
+   1    1   G    -3.723               -21.03              
+        2   G    -6.26*               -26.1*              
+        3   G           -1.042               -6.180       
+        4   G                  -43.8*               -53.5*
+   2    1   G    -3.584               -20.76              
+        2   G    -5.98*               -25.55              
+        3   G           -2.097               -8.047       
+        4   G                  -45.0*               -54.4*
+   3    1   G    -3.585               -20.77              
+        2   G    -5.99*               -25.57              
+        3   G           -2.102               -8.269       
+        4   G                  -45.1*               -54.9*
+   4    1   G    -3.586               -20.78              
+        2   G    -5.99*               -25.59              
+        3   G           -2.107               -8.381       
+        4   G                  -45.3*               -55.3*
+   5    1   G    -3.587               -20.79              
+        2   G    -6.00*               -25.61              
+        3   G           -2.112               -8.393       
+        4   G                  -45.4*               -55.5*
+   6    1   G    -3.588               -20.80              
+        2   G    -6.01*               -25.63              
+        3   G           -2.117               -8.402       
+        4   G                  -45.6*               -55.7*
+   7    1   G    -3.590               -20.81              
+        2   G    -6.01*               -25.66              
+        3   G           -2.123               -8.411       
+        4   G                  -45.7*               -55.7*
+   8    1   G    -3.593               -20.82              
+        2   G    -6.02*               -25.68              
+        3   G           -2.130               -8.418       
+        4   G                  -45.8*               -55.7*
+   9    1   G    -3.596               -20.84              
+        2   G    -6.03*               -25.70              
+        3   G           -2.137               -8.425       
+        4   G                  -45.9*               -55.6*
+  10    1   G    -3.600               -20.85              
+        2   G    -6.04*               -25.73              
+        3   G           -2.145               -8.432       
+        4   G                  -46.0*               -55.5*
+  11    1   G    -3.605               -20.87              
+        2   G    -6.06*               -25.76              
+        3   G           -2.154               -8.438       
+        4   G                  -45.9*               -55.4*
+  12    1   G    -3.612               -20.88              
+        2   G    -6.07*               -25.80              
+        3   G           -2.165               -8.444       
+        4   G                  -45.8*               -55.4*
+  13    1   G    -3.620               -20.91              
+        2   G    -6.09*               -25.84              
+        3   G           -2.176               -8.449       
+        4   G                  -45.8*               -55.3*
+  14    1   G    -3.630               -20.93              
+        2   G    -6.11*               -25.89              
+        3   G           -2.190               -8.454       
+        4   G                  -45.7*               -55.2*
+  15    1   G    -3.641               -20.96              
+        2   G    -6.14*               -25.95              
+        3   G           -2.206               -8.460       
+        4   G                  -45.6*               -55.1*
+  17        N    -2.638 -2.204 -44.5* -23.08 -9.940 -56.3*
+  18        N    -5.27* -5.38* -46.8* -31.9* -14.67 -61.1*
+
+Electrode       Va(V)      In(A)       Ip(A)       Ic(A)       It(A)    
+========================================================================
+anode         2.000e+00   8.604e+03   4.433e-43   8.604e+03   8.604e+03 
+cathode       0.000e+00  -8.604e+03  -2.993e-54  -8.604e+03  -8.604e+03 
+Total                                                        -1.296e-06 
+
+Time for bias point:       6.58 sec.
+Total time:                1.80 min.
+
+
+Obtaining static solution: 
+
+V(anode) = 2.1      
+
+proj(2)            psi     n      p     psi     n      p  
+SPEEDS(160)         x      x      x     rhs    rhs    rhs 
+   i    j   m    -5.00* -5.00* -5.00* -26.0* -17.3* -17.3*
+----------------------------------------------------------
+   1    1   G    -4.037               -21.63              
+        2   G    -6.87*               -27.3*              
+        3   G           -0.941               -6.080       
+        4   G                  -44.1*               -53.0*
+   2    1   G    -3.618               -20.79              
+        2   G    -6.03*               -25.62              
+        3   G           -2.108               -7.630       
+        4   G                  -44.8*               -53.6*
+   3    1   G    -3.617               -20.80              
+        2   G    -6.04*               -25.64              
+        3   G           -2.114               -7.811       
+        4   G                  -44.8*               -53.8*
+   4    1   G    -3.619               -20.81              
+        2   G    -6.04*               -25.66              
+        3   G           -2.120               -7.976       
+        4   G                  -44.9*               -54.0*
+   5    1   G    -3.619               -20.82              
+        2   G    -6.05*               -25.68              
+        3   G           -2.124               -8.128       
+        4   G                  -45.0*               -54.2*
+   6    1   G    -3.619               -20.83              
+        2   G    -6.05*               -25.70              
+        3   G           -2.128               -8.265       
+        4   G                  -45.1*               -54.3*
+   7    1   G    -3.619               -20.84              
+        2   G    -6.06*               -25.71              
+        3   G           -2.132               -8.397       
+        4   G                  -45.3*               -54.4*
+   8    1   G    -3.619               -20.85              
+        2   G    -6.06*               -25.73              
+        3   G           -2.136               -8.428       
+        4   G                  -45.4*               -54.6*
+   9    1   G    -3.620               -20.86              
+        2   G    -6.07*               -25.75              
+        3   G           -2.141               -8.438       
+        4   G                  -45.5*               -54.8*
+  10    1   G    -3.621               -20.87              
+        2   G    -6.07*               -25.77              
+        3   G           -2.147               -8.447       
+        4   G                  -45.7*               -55.0*
+  11    1   G    -3.624               -20.88              
+        2   G    -6.08*               -25.79              
+        3   G           -2.154               -8.455       
+        4   G                  -45.9*               -55.6*
+  12    1   G    -3.627               -20.89              
+        2   G    -6.09*               -25.82              
+        3   G           -2.162               -8.463       
+        4   G                  -46.1*               -55.4*
+  13    1   G    -3.632               -20.91              
+        2   G    -6.10*               -25.85              
+        3   G           -2.170               -8.470       
+        4   G                  -46.1*               -55.0*
+  14    1   G    -3.638               -20.92              
+        2   G    -6.12*               -25.88              
+        3   G           -2.180               -8.477       
+        4   G                  -45.8*               -54.8*
+  15    1   G    -3.645               -20.94              
+        2   G    -6.13*               -25.92              
+        3   G           -2.192               -8.484       
+        4   G                  -45.7*               -54.6*
+  17        N    -2.713 -1.749 -43.8* -23.05 -7.514 -53.8*
+  18        N    -4.297 -2.194 -44.3* -26.6* -8.999 -55.2*
+  19        N    -5.61* -3.566 -45.6* -29.3* -11.58 -57.8*
+  20        N    -8.22* -6.16* -48.2* -34.5* -16.78 -63.0*
+
+Electrode       Va(V)      In(A)       Ip(A)       Ic(A)       It(A)    
+========================================================================
+anode         2.100e+00   9.114e+03   4.661e-43   9.114e+03   9.114e+03 
+cathode       0.000e+00  -9.114e+03  -3.006e-54  -9.114e+03  -9.114e+03 
+Total                                                        -1.984e-08 
+
+Time for bias point:       6.73 sec.
+Total time:                1.92 min.
+
+
+Obtaining static solution: 
+
+V(anode) = 2.2      
+
+proj(2)            psi     n      p     psi     n      p  
+SPEEDS(160)         x      x      x     rhs    rhs    rhs 
+   i    j   m    -5.00* -5.00* -5.00* -26.0* -17.3* -17.3*
+----------------------------------------------------------
+   1    1   G    -5.97*               -25.83              
+        2   G           -1.054               -5.834       
+        3   G                  -44.2*               -52.4*
+   2    1   G    -4.047               -21.13              
+        2   G    -6.65*               -26.3*              
+        3   G           -2.542               -7.193       
+        4   G                  -44.6*               -54.1*
+   3    1   G    -4.129               -21.68              
+        2   G    -7.05*               -27.4*              
+        3   G           -2.618               -7.598       
+        4   G                  -44.7*               -54.3*
+   4    1   G    -4.132               -21.81              
+        2   G    -7.06*               -27.7*              
+        3   G           -2.623               -8.007       
+        4   G                  -44.8*               -54.6*
+
+Electrode       Va(V)      In(A)       Ip(A)       Ic(A)       It(A)    
+========================================================================
+anode         2.200e+00   9.610e+03   4.877e-43   9.610e+03   9.610e+03 
+cathode       0.000e+00  -9.610e+03  -3.019e-54  -9.610e+03  -9.610e+03 
+Total                                                         6.959e-09 
+
+Time for bias point:       1.63 sec.
+Total time:                1.94 min.
+
+
+Obtaining static solution: 
+
+V(anode) = 2.3      
+
+proj(2)            psi     n      p     psi     n      p  
+SPEEDS(160)         x      x      x     rhs    rhs    rhs 
+   i    j   m    -5.00* -5.00* -5.00* -26.0* -17.3* -17.3*
+----------------------------------------------------------
+   1    1   G    -3.842               -21.22              
+        2   G    -6.47*               -26.5*              
+        3   G           -1.670               -6.580       
+        4   G                  -43.7*               -53.4*
+   2    1   G    -3.688               -20.87              
+        2   G    -6.17*               -25.83              
+        3   G           -2.178               -7.108       
+        4   G                  -44.3*               -54.0*
+   3    1   G    -3.687               -20.93              
+        2   G    -6.17*               -25.90              
+        3   G           -2.183               -7.482       
+        4   G                  -44.6*               -54.2*
+   4    1   G    -3.687               -20.94              
+        2   G    -6.18*               -25.92              
+        3   G           -2.187               -7.808       
+        4   G                  -44.7*               -54.4*
+   5    1   G    -3.687               -20.95              
+        2   G    -6.18*               -25.93              
+        3   G           -2.191               -7.931       
+        4   G                  -44.8*               -54.7*
+   6    1   G    -3.686               -20.96              
+        2   G    -6.18*               -25.95              
+        3   G           -2.195               -8.032       
+        4   G                  -44.9*               -54.9*
+   7    1   G    -3.686               -20.97              
+        2   G    -6.19*               -25.97              
+        3   G           -2.199               -8.117       
+        4   G                  -45.1*               -55.1*
+   8    1   G    -3.687               -20.98              
+        2   G    -6.19*               -25.98              
+        3   G           -2.205               -8.191       
+        4   G                  -45.2*               -55.3*
+   9    1   G    -3.688               -20.99              
+        2   G    -6.20*               -26.0*              
+        3   G           -2.210               -8.258       
+        4   G                  -45.3*               -55.5*
+  10    1   G    -3.690               -21.00              
+        2   G    -6.21*               -26.0*              
+        3   G           -2.217               -8.317       
+        4   G                  -45.4*               -55.6*
+  11    1   G    -3.693               -21.01              
+        2   G    -6.22*               -26.1*              
+        3   G           -2.224               -8.372       
+        4   G                  -45.5*               -55.6*
+  12    1   G    -3.697               -21.02              
+        2   G    -6.23*               -26.1*              
+        3   G           -2.232               -8.422       
+        4   G                  -45.6*               -55.5*
+  13    1   G    -3.702               -21.04              
+        2   G    -6.24*               -26.1*              
+        3   G           -2.242               -8.468       
+        4   G                  -45.6*               -55.5*
+  14    1   G    -3.709               -21.06              
+        2   G    -6.26*               -26.2*              
+        3   G           -2.252               -8.497       
+        4   G                  -45.6*               -55.4*
+  15    1   G    -3.716               -21.08              
+        2   G    -6.27*               -26.2*              
+        3   G           -2.264               -8.503       
+        4   G                  -45.6*               -55.4*
+  17        N    -2.744 -2.262 -44.3* -23.19 -10.14 -56.4*
+  18        N    -5.33* -5.51* -47.0* -32.2* -15.40 -61.5*
+
+Electrode       Va(V)      In(A)       Ip(A)       Ic(A)       It(A)    
+========================================================================
+anode         2.300e+00   1.012e+04   5.122e-43   1.012e+04   1.012e+04 
+cathode       0.000e+00  -1.012e+04  -3.032e-54  -1.012e+04  -1.012e+04 
+Total                                                        -4.042e-07 
+
+Time for bias point:       6.43 sec.
+Total time:                2.05 min.
+
+
+Obtaining static solution: 
+
+V(anode) = 2.4      
+
+proj(2)            psi     n      p     psi     n      p  
+SPEEDS(160)         x      x      x     rhs    rhs    rhs 
+   i    j   m    -5.00* -5.00* -5.00* -26.0* -17.3* -17.3*
+----------------------------------------------------------
+   1    1   G    -4.157               -21.83              
+        2   G    -7.09*               -27.7*              
+        3   G           -1.622               -6.641       
+        4   G                  -43.9*               -53.2*
+   2    1   G    -3.727               -20.97              
+        2   G    -6.23*               -25.97              
+        3   G           -2.195               -7.504       
+        4   G                  -44.3*               -54.1*
+   3    1   G    -3.725               -20.97              
+        2   G    -6.23*               -25.98              
+        3   G           -2.201               -7.749       
+        4   G                  -44.6*               -54.5*
+   4    1   G    -3.725               -20.99              
+        2   G    -6.24*               -26.0*              
+        3   G           -2.207               -7.895       
+        4   G                  -44.8*               -54.8*
+   5    1   G    -3.725               -21.00              
+        2   G    -6.24*               -26.0*              
+        3   G           -2.211               -8.011       
+        4   G                  -45.0*               -54.9*
+   6    1   G    -3.725               -21.01              
+        2   G    -6.25*               -26.0*              
+        3   G           -2.215               -8.097       
+        4   G                  -45.2*               -55.1*
+   7    1   G    -3.723               -21.01              
+        2   G    -6.25*               -26.1*              
+        3   G           -2.219               -8.167       
+        4   G                  -45.4*               -55.3*
+   8    1   G    -3.722               -21.02              
+        2   G    -6.25*               -26.1*              
+        3   G           -2.223               -8.231       
+        4   G                  -45.6*               -55.5*
+   9    1   G    -3.722               -21.03              
+        2   G    -6.25*               -26.1*              
+        3   G           -2.227               -8.290       
+        4   G                  -45.6*               -55.6*
+  10    1   G    -3.722               -21.04              
+        2   G    -6.26*               -26.1*              
+        3   G           -2.233               -8.344       
+        4   G                  -45.7*               -55.7*
+  11    1   G    -3.723               -21.05              
+        2   G    -6.27*               -26.1*              
+        3   G           -2.239               -8.394       
+        4   G                  -45.8*               -55.7*
+  12    1   G    -3.725               -21.06              
+        2   G    -6.27*               -26.2*              
+        3   G           -2.245               -8.441       
+        4   G                  -45.8*               -55.6*
+  13    1   G    -3.728               -21.07              
+        2   G    -6.28*               -26.2*              
+        3   G           -2.253               -8.485       
+        4   G                  -45.8*               -55.6*
+  14    1   G    -3.732               -21.09              
+        2   G    -6.29*               -26.2*              
+        3   G           -2.261               -8.495       
+        4   G                  -45.7*               -55.5*
+  15    1   G    -3.738               -21.11              
+        2   G    -6.31*               -26.2*              
+        3   G           -2.271               -8.501       
+        4   G                  -45.7*               -55.4*
+  17        N    -2.813 -2.273 -44.3* -23.21 -10.39 -56.6*
+  18        N    -5.35* -6.41* -46.9* -32.2* -15.71 -61.8*
+
+Electrode       Va(V)      In(A)       Ip(A)       Ic(A)       It(A)    
+========================================================================
+anode         2.400e+00   1.061e+04   5.372e-43   1.061e+04   1.061e+04 
+cathode       0.000e+00  -1.061e+04  -3.045e-54  -1.061e+04  -1.061e+04 
+Total                                                        -1.733e-07 
+
+Time for bias point:       6.51 sec.
+Total time:                2.16 min.
+
+
+Obtaining static solution: 
+
+V(anode) = 2.5      
+
+proj(2)            psi     n      p     psi     n      p  
+SPEEDS(160)         x      x      x     rhs    rhs    rhs 
+   i    j   m    -5.00* -5.00* -5.00* -26.0* -17.3* -17.3*
+----------------------------------------------------------
+   1    1   G    -5.93*               -24.75              
+        2   G           -1.606               -6.629       
+        3   G                  -44.1*               -53.8*
+   2    1   G    -4.236               -21.95              
+        2   G    -7.23*               -27.9*              
+        3   G           -2.694               -8.058       
+        4   G                  -44.9*               -54.6*
+   3    1   G    -4.236               -21.97              
+        2   G    -7.24*               -28.0*              
+        3   G           -2.702               -8.377       
+        4   G                  -45.0*               -54.9*
+   4    1   G    -4.238               -21.98              
+        2   G    -7.25*               -28.0*              
+        3   G           -2.708               -8.466       
+        4   G                  -45.1*               -55.1*
+
+Electrode       Va(V)      In(A)       Ip(A)       Ic(A)       It(A)    
+========================================================================
+anode         2.500e+00   1.109e+04   5.623e-43   1.109e+04   1.109e+04 
+cathode       0.000e+00  -1.109e+04  -3.057e-54  -1.109e+04  -1.109e+04 
+Total                                                         9.743e-09 
+
+Time for bias point:       1.52 sec.
+Total time:                2.19 min.
+
+
+Obtaining static solution: 
+
+V(anode) = 2.6      
+
+proj(2)            psi     n      p     psi     n      p  
+SPEEDS(160)         x      x      x     rhs    rhs    rhs 
+   i    j   m    -5.00* -5.00* -5.00* -26.0* -17.3* -17.3*
+----------------------------------------------------------
+   1    1   G    -3.948               -21.39              
+        2   G    -6.67*               -26.8*              
+        3   G           -1.601               -6.317       
+        4   G                  -44.0*               -53.7*
+   2    1   G    -3.790               -21.08              
+        2   G    -6.35*               -26.2*              
+        3   G           -2.258               -8.100       
+        4   G                  -44.8*               -54.9*
+   3    1   G    -3.788               -21.09              
+        2   G    -6.36*               -26.2*              
+        3   G           -2.263               -8.147       
+        4   G                  -44.9*               -55.1*
+   4    1   G    -3.787               -21.10              
+        2   G    -6.36*               -26.2*              
+        3   G           -2.266               -8.190       
+        4   G                  -45.0*               -55.2*
+   5    1   G    -3.786               -21.11              
+        2   G    -6.36*               -26.3*              
+        3   G           -2.270               -8.234       
+        4   G                  -45.2*               -55.4*
+   6    1   G    -3.784               -21.12              
+        2   G    -6.36*               -26.3*              
+        3   G           -2.274               -8.280       
+        4   G                  -45.3*               -55.5*
+   7    1   G    -3.783               -21.12              
+        2   G    -6.37*               -26.3*              
+        3   G           -2.278               -8.310       
+        4   G                  -45.4*               -55.6*
+   8    1   G    -3.783               -21.13              
+        2   G    -6.37*               -26.3*              
+        3   G           -2.283               -8.342       
+        4   G                  -45.6*               -55.8*
+   9    1   G    -3.783               -21.14              
+        2   G    -6.38*               -26.3*              
+        3   G           -2.289               -8.375       
+        4   G                  -45.7*               -55.7*
+  10    1   G    -3.784               -21.15              
+        2   G    -6.38*               -26.3*              
+        3   G           -2.295               -8.409       
+        4   G                  -45.9*               -55.6*
+  11    1   G    -3.786               -21.17              
+        2   G    -6.39*               -26.4*              
+        3   G           -2.301               -8.434       
+        4   G                  -45.8*               -55.6*
+  12    1   G    -3.788               -21.18              
+        2   G    -6.40*               -26.4*              
+        3   G           -2.309               -8.459       
+        4   G                  -45.7*               -55.5*
+  13    1   G    -3.792               -21.19              
+        2   G    -6.41*               -26.4*              
+        3   G           -2.317               -8.485       
+        4   G                  -45.7*               -55.4*
+  14    1   G    -3.797               -21.21              
+        2   G    -6.42*               -26.5*              
+        3   G           -2.326               -8.506       
+        4   G                  -45.6*               -55.4*
+  15    1   G    -3.803               -21.23              
+        2   G    -6.44*               -26.5*              
+        3   G           -2.337               -8.511       
+        4   G                  -45.6*               -55.3*
+  17        N    -2.851 -2.335 -44.3* -23.34 -10.75 -56.9*
+  18        N    -5.43* -5.95* -47.0* -32.3* -16.11 -62.2*
+
+Electrode       Va(V)      In(A)       Ip(A)       Ic(A)       It(A)    
+========================================================================
+anode         2.600e+00   1.159e+04   5.886e-43   1.159e+04   1.159e+04 
+cathode       0.000e+00  -1.159e+04  -3.070e-54  -1.159e+04  -1.159e+04 
+Total                                                        -3.342e-08 
+
+Time for bias point:       6.46 sec.
+Total time:                2.29 min.
+
+
+Obtaining static solution: 
+
+V(anode) = 2.7      
+
+proj(2)            psi     n      p     psi     n      p  
+SPEEDS(160)         x      x      x     rhs    rhs    rhs 
+   i    j   m    -5.00* -5.00* -5.00* -26.0* -17.3* -17.3*
+----------------------------------------------------------
+   1    1   G    -4.264               -21.99              
+        2   G    -7.28*               -28.0*              
+        3   G           -1.558               -6.572       
+        4   G                  -44.5*               -53.9*
+   2    1   G    -3.826               -21.12              
+        2   G    -6.41*               -26.3*              
+        3   G           -2.270               -8.073       
+        4   G                  -44.7*               -54.8*
+   3    1   G    -3.820               -21.12              
+        2   G    -6.40*               -26.3*              
+        3   G           -2.276               -8.117       
+        4   G                  -44.8*               -55.0*
+   4    1   G    -3.820               -21.13              
+        2   G    -6.41*               -26.3*              
+        3   G           -2.282               -8.166       
+        4   G                  -44.9*               -55.1*
+   5    1   G    -3.821               -21.15              
+        2   G    -6.42*               -26.3*              
+        3   G           -2.288               -8.206       
+        4   G                  -45.1*               -55.2*
+   6    1   G    -3.820               -21.16              
+        2   G    -6.42*               -26.4*              
+        3   G           -2.292               -8.239       
+        4   G                  -45.2*               -55.4*
+   7    1   G    -3.818               -21.17              
+        2   G    -6.42*               -26.4*              
+        3   G           -2.296               -8.277       
+        4   G                  -45.3*               -55.5*
+   8    1   G    -3.816               -21.17              
+        2   G    -6.42*               -26.4*              
+        3   G           -2.299               -8.317       
+        4   G                  -45.5*               -55.6*
+   9    1   G    -3.815               -21.18              
+        2   G    -6.43*               -26.4*              
+        3   G           -2.304               -8.342       
+        4   G                  -45.6*               -55.7*
+  10    1   G    -3.815               -21.19              
+        2   G    -6.43*               -26.4*              
+        3   G           -2.309               -8.371       
+        4   G                  -45.7*               -55.7*
+  11    1   G    -3.815               -21.20              
+        2   G    -6.43*               -26.4*              
+        3   G           -2.315               -8.402       
+        4   G                  -45.8*               -55.6*
+  12    1   G    -3.816               -21.21              
+        2   G    -6.44*               -26.5*              
+        3   G           -2.321               -8.431       
+        4   G                  -45.8*               -55.6*
+  13    1   G    -3.818               -21.22              
+        2   G    -6.45*               -26.5*              
+        3   G           -2.328               -8.453       
+        4   G                  -45.7*               -55.5*
+  14    1   G    -3.821               -21.24              
+        2   G    -6.46*               -26.5*              
+        3   G           -2.336               -8.477       
+        4   G                  -45.7*               -55.5*
+  15    1   G    -3.825               -21.25              
+        2   G    -6.47*               -26.5*              
+        3   G           -2.344               -8.503       
+        4   G                  -45.6*               -55.4*
+  17        N    -2.897 -2.346 -44.3* -23.35 -10.77 -57.0*
+  18        N    -5.47* -5.87* -47.0* -32.4* -16.04 -62.3*
+
+Electrode       Va(V)      In(A)       Ip(A)       Ic(A)       It(A)    
+========================================================================
+anode         2.700e+00   1.207e+04   6.148e-43   1.207e+04   1.207e+04 
+cathode       0.000e+00  -1.207e+04  -3.083e-54  -1.207e+04  -1.207e+04 
+Total                                                        -1.823e-08 
+
+Time for bias point:       6.46 sec.
+Total time:                2.40 min.
+
+
+Obtaining static solution: 
+
+V(anode) = 2.8      
+
+proj(2)            psi     n      p     psi     n      p  
+SPEEDS(160)         x      x      x     rhs    rhs    rhs 
+   i    j   m    -5.00* -5.00* -5.00* -26.0* -17.3* -17.3*
+----------------------------------------------------------
+   1    1   G    -5.92*               -24.58              
+        2   G           -1.601               -6.595       
+        3   G                  -44.0*               -53.7*
+   2    1   G    -4.338               -22.11              
+        2   G    -7.42*               -28.3*              
+        3   G           -2.774               -8.487       
+        4   G                  -45.1*               -55.2*
+   3    1   G    -4.339               -22.13              
+        2   G    -7.43*               -28.3*              
+        3   G           -2.781               -8.552       
+        4   G                  -45.3*               -55.4*
+   4    1   G    -4.339               -22.14              
+        2   G    -7.44*               -28.3*              
+        3   G           -2.785               -8.604       
+        4   G                  -45.4*               -55.5*
+
+Electrode       Va(V)      In(A)       Ip(A)       Ic(A)       It(A)    
+========================================================================
+anode         2.800e+00   1.253e+04   6.408e-43   1.253e+04   1.253e+04 
+cathode       0.000e+00  -1.253e+04  -3.095e-54  -1.253e+04  -1.253e+04 
+Total                                                         2.696e-09 
+
+Time for bias point:       1.57 sec.
+Total time:                2.43 min.
+
+
+Obtaining static solution: 
+
+V(anode) = 2.9      
+
+proj(2)            psi     n      p     psi     n      p  
+SPEEDS(160)         x      x      x     rhs    rhs    rhs 
+   i    j   m    -5.00* -5.00* -5.00* -26.0* -17.3* -17.3*
+----------------------------------------------------------
+   1    1   G    -4.047               -21.55              
+        2   G    -6.85*               -27.1*              
+        3   G           -1.621               -6.302       
+        4   G                  -44.0*               -53.7*
+   2    1   G    -3.875               -21.21              
+        2   G    -6.51*               -26.5*              
+        3   G           -2.312               -8.210       
+        4   G                  -45.1*               -55.2*
+   3    1   G    -3.862               -21.20              
+        2   G    -6.49*               -26.4*              
+        3   G           -2.318               -8.236       
+        4   G                  -45.1*               -55.3*
+   4    1   G    -3.862               -21.21              
+        2   G    -6.49*               -26.5*              
+        3   G           -2.328               -8.269       
+        4   G                  -45.3*               -55.5*
+   5    1   G    -3.866               -21.23              
+        2   G    -6.51*               -26.5*              
+        3   G           -2.337               -8.306       
+        4   G                  -45.4*               -55.6*
+   6    1   G    -3.869               -21.25              
+        2   G    -6.52*               -26.5*              
+        3   G           -2.344               -8.327       
+        4   G                  -45.5*               -55.4*
+   7    1   G    -3.870               -21.26              
+        2   G    -6.53*               -26.6*              
+        3   G           -2.349               -8.355       
+        4   G                  -45.6*               -55.4*
+   8    1   G    -3.870               -21.28              
+        2   G    -6.53*               -26.6*              
+        3   G           -2.354               -8.384       
+        4   G                  -45.6*               -55.4*
+   9    1   G    -3.870               -21.29              
+        2   G    -6.54*               -26.6*              
+        3   G           -2.359               -8.403       
+        4   G                  -45.6*               -55.4*
+  10    1   G    -3.871               -21.30              
+        2   G    -6.54*               -26.6*              
+        3   G           -2.366               -8.426       
+        4   G                  -45.6*               -55.4*
+  11    1   G    -3.872               -21.31              
+        2   G    -6.55*               -26.7*              
+        3   G           -2.372               -8.452       
+        4   G                  -45.6*               -55.4*
+  12    1   G    -3.874               -21.32              
+        2   G    -6.56*               -26.7*              
+        3   G           -2.379               -8.469       
+        4   G                  -45.6*               -55.4*
+  13    1   G    -3.877               -21.34              
+        2   G    -6.57*               -26.7*              
+        3   G           -2.387               -8.489       
+        4   G                  -45.5*               -55.4*
+  14    1   G    -3.880               -21.35              
+        2   G    -6.58*               -26.7*              
+        3   G           -2.395               -8.514       
+        4   G                  -45.5*               -55.3*
+  15    1   G    -3.885               -21.37              
+        2   G    -6.59*               -26.8*              
+        3   G           -2.405               -8.522       
+        4   G                  -45.5*               -55.3*
+  17        N    -2.889 -2.403 -44.4* -23.47 -10.33 -57.3*
+  18        N    -5.53* -5.83* -47.0* -32.4* -16.66 -62.6*
+
+Electrode       Va(V)      In(A)       Ip(A)       Ic(A)       It(A)    
+========================================================================
+anode         2.900e+00   1.301e+04   6.680e-43   1.301e+04   1.301e+04 
+cathode       0.000e+00  -1.301e+04  -3.108e-54  -1.301e+04  -1.301e+04 
+Total                                                        -1.921e-09 
+
+Time for bias point:       6.35 sec.
+Total time:                2.54 min.
+
+
+Obtaining static solution: 
+
+V(anode) = 3        
+
+proj(2)            psi     n      p     psi     n      p  
+SPEEDS(160)         x      x      x     rhs    rhs    rhs 
+   i    j   m    -5.00* -5.00* -5.00* -26.0* -17.3* -17.3*
+----------------------------------------------------------
+   1    1   G    -4.363               -22.15              
+        2   G    -7.47*               -28.3*              
+        3   G           -1.602               -6.569       
+        4   G                  -44.5*               -54.1*
+   2    1   G    -3.982               -21.38              
+        2   G    -6.70*               -26.8*              
+        3   G           -2.473               -7.712       
+        4   G                  -45.1*               -54.7*
+   3    1   G    -4.049               -21.53              
+        2   G    -6.84*               -27.1*              
+        3   G           -2.478               -7.992       
+        4   G                  -44.8*               -54.5*
+   4    1   G    -4.047               -21.54              
+        2   G    -6.84*               -27.1*              
+        3   G           -2.439               -8.239       
+        4   G                  -44.9*               -54.7*
+   5    1   G    -3.999               -21.46              
+        2   G    -6.75*               -27.0*              
+        3   G           -2.405               -8.303       
+        4   G                  -45.1*               -55.0*
+   6    1   G    -3.957               -21.39              
+        2   G    -6.68*               -26.8*              
+        3   G           -2.385               -8.335       
+        4   G                  -45.4*               -55.1*
+   7    1   G    -3.930               -21.35              
+        2   G    -6.63*               -26.7*              
+        3   G           -2.377               -8.375       
+        4   G                  -45.3*               -54.9*
+   8    1   G    -3.916               -21.34              
+        2   G    -6.61*               -26.7*              
+        3   G           -2.376               -8.410       
+        4   G                  -45.3*               -55.0*
+   9    1   G    -3.908               -21.33              
+        2   G    -6.60*               -26.7*              
+        3   G           -2.377               -8.438       
+        4   G                  -45.3*               -55.1*
+  10    1   G    -3.904               -21.34              
+        2   G    -6.59*               -26.7*              
+        3   G           -2.380               -8.472       
+        4   G                  -45.4*               -55.3*
+  11    1   G    -3.902               -21.34              
+        2   G    -6.60*               -26.7*              
+        3   G           -2.385               -8.506       
+        4   G                  -45.5*               -55.5*
+  12    1   G    -3.901               -21.35              
+        2   G    -6.60*               -26.7*              
+        3   G           -2.390               -8.512       
+        4   G                  -45.6*               -55.6*
+  13    1   G    -3.902               -21.36              
+        2   G    -6.60*               -26.8*              
+        3   G           -2.396               -8.516       
+        4   G                  -45.8*               -55.8*
+  14    1   G    -3.904               -21.38              
+        2   G    -6.61*               -26.8*              
+        3   G           -2.403               -8.519       
+        4   G                  -46.0*               -55.6*
+  15    1   G    -3.906               -21.39              
+        2   G    -6.62*               -26.8*              
+        3   G           -2.411               -8.523       
+        4   G                  -45.8*               -55.5*

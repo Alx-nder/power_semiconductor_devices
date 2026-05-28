@@ -1,5 +1,6 @@
 let data = window.DEVICE_DATA || null;
 let forwardChart = null;
+let reverseChart = null;
 let transientChart = null;
 
 const state = {
@@ -26,6 +27,7 @@ function btn(text, active, click) {
 
 function destroyCharts() {
   if (forwardChart) { forwardChart.destroy(); forwardChart = null; }
+  if (reverseChart) { reverseChart.destroy(); reverseChart = null; }
   if (transientChart) { transientChart.destroy(); transientChart = null; }
 }
 
@@ -154,7 +156,7 @@ function seriesDataset(name, color, x, y, options = {}) {
   };
 }
 
-function chartOptions(xLabel, yLabel, logY = false, yMax = null, yMin = null) {
+function chartOptions(xLabel, yLabel, logY = false, yMax = null, yMin = null, xMin = null, xMax = null, showLegend = true) {
   const yAxis = {
     type: logY ? 'logarithmic' : 'linear',
     title: { display: true, text: yLabel },
@@ -167,18 +169,21 @@ function chartOptions(xLabel, yLabel, logY = false, yMax = null, yMin = null) {
   }
   if (yMax !== null) yAxis.max = yMax;
   if (yMin !== null) yAxis.min = yMin;
+  const xAxis = {
+    type: 'linear',
+    title: { display: true, text: xLabel },
+    grid: { color: 'rgba(0,0,0,0.08)' }
+  };
+  if (xMin !== null) xAxis.min = xMin;
+  if (xMax !== null) xAxis.max = xMax;
   return {
     responsive: true,
     animation: false,
     plugins: {
-      legend: { position: 'top' }
+      legend: { display: showLegend, position: 'top' }
     },
     scales: {
-      x: {
-        type: 'linear',
-        title: { display: true, text: xLabel },
-        grid: { color: 'rgba(0,0,0,0.08)' }
-      },
+      x: xAxis,
       y: yAxis
     }
   };
@@ -217,30 +222,57 @@ function fmtMetric(value, unit) {
   return unit ? `${text} ${unit}` : text;
 }
 
-function combineIvCurve(d) {
-  const reverse = (d.reverse?.voltage || []).map((voltage, idx) => ({
-    x: -Math.abs(voltage),
-    y: -Math.abs(d.reverse.current[idx] || 0)
-  }));
+function forwardIvPoints(d) {
   const forwardSource = d.forward_family?.length ? d.forward_family[d.forward_family.length - 1] : d.forward;
-  const forward = (forwardSource?.voltage || []).map((voltage, idx) => ({
+  return (forwardSource?.voltage || []).map((voltage, idx) => ({
     x: Math.abs(voltage),
     y: Math.abs(forwardSource.current[idx] || 0)
-  }));
-  return [...reverse, { x: 0, y: 0 }, ...forward].filter(point => Number.isFinite(point.x) && Number.isFinite(point.y)).sort((a, b) => a.x - b.x);
+  })).filter(point => Number.isFinite(point.x) && Number.isFinite(point.y) && point.y > 0).sort((a, b) => a.x - b.x);
+}
+
+function reverseIvPoints(d) {
+  return (d.reverse?.voltage || []).map((voltage, idx) => ({
+    x: -Math.abs(voltage),
+    y: Math.abs(d.reverse.current[idx] || 0)
+  })).filter(point => Number.isFinite(point.x) && Number.isFinite(point.y) && point.y > 0).sort((a, b) => a.x - b.x);
+}
+
+function steadyLogYMin(ivSets, lowerBound, yMax = null) {
+  const values = ivSets.flatMap(dataset => dataset.data.map(point => point.y))
+    .filter(value => Number.isFinite(value) && value > 0 && (yMax === null || value <= yMax));
+  if (!values.length) return lowerBound;
+  const minValue = Math.min(...values);
+  const floor = Math.pow(10, Math.floor(Math.log10(minValue)));
+  if (!Number.isFinite(floor) || floor <= 0) return lowerBound;
+  return Math.max(floor, lowerBound);
 }
 
 function renderSteady(entry) {
-  const ivSets = [];
+  const forwardSets = [];
+  const reverseSets = [];
+  const selectedBv = typeof voltageClassToBV === 'function' ? voltageClassToBV(state.voltage) : null;
 
   Object.entries(entry.materials).forEach(([mat, d]) => {
     if (!state.materials[mat]) return;
     const color = d.color || '#666';
-    const points = combineIvCurve(d);
-    if (points.length < 2) return;
-    ivSets.push({
+    const forwardPoints = forwardIvPoints(d);
+    if (forwardPoints.length >= 2) {
+      forwardSets.push({
+        label: mat,
+        data: forwardPoints,
+        borderColor: color,
+        backgroundColor: color,
+        borderWidth: 2,
+        pointRadius: 0,
+        showLine: true,
+        tension: 0
+      });
+    }
+    const reversePoints = reverseIvPoints(d);
+    if (reversePoints.length < 2) return;
+    reverseSets.push({
       label: mat,
-      data: points,
+      data: reversePoints,
       borderColor: color,
       backgroundColor: color,
       borderWidth: 2,
@@ -250,14 +282,27 @@ function renderSteady(entry) {
     });
   });
 
-  show(byId('forward-none'), !ivSets.length);
+  show(byId('forward-none'), !forwardSets.length);
+  show(byId('reverse-none'), !reverseSets.length);
 
-  if (ivSets.length) {
+  if (forwardSets.length) {
     const steadyYLabel = state.family === 'mosfet' ? 'I_D (A)' : 'J (A/cm²)';
+    const yMax = 200;
+    const yMin = steadyLogYMin(forwardSets, 1e-3, yMax);
     forwardChart = new Chart(document.getElementById('forward-chart'), {
       type: 'scatter',
-      data: { datasets: ivSets },
-      options: chartOptions('Voltage (V)', steadyYLabel)
+      data: { datasets: forwardSets },
+      options: chartOptions('Voltage (V)', steadyYLabel, true, yMax, yMin, 0, 5, true)
+    });
+  }
+
+  if (reverseSets.length) {
+    const reverseYLabel = state.family === 'mosfet' ? '|I_D| (A)' : '|J| (A/cm²)';
+    const yMin = steadyLogYMin(reverseSets, 1e-18);
+    reverseChart = new Chart(document.getElementById('reverse-chart'), {
+      type: 'scatter',
+      data: { datasets: reverseSets },
+      options: chartOptions('Voltage (V)', reverseYLabel, true, null, yMin, Number.isFinite(selectedBv) ? -Math.abs(selectedBv) : null, 0, false)
     });
   }
 }

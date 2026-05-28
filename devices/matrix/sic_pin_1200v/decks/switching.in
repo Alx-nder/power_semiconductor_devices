@@ -1,5 +1,5 @@
-GO VICTORYDEVICE SIMFLAGS="-P 8 -256"
-# WBG low-leakage reverse sweeps and mixed-mode transitions intentionally use 256-bit precision.
+GO VICTORYDEVICE SIMFLAGS="-P 8 -160"
+# WBG low-leakage reverse sweeps and mixed-mode transitions intentionally use 160-bit precision.
 
 MESH WIDTH=1e+07
 # Active area enforced: 10 um lateral span x WIDTH=1e+07 um = 1 cm^2.
@@ -44,8 +44,8 @@ METHOD NEWTON GUMMEL TRAP CLIMIT=1e-9 MAXTRAPS=40
 SOLVE init
 SAVE OUTFILE=sic_pin_1200v_dpt.str
 
-GO VICTORYDEVICE SIMFLAGS="-P 8 -256"
-# WBG low-leakage reverse sweeps and mixed-mode transitions intentionally use 256-bit precision.
+GO VICTORYDEVICE SIMFLAGS="-P 8 -160"
+# WBG low-leakage reverse sweeps and mixed-mode transitions intentionally use 160-bit precision.
 
 .BEGIN
 V_DC     10  0   960

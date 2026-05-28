@@ -216,6 +216,17 @@ small.mono {
   gap: 0.4rem;
 }
 .plot-header h2 { margin: 0; }
+.steady-chart-stack {
+  display: grid;
+  gap: 0.65rem;
+}
+.steady-subplot-title {
+  margin: 0 0 0.35rem;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+}
 .panel-header {
   display: flex;
   align-items: center;

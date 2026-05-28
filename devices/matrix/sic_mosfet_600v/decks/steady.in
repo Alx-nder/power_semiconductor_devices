@@ -1,5 +1,5 @@
-GO VICTORYDEVICE SIMFLAGS="-P 8 -256"
-# WBG MOSFET steady off-state uses 256-bit precision for low-current reverse leakage.
+GO VICTORYDEVICE SIMFLAGS="-P 8 -160"
+# WBG MOSFET steady off-state uses 160-bit precision for low-current reverse leakage.
 
 MESH WIDTH=2.5e+07
 # Active area enforced: 4 um lateral span x WIDTH=2.5e+07 um = 1 cm^2.
