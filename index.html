@@ -8,8 +8,8 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
-<script src="data/device_data.js"></script>
-<link rel="stylesheet" href="assets/styles.css?v=lab-20260528b">
+<script src="data/device_data.js?v=lab-20260529d"></script>
+<link rel="stylesheet" href="assets/styles.css?v=lab-20260529a">
 <link rel="stylesheet" href="assets/analysis.css?v=lab-20260528a">
 </head>
 <body>
@@ -31,6 +31,9 @@
     </div>
     <div class="control-row" id="material-row">
       <span class="label">Material</span>
+    </div>
+    <div class="material-status-note" id="material-status-note">
+      Diamond: 3 local VD refs vs Si 129. Missing critical VD setup: mobility defaults, SRH/Auger lifetimes, A.EDB/A.EAB dopant levels, and a calibrated impact-ionization model.
     </div>
   </section>
 
@@ -133,6 +136,7 @@
             <canvas id="reverse-chart" height="180"></canvas>
             <div class="no-data" id="reverse-none" hidden>No reverse I-V data</div>
           </div>
+          <div class="chart-note" id="reverse-start-note">Start values appear here.</div>
         </section>
       </div>
     </div>
@@ -193,6 +197,6 @@
 
 <script src="assets/calculators.js?v=lab-20260513b"></script>
 <script src="assets/analysis.js?v=lab-20260513b"></script>
-<script src="assets/app.js?v=lab-20260528b"></script>
+<script src="assets/app.js?v=lab-20260529d"></script>
 </body>
 </html>

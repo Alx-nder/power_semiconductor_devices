@@ -43,8 +43,7 @@
   border: 1px dashed #d8cfbc;
   border-radius: 10px;
   padding: 0.65rem;
-  background: linear-gradient(180deg, rgba(246, 242, 232, 0.85), rgba(255, 255, 255, 0.92));
-  opacity: 0.68;
+  background: #f6f2e8;
 }
 .pt-preview-header {
   display: flex;

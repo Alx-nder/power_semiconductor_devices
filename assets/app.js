@@ -9,6 +9,12 @@ const state = {
   materials: { 'Si': true, '4H-SiC': true, 'GaN': true }
 };
 
+const TRANSIENT_LINE_STYLES = {
+  'Si': { borderDash: [], borderWidth: 2.4 },
+  '4H-SiC': { borderDash: [10, 6], borderWidth: 2.4 },
+  'GaN': { borderDash: [3, 5], borderWidth: 2.6 }
+};
+
 function byId(id) {
   return document.getElementById(id);
 }
@@ -80,9 +86,8 @@ function buildMaterialRow() {
     return (m.trace?.time?.length > 0) || (m.trace?.x?.length > 0);
   }
   
-  // Order: GaAs, Si, SiC, GaN, Diamond
+  // Order: Si, SiC, GaN, Diamond
   const orderedMaterials = [
-    { mat: 'GaAs', alwaysUnavailable: true, color: '#b8a892' },
     { mat: 'Si', alwaysUnavailable: false },
     { mat: '4H-SiC', alwaysUnavailable: false },
     { mat: 'GaN', alwaysUnavailable: false },
@@ -122,7 +127,6 @@ function buildMaterialRow() {
       // Unavailable material
       const chip = document.createElement('span');
       chip.className = 'chip material-chip unavailable';
-      chip.title = item.alwaysUnavailable ? 'Not yet available' : 'No simulation data for this combination';
       chip.setAttribute('aria-disabled', 'true');
 
       const dot = document.createElement('span');
@@ -156,6 +160,34 @@ function seriesDataset(name, color, x, y, options = {}) {
   };
 }
 
+function zeroAnimationConfig() {
+  return {
+    animation: { duration: 0 },
+    animations: {
+      colors: false,
+      numbers: false,
+      x: false,
+      y: false
+    },
+    transitions: {
+      active: { animation: { duration: 0 } },
+      resize: { animation: { duration: 0 } },
+      show: { animations: { colors: { duration: 0 }, numbers: { duration: 0 }, x: { duration: 0 }, y: { duration: 0 } } },
+      hide: { animations: { colors: { duration: 0 }, numbers: { duration: 0 }, x: { duration: 0 }, y: { duration: 0 } } }
+    }
+  };
+}
+
+function disableChartDefaults() {
+  if (typeof Chart === 'undefined') return;
+  Chart.defaults.animation = false;
+  Chart.defaults.animations = false;
+  if (Chart.defaults.transitions) {
+    Chart.defaults.transitions.active = { animation: { duration: 0 } };
+    Chart.defaults.transitions.resize = { animation: { duration: 0 } };
+  }
+}
+
 function chartOptions(xLabel, yLabel, logY = false, yMax = null, yMin = null, xMin = null, xMax = null, showLegend = true) {
   const yAxis = {
     type: logY ? 'logarithmic' : 'linear',
@@ -178,23 +210,27 @@ function chartOptions(xLabel, yLabel, logY = false, yMax = null, yMin = null, xM
   if (xMax !== null) xAxis.max = xMax;
   return {
     responsive: true,
-    animation: false,
+    events: [],
     plugins: {
-      legend: { display: showLegend, position: 'top' }
+      legend: { display: showLegend, position: 'top' },
+      tooltip: { enabled: false }
     },
     scales: {
       x: xAxis,
       y: yAxis
-    }
+    },
+    ...zeroAnimationConfig()
   };
 }
 
 function dptChartOptions() {
   return {
     responsive: true,
-    animation: false,
-    interaction: { mode: 'nearest', intersect: false },
-    plugins: { legend: { position: 'top' } },
+    events: [],
+    plugins: {
+      legend: { position: 'top' },
+      tooltip: { enabled: false }
+    },
     scales: {
       x: {
         type: 'linear',
@@ -207,7 +243,8 @@ function dptChartOptions() {
         title: { display: true, text: 'DUT Current (A)' },
         grid: { color: 'rgba(0,0,0,0.08)' }
       }
-    }
+    },
+    ...zeroAnimationConfig()
   };
 }
 
@@ -245,6 +282,70 @@ function steadyLogYMin(ivSets, lowerBound, yMax = null) {
   const floor = Math.pow(10, Math.floor(Math.log10(minValue)));
   if (!Number.isFinite(floor) || floor <= 0) return lowerBound;
   return Math.max(floor, lowerBound);
+}
+
+function steadyLinearXMin(ivSets, fallback = null, step = 50) {
+  const values = ivSets.flatMap(dataset => dataset.data.map(point => point.x))
+    .filter(value => Number.isFinite(value));
+  if (!values.length) return fallback;
+  const actualMin = Math.min(...values);
+  const roundedMin = step > 0 ? Math.floor(actualMin / step) * step : actualMin;
+  if (fallback === null || !Number.isFinite(fallback)) return roundedMin;
+  return Math.min(fallback, roundedMin);
+}
+
+function forwardLinearXMax(ivSets, yCap = 200, fallback = 5) {
+  const values = [];
+  ivSets.forEach(dataset => {
+    const points = dataset.data.filter(point => Number.isFinite(point.x) && Number.isFinite(point.y) && point.x >= 0);
+    if (!points.length) return;
+    let candidate = null;
+    points.forEach(point => {
+      if (point.y <= yCap) candidate = point.x;
+      else if (candidate === null) candidate = point.x;
+    });
+    if (Number.isFinite(candidate)) values.push(candidate);
+  });
+  if (!values.length) return fallback;
+  const maxValue = Math.max(...values);
+  const padded = maxValue < 1 ? maxValue + 0.2 : maxValue * 1.1;
+  const rounded = Math.ceil(padded * 10) / 10;
+  return Math.min(Math.max(rounded, 1), fallback);
+}
+
+function logAxisFloor(value, extraDecades = 0, fallback = null) {
+  if (!Number.isFinite(value) || value <= 0) return fallback;
+  return Math.pow(10, Math.floor(Math.log10(value)) - extraDecades);
+}
+
+function logAxisCeil(value, extraDecades = 0, fallback = null) {
+  if (!Number.isFinite(value) || value <= 0) return fallback;
+  return Math.pow(10, Math.ceil(Math.log10(value)) + extraDecades);
+}
+
+function reverseScaleConfig(reverseSets, selectedBv) {
+  const values = reverseSets.flatMap(dataset => dataset.data.map(point => point.y))
+    .filter(value => Number.isFinite(value) && value > 0);
+  const minValue = values.length ? Math.min(...values) : null;
+  const maxValue = values.length ? Math.max(...values) : null;
+  return {
+    xMin: steadyLinearXMin(reverseSets, Number.isFinite(selectedBv) ? -Math.abs(selectedBv) : null),
+    yMin: logAxisFloor(minValue, 2, 1e-18),
+    yMax: logAxisCeil(maxValue, 1, null)
+  };
+}
+
+function updateReverseStartNote(reverseSets) {
+  const note = document.getElementById('reverse-start-note');
+  if (!note) return;
+  if (!reverseSets.length) {
+    note.textContent = 'No reverse I-V data for the current selection.';
+    return;
+  }
+  note.textContent = 'Start |J|: ' + reverseSets.map(dataset => {
+    const startPoint = dataset.data[0];
+    return `${dataset.label} ${fmtMetric(startPoint?.y, '')} @ ${fmtMetric(startPoint?.x, 'V')}`;
+  }).join(' | ');
 }
 
 function renderSteady(entry) {
@@ -288,23 +389,25 @@ function renderSteady(entry) {
   if (forwardSets.length) {
     const steadyYLabel = state.family === 'mosfet' ? 'I_D (A)' : 'J (A/cm²)';
     const yMax = 200;
-    const yMin = steadyLogYMin(forwardSets, 1e-3, yMax);
+    const xMax = forwardLinearXMax(forwardSets, yMax, 5);
     forwardChart = new Chart(document.getElementById('forward-chart'), {
       type: 'scatter',
       data: { datasets: forwardSets },
-      options: chartOptions('Voltage (V)', steadyYLabel, true, yMax, yMin, 0, 5, true)
+      options: chartOptions('Voltage (V)', steadyYLabel, false, yMax, 0, 0, xMax, true)
     });
   }
 
   if (reverseSets.length) {
     const reverseYLabel = state.family === 'mosfet' ? '|I_D| (A)' : '|J| (A/cm²)';
-    const yMin = steadyLogYMin(reverseSets, 1e-18);
+    const reverseScale = reverseScaleConfig(reverseSets, selectedBv);
     reverseChart = new Chart(document.getElementById('reverse-chart'), {
       type: 'scatter',
       data: { datasets: reverseSets },
-      options: chartOptions('Voltage (V)', reverseYLabel, true, null, yMin, Number.isFinite(selectedBv) ? -Math.abs(selectedBv) : null, 0, false)
+      options: chartOptions('Voltage (V)', reverseYLabel, true, reverseScale.yMax, reverseScale.yMin, reverseScale.xMin, 0, false)
     });
   }
+
+  updateReverseStartNote(reverseSets);
 }
 
 function renderTransient(entry) {
@@ -317,7 +420,13 @@ function renderTransient(entry) {
     const current = d.trace.current || d.trace.y;
     if (!time?.length || !current?.length) return;
     const color = d.color || '#666';
-    sets.push(seriesDataset(`${mat} | I_DUT`, color, time.map(value => value * 1e6), current));
+    sets.push(seriesDataset(
+      `${mat} | I_DUT`,
+      color,
+      time.map(value => value * 1e6),
+      current,
+      TRANSIENT_LINE_STYLES[mat] || {}
+    ));
   });
 
   show(byId('transient-none'), !sets.length);
@@ -438,6 +547,7 @@ function boot() {
     return;
   }
 
+  disableChartDefaults();
   document.getElementById('kpi').textContent = `Loaded: ${data.meta.loaded_variants || 0} variants`;
   if (typeof initAnalysisLab === 'function') initAnalysisLab();
   buildFamilyRow();

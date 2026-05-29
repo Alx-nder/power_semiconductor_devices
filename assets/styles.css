@@ -58,6 +58,15 @@ h1 {
   align-items: center;
   flex-wrap: wrap;
 }
+.material-status-note {
+  border: 1px solid #e6dfd2;
+  background: #faf7f0;
+  border-radius: 8px;
+  padding: 0.5rem 0.65rem;
+  color: var(--muted);
+  font-size: 0.73rem;
+  line-height: 1.45;
+}
 .label {
   font-size: 0.76rem;
   text-transform: uppercase;
@@ -237,20 +246,11 @@ small.mono {
 .panel-header h2 {
   margin: 0;
 }
-.axis-toggle {
-  display: flex;
-  gap: 0.3rem;
-  align-items: center;
-}
-.axis-toggle span {
-  font-size: 0.72rem;
+.chart-note {
+  margin-top: 0.32rem;
+  font-size: 0.68rem;
   color: var(--muted);
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-}
-.axis-toggle button {
-  padding: 0.2rem 0.55rem;
-  font-size: 0.76rem;
+  line-height: 1.4;
 }
 .deck-section {
   margin-top: 0.75rem;

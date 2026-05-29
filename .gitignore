@@ -25,6 +25,8 @@ devices/**/README.md
 
 knowledge_base/
 
+gan_algan_hemt_650v/
+
 IMPLEMENTATION_PLAN.md
 PROCESS_INIT_PROMPT.md
 MATRIX_REBUILD_LOG.md
