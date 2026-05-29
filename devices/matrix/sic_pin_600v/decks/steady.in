@@ -34,7 +34,7 @@ MODELS REGION=3 FERMIDIRAC ANALYTIC CONWELL SRH BGN AUGER INCOMPLETE TEMP=300 PR
 IMPACT REGION=3 ANISOTROPIC E.SIDE SIC4H0001
 METHOD NEWTON GUMMEL
 
-LOG outf=steady_forward.log
+LOG outf=steady_forward.log 
 SOLVE init
 SAVE outf=structure.str
 SOLVE vanode=0.100 vstep=0.100 vfinal=5.000 name=anode compliance=1e6 cname=anode

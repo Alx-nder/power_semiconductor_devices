@@ -65,21 +65,9 @@
         <div class="pt-preview-header">
           <div>
             <h3 id="pt-preview-title">Punch-Through Drift Tuning</h3>
-            <p id="pt-preview-copy">Preview only for now. The completed tool will lock a drift width, sweep drift doping, and expose the punch-through versus avalanche tradeoff at constant thickness.</p>
+            <p id="pt-preview-copy">This view frames the fixed-width tradeoff: lock the drift thickness, sweep drift doping, and compare the punch-through and avalanche limits at constant geometry.</p>
           </div>
-          <span class="pt-preview-badge">Coming soon</span>
         </div>
-        <fieldset class="pt-preview-controls" disabled>
-          <label>Fixed Drift Width W<sub>fix</sub> (um)
-            <input type="number" value="32" aria-label="Fixed drift width placeholder">
-          </label>
-          <label>Doping Multiplier k<sub>N</sub> = N<sub>D</sub>/N<sub>D,ref</sub>
-            <input type="range" min="0.50" max="2.00" step="0.05" value="1.25" aria-label="Punch-through doping multiplier placeholder">
-          </label>
-          <label>Comparison Mode
-            <input type="text" value="Increase N_D while W_fix stays locked" aria-label="Punch-through comparison mode placeholder">
-          </label>
-        </fieldset>
         <div class="pt-preview-summary">
           <span>At fixed W<sub>fix</sub>, higher N<sub>D</sub> lowers R<sub>drift,sp</sub>, raises V<sub>PT</sub>, and lowers the avalanche limit, so the usable blocking point becomes BV<sub>eff</sub> = min(BV<sub>PT</sub>, BV<sub>AVL</sub>).</span>
         </div>
