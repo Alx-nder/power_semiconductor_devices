@@ -8,8 +8,8 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
-<script src="data/device_data.js?v=lab-20260529d"></script>
-<link rel="stylesheet" href="assets/styles.css?v=lab-20260529a">
+<script src="data/device_data.js?v=lab-20260529f"></script>
+<link rel="stylesheet" href="assets/styles.css?v=lab-20260529c">
 <link rel="stylesheet" href="assets/analysis.css?v=lab-20260528a">
 </head>
 <body>
@@ -153,6 +153,44 @@
       </div>
       <div id="dpt-results-block">
         <div class="metric-grid dpt-metrics" id="dpt-metrics"></div>
+        <div class="dpt-circuit-block" id="dpt-circuit-block" hidden>
+          <div class="steady-subplot-title">Shared Test Circuit</div>
+          <div class="dpt-circuit-shell">
+            <svg class="dpt-circuit-svg" viewBox="0 0 540 240" role="img" aria-label="Double pulse test circuit schematic">
+              <path class="wire" d="M70 50 L70 78"/>
+              <circle class="source" cx="70" cy="108" r="30"/>
+              <path class="wire" d="M70 138 L70 188 L350 188"/>
+              <path class="wire" d="M70 50 L180 50"/>
+              <path class="inductor" d="M180 50 C190 35 200 35 210 50 C220 65 230 65 240 50 C250 35 260 35 270 50 C280 65 290 65 300 50"/>
+              <path class="wire" d="M300 50 L350 50 L430 50"/>
+              <path class="wire" d="M350 50 L350 98"/>
+              <path class="wire" d="M350 118 L350 188"/>
+              <path class="wire" d="M350 108 L430 108"/>
+              <path class="wire" d="M430 50 L430 74"/>
+              <path class="wire" d="M430 96 L430 108"/>
+              <path class="diode-triangle" d="M412 74 L448 74 L430 96 Z"/>
+              <path class="diode-bar" d="M410 70 L450 70"/>
+              <rect class="switch-body" x="334" y="98" width="32" height="20" rx="4" ry="4"/>
+              <path class="wire" d="M280 138 L320 138"/>
+              <path class="wire" d="M280 138 L280 168"/>
+              <path class="wire" d="M320 108 L334 108"/>
+              <path class="wire" d="M320 108 L320 138"/>
+              <path class="wire" d="M120 138 L180 138"/>
+              <path class="resistor" d="M180 138 L190 130 L200 146 L210 130 L220 146 L230 130 L240 146 L250 130 L260 146 L270 138 L280 138"/>
+              <circle class="source small-source" cx="90" cy="138" r="20"/>
+              <path class="wire" d="M90 158 L90 188"/>
+              <path class="ground" d="M350 188 L350 200 M336 200 L364 200 M340 206 L360 206 M344 212 L356 212"/>
+              <path class="ground" d="M90 188 L90 200 M76 200 L104 200 M80 206 L100 206 M84 212 L96 212"/>
+              <text class="schematic-text" x="52" y="112">V_DC</text>
+              <text class="schematic-text" x="208" y="30">L_LOAD</text>
+              <text class="schematic-text" x="405" y="38">ADIODE</text>
+              <text class="schematic-text" x="319" y="92">M_SW</text>
+              <text class="schematic-text" x="202" y="126">R_GATE</text>
+              <text class="schematic-text" x="60" y="142">V_GATE</text>
+            </svg>
+            <div class="metric-grid dpt-circuit-values" id="dpt-circuit-values"></div>
+          </div>
+        </div>
       </div>
     </div>
   </section>
@@ -197,6 +235,6 @@
 
 <script src="assets/calculators.js?v=lab-20260513b"></script>
 <script src="assets/analysis.js?v=lab-20260513b"></script>
-<script src="assets/app.js?v=lab-20260529d"></script>
+<script src="assets/app.js?v=lab-20260529f"></script>
 </body>
 </html>

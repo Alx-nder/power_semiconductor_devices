@@ -1,32 +1,25 @@
-GO VICTORYDEVICE SIMFLAGS="-P 8"
-# 100 V and 600 V WBG smoke use default precision; high precision is reserved for higher-BV leakage/convergence runs.
+GO VICTORYDEVICE SIMFLAGS="-P 8 -160"
+# WBG DPT rebuild: 2 um x-span, 0.1 um mesh, gaussian-only doping, 160-bit precision.
 
-MESH WIDTH=1e+07
-# Active area enforced: 10 um lateral span x WIDTH=1e+07 um = 1 cm^2.
-X.MESH loc=0.0 spac=0.5
-X.MESH loc=10.0 spac=0.5
-Y.MESH loc=0.000 spac=0.040
-Y.MESH loc=1.428 spac=0.057
-Y.MESH loc=1.472 spac=0.063
-Y.MESH loc=1.516 spac=0.061
-Y.MESH loc=2.821 spac=0.113
-Y.MESH loc=5.643 spac=0.226
-Y.MESH loc=8.464 spac=0.282
-Y.MESH loc=9.361 spac=0.282
-Y.MESH loc=9.650 spac=0.063
-Y.MESH loc=9.940 spac=0.282
-Y.MESH loc=11.286 spac=0.282
+MESH WIDTH=5e+07
+# Active area enforced: 2 um lateral span x WIDTH=5e+07 um = 1 cm^2.
+X.MESH loc=0.0 spac=0.1
+X.MESH loc=2.0 spac=0.1
+Y.MESH loc=0.000 spac=0.100
+Y.MESH loc=1.472 spac=0.100
+Y.MESH loc=9.650 spac=0.100
+Y.MESH loc=11.286 spac=0.100
 
-REGION num=1 material=4H-SiC x.min=0 x.max=10.0 y.min=0 y.max=1.472
-REGION num=2 material=4H-SiC x.min=0 x.max=10.0 y.min=1.472 y.max=9.650
-REGION num=3 material=4H-SiC x.min=0 x.max=10.0 y.min=9.650 y.max=11.286
+REGION num=1 material=4H-SiC x.min=0 x.max=2.0 y.min=0 y.max=1.472
+REGION num=2 material=4H-SiC x.min=0 x.max=2.0 y.min=1.472 y.max=9.650
+REGION num=3 material=4H-SiC x.min=0 x.max=2.0 y.min=9.650 y.max=11.286
 
 ELECTRODE name=anode top
 ELECTRODE name=cathode bottom
 
-DOPING gauss p.type conc=1e20 peak=0 char=0.491 dir=Y REGION=1
-DOPING uniform n.type conc=3.81041e+16 REGION=2
-DOPING uniform n.type conc=1.00000e+20 REGION=3
+DOPING gauss p.type conc=1e20 peak=0.000 char=0.491 dir=Y REGION=1
+DOPING gauss n.type conc=3.81041e+16 peak=5.561 char=81.780 dir=Y REGION=2
+DOPING gauss n.type conc=1.00000e+20 peak=11.286 char=0.545 dir=Y REGION=3
 
 CONTACT name=anode NEUTRAL
 CONTACT name=cathode NEUTRAL
@@ -39,13 +32,14 @@ MODELS REGION=2 FERMIDIRAC ANALYTIC CONWELL SRH BGN AUGER INCOMPLETE TEMP=300 PR
 IMPACT REGION=2 ANISOTROPIC E.SIDE SIC4H0001
 MODELS REGION=3 FERMIDIRAC ANALYTIC CONWELL SRH BGN AUGER INCOMPLETE TEMP=300 PRINT
 IMPACT REGION=3 ANISOTROPIC E.SIDE SIC4H0001
-METHOD NEWTON GUMMEL TRAP CLIMIT=1e-9 MAXTRAPS=40
+METHOD NEWTON GUMMEL
+
 
 SOLVE init
 SAVE OUTFILE=sic_pin_600v_dpt.str
 
-GO VICTORYDEVICE SIMFLAGS="-P 8"
-# 100 V and 600 V WBG smoke use default precision; high precision is reserved for higher-BV leakage/convergence runs.
+GO VICTORYDEVICE SIMFLAGS="-P 8 -160"
+# Shared mixed-mode DPT circuit on normalized WBG structure.
 
 .BEGIN
 V_DC     10  0   480
@@ -54,7 +48,7 @@ R_GATE   1   2   5.0
 L_LOAD   10  3   4.800000e-04
 M_SW     3   2   0   0   NMOD  W=10000  L=1e-4
 .MODEL NMOD NMOS LEVEL=1 VTO=3.0 KP=1e-08 LAMBDA=0.01 RD=0.5 RS=0.05 CBD=50e-12 CBS=50e-12
-ADIODE   3=anode  10=cathode  INFILE=sic_pin_600v_dpt.str  WIDTH=1e+07
+ADIODE   3=anode  10=cathode  INFILE=sic_pin_600v_dpt.str  WIDTH=5e+07
 .NODESET  v(1)=0  v(2)=0  v(3)=480  v(10)=480
 .NUMERIC  LTE=0.35  TOLTR=2e-05  VCHANGE=9.6
 .OPTIONS  PRINT RELPOT WRITE=20
@@ -66,6 +60,6 @@ ADIODE   3=anode  10=cathode  INFILE=sic_pin_600v_dpt.str  WIDTH=1e+07
 MATERIAL DEVICE=ADIODE
 MODELS DEVICE=ADIODE FLDMOB FERMIDIRAC ANALYTIC CONWELL SRH BGN AUGER INCOMPLETE TEMP=300
 IMPACT DEVICE=ADIODE ANISOTROPIC EDGE SIC4H0001
-METHOD NEWTON TRAP MAXTRAPS=60 ITLIMIT=80 CLIMIT=1e8 DVMAX=1e6
+METHOD NEWTON GUMMEL
 
 QUIT

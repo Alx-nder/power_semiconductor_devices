@@ -44,7 +44,6 @@ function buildFamilyRow() {
     row.appendChild(btn(label, state.family === key, () => {
       state.family = key;
       buildFamilyRow();
-      buildVoltageRow();
       renderAll();
     }));
   });
@@ -63,7 +62,6 @@ function buildVoltageRow() {
     row.appendChild(btn(v, state.voltage === v, () => {
       state.voltage = v;
       if (typeof syncAnalysisBVToSelection === 'function') syncAnalysisBVToSelection();
-      buildVoltageRow();
       renderAll();
     }));
   });
@@ -74,30 +72,28 @@ function buildMaterialRow() {
   row.querySelectorAll('.material-chip').forEach(n => n.remove());
 
   const colorMap = data.meta.colors;
-  const modeKey = 'steady';
-  const classNode = data[modeKey]?.[state.family]?.classes?.[state.voltage];
+  const classNode = data.steady?.[state.family]?.classes?.[state.voltage];
 
   function hasData(mat) {
-    if (!classNode?.materials?.[mat]) return false;
-    const m = classNode.materials[mat];
-    if (modeKey === 'steady') {
-      return (m.forward?.voltage?.length > 0) || (m.forward_family?.some(curve => curve.voltage?.length) ?? false);
-    }
-    return (m.trace?.time?.length > 0) || (m.trace?.x?.length > 0);
+    const material = classNode?.materials?.[mat];
+    return Boolean(
+      material && (
+        material.forward?.voltage?.length > 0 ||
+        material.forward_family?.some(curve => curve.voltage?.length)
+      )
+    );
   }
-  
-  // Order: Si, SiC, GaN, Diamond
+
   const orderedMaterials = [
     { mat: 'Si', alwaysUnavailable: false },
     { mat: '4H-SiC', alwaysUnavailable: false },
     { mat: 'GaN', alwaysUnavailable: false },
     { mat: 'Diamond', alwaysUnavailable: true, color: '#8a97a6' }
   ];
-  
+
   orderedMaterials.forEach(item => {
     const available = !item.alwaysUnavailable && hasData(item.mat);
     if (available) {
-      // Available material
       const mat = item.mat;
       const key = Object.entries(data.meta.materials).find(([, v]) => v === mat)?.[0] || mat.toLowerCase();
       const chip = document.createElement('label');
@@ -108,7 +104,6 @@ function buildMaterialRow() {
       input.checked = state.materials[mat];
       input.addEventListener('change', () => {
         state.materials[mat] = input.checked;
-        buildMaterialRow();
         renderAll();
       });
 
@@ -124,7 +119,6 @@ function buildMaterialRow() {
       chip.appendChild(txt);
       row.appendChild(chip);
     } else {
-      // Unavailable material
       const chip = document.createElement('span');
       chip.className = 'chip material-chip unavailable';
       chip.setAttribute('aria-disabled', 'true');
@@ -259,6 +253,57 @@ function fmtMetric(value, unit) {
   return unit ? `${text} ${unit}` : text;
 }
 
+function circuitValueCards(recipe) {
+  const lines = recipe?.elements || [];
+  const cards = [];
+  lines.forEach(line => {
+    const trimmed = line.trim();
+    if (!trimmed) return;
+    const parts = trimmed.split(/\s+/);
+    if (/^V_DC\b/i.test(trimmed)) {
+      cards.push({ label: 'V_DC', value: `${parts[3]} V` });
+      return;
+    }
+    if (/^V_GATE\b/i.test(trimmed)) {
+      cards.push({ label: 'V_GATE', value: parts.slice(3).join(' ') });
+      return;
+    }
+    if (/^R_GATE\b/i.test(trimmed)) {
+      cards.push({ label: 'R_GATE', value: `${parts[3]} Ohm` });
+      return;
+    }
+    if (/^L_LOAD\b/i.test(trimmed)) {
+      cards.push({ label: 'L_LOAD', value: `${parts[3]} H` });
+      return;
+    }
+    if (/^M_SW\b/i.test(trimmed)) {
+      cards.push({ label: 'M_SW', value: parts.slice(5).join(' ') });
+      return;
+    }
+    if (/^\.MODEL\s+NMOD\b/i.test(trimmed)) {
+      cards.push({ label: 'NMOD', value: trimmed.replace(/^\.MODEL\s+NMOD\s+/i, '') });
+      return;
+    }
+    if (/^ADIODE\b/i.test(trimmed)) {
+      const value = trimmed
+        .replace(/^ADIODE\s+/i, '')
+        .replace(/\s+INFILE=[^\s]+/i, '')
+        .replace(/\s+WIDTH=[^\s]+/i, '')
+        .trim();
+      cards.push({ label: 'DUT', value });
+    }
+  });
+  return cards;
+}
+
+function sharedCircuitRecipe(entry) {
+  for (const [mat, material] of Object.entries(entry.materials)) {
+    if (!state.materials[mat]) continue;
+    if (material.recipe?.elements?.length) return material.recipe;
+  }
+  return null;
+}
+
 function forwardIvPoints(d) {
   const forwardSource = d.forward_family?.length ? d.forward_family[d.forward_family.length - 1] : d.forward;
   return (forwardSource?.voltage || []).map((voltage, idx) => ({
@@ -272,16 +317,6 @@ function reverseIvPoints(d) {
     x: -Math.abs(voltage),
     y: Math.abs(d.reverse.current[idx] || 0)
   })).filter(point => Number.isFinite(point.x) && Number.isFinite(point.y) && point.y > 0).sort((a, b) => a.x - b.x);
-}
-
-function steadyLogYMin(ivSets, lowerBound, yMax = null) {
-  const values = ivSets.flatMap(dataset => dataset.data.map(point => point.y))
-    .filter(value => Number.isFinite(value) && value > 0 && (yMax === null || value <= yMax));
-  if (!values.length) return lowerBound;
-  const minValue = Math.min(...values);
-  const floor = Math.pow(10, Math.floor(Math.log10(minValue)));
-  if (!Number.isFinite(floor) || floor <= 0) return lowerBound;
-  return Math.max(floor, lowerBound);
 }
 
 function steadyLinearXMin(ivSets, fallback = null, step = 50) {
@@ -358,29 +393,11 @@ function renderSteady(entry) {
     const color = d.color || '#666';
     const forwardPoints = forwardIvPoints(d);
     if (forwardPoints.length >= 2) {
-      forwardSets.push({
-        label: mat,
-        data: forwardPoints,
-        borderColor: color,
-        backgroundColor: color,
-        borderWidth: 2,
-        pointRadius: 0,
-        showLine: true,
-        tension: 0
-      });
+      forwardSets.push(seriesDataset(mat, color, forwardPoints.map(point => point.x), forwardPoints.map(point => point.y)));
     }
     const reversePoints = reverseIvPoints(d);
     if (reversePoints.length < 2) return;
-    reverseSets.push({
-      label: mat,
-      data: reversePoints,
-      borderColor: color,
-      backgroundColor: color,
-      borderWidth: 2,
-      pointRadius: 0,
-      showLine: true,
-      tension: 0
-    });
+    reverseSets.push(seriesDataset(mat, color, reversePoints.map(point => point.x), reversePoints.map(point => point.y)));
   });
 
   show(byId('forward-none'), !forwardSets.length);
@@ -474,6 +491,31 @@ function renderDptMetrics(entry) {
   return summaries.length;
 }
 
+function renderDptCircuit(entry) {
+  const block = byId('dpt-circuit-block');
+  const grid = byId('dpt-circuit-values');
+  if (!block || !grid) return;
+
+  grid.innerHTML = '';
+  const recipe = sharedCircuitRecipe(entry);
+  show(block, Boolean(recipe));
+  if (!recipe) return;
+
+  circuitValueCards(recipe).forEach(({ label, value }) => {
+    const card = document.createElement('div');
+    card.className = 'metric-card';
+    const labelEl = document.createElement('span');
+    labelEl.className = 'label';
+    labelEl.textContent = label;
+    const valueEl = document.createElement('span');
+    valueEl.className = 'value';
+    valueEl.textContent = value;
+    card.appendChild(labelEl);
+    card.appendChild(valueEl);
+    grid.appendChild(card);
+  });
+}
+
 function renderPlots() {
   destroyCharts();
 
@@ -486,6 +528,7 @@ function renderPlots() {
   renderSteady(steadyNode);
   renderTransient(transientNode);
   renderDptMetrics(transientNode);
+  renderDptCircuit(transientNode);
 }
 
 function renderDeckTable() {
@@ -551,8 +594,6 @@ function boot() {
   document.getElementById('kpi').textContent = `Loaded: ${data.meta.loaded_variants || 0} variants`;
   if (typeof initAnalysisLab === 'function') initAnalysisLab();
   buildFamilyRow();
-  buildVoltageRow();
-  buildMaterialRow();
   renderAll();
 }
 

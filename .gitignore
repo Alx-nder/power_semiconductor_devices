@@ -24,6 +24,7 @@ devices/**/README.md
 *.py
 
 knowledge_base/
+dpt_backup_20260529/
 
 gan_algan_hemt_650v/
 
